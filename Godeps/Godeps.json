@@ -1,0 +1,8 @@
+{
+	"ImportPath": "github.com/dockpit/pit",
+	"GoVersion": "go1.3.3",
+	"Packages": [
+		"./..."
+	],
+	"Deps": []
+}
