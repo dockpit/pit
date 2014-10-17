@@ -3,8 +3,71 @@ dockpit cli
 
 Ahoy Matey! Welcome to the _dockpit_, the dockpit is a cockpit for your docker based microservice architecture. From the comfort of your command line it will be possible to rapidly develop individuel services without the hassle that normally comes with microservice development, it is not [a free lunch](http://highscalability.com/blog/2014/4/8/microservices-not-a-free-lunch.html) after all.
 
-The CLI focusses on three things and three things only:
+Dockpit has one goal: __Making you 10x more productive while developing micro-services__ , and achieves this by providing two functionalities:
 
-1. `pit switch <name>` - Start or continue development on a (different) named service.
-2. `pit mock` - Mock the dependencies for the current service based on the specification and create an isolated environment.
-3. `pit test` - Using the isolated environment test the current service using the specification.
+1. `pit mock` - Mock the dependencies for the current service based on the specification in the current directory and create an isolated environment using docker (based on the DOCKER_HOST env variable).
+2. `pit test` - Using the isolated environment to black-box test the current service against the specification.
+
+the specification
+-----------------
+At the basis is a JSON specification file called `dockpit.json` that should be present in the directory of the current service. The file describes a set of JSON over HTTP Rest calls as test cases, all different cases together should describe the service's behaviour.
+
+Below is an imaginary 'notes' endpoint that supports the listing, creation and deletion of notes:
+```json
+{
+	"endpoints": [
+		{
+			"name": "list_notes",
+			"cases": [
+				{
+				  //behaviour describing cases, 'when' specifies the request that the service expects
+					"when": {
+						"method": "GET",
+						"path": "/notes"
+					},
+					//'then' describes the response the service is to return for the request
+					"then": {
+						"status_code": 200
+					}
+				}
+			]
+		},{
+			"name": "create_note",
+			"cases": [
+				{
+					"when": {
+						"method": "POST",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 201
+					},
+					//'while' lists other service that should be involved in the formulation of the response
+					"while": [
+						{"service": "users"}
+					]
+				}
+			]
+		},{
+			"name": "delete_notes",
+			"cases": [
+				{
+					"given": {
+						//'given' describes the state of the service before sending the request, for example by loading data in the database 
+					},
+					"when": {
+						"method": "DELETE",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 200
+					},
+					"while": [
+						{"service": "users"}
+					]
+				}
+			]
+		}
+	]
+}
+```
