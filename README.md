@@ -13,55 +13,27 @@ the specification
 At the basis is a JSON specification file called `dockpit.json` that should be present in the directory of the current service. The file describes a set of JSON over HTTP Rest calls as test cases, all different cases together should describe the service's behaviour.
 
 Below is an imaginary 'notes' endpoint that supports the listing, creation and deletion of notes:
-```json
+```
 {
 	"endpoints": [
 		{
-			"name": "list_notes",
+			"name": "delete_notes",
 			"cases": [
 				{
-				  //behaviour describing cases, 'when' specifies the request that the service expects
+					//'given' describes the state of the service before sending the request, for example by loading data in the database 
+					"given": {
+
+					},
+					//behaviour describing cases, 'when' specifies the request that the service expects
 					"when": {
-						"method": "GET",
+						"method": "DELETE",
 						"path": "/notes"
 					},
 					//'then' describes the response the service is to return for the request
 					"then": {
 						"status_code": 200
-					}
-				}
-			]
-		},{
-			"name": "create_note",
-			"cases": [
-				{
-					"when": {
-						"method": "POST",
-						"path": "/notes"
 					},
-					"then": {
-						"status_code": 201
-					},
-					//'while' lists other service that should be involved in the formulation of the response
-					"while": [
-						{"service": "users"}
-					]
-				}
-			]
-		},{
-			"name": "delete_notes",
-			"cases": [
-				{
-					"given": {
-						//'given' describes the state of the service before sending the request, for example by loading data in the database 
-					},
-					"when": {
-						"method": "DELETE",
-						"path": "/notes"
-					},
-					"then": {
-						"status_code": 200
-					},
+					//'while' lists other service that should be involved in the formulation of the
 					"while": [
 						{"service": "users"}
 					]
