@@ -6,5 +6,5 @@ Ahoy Matey! Welcome to the _dockpit_, the dockpit is a cockpit for your docker b
 The CLI focusses on three things and three things only:
 
 1. `pit switch <name>` - Start or continue development on a (different) named service.
-2. `pit mock` - Mock the dependencies for the current service based on the specification creating the isolation
-3. `pit test` - Test the current service using the specification
+2. `pit mock` - Mock the dependencies for the current service based on the specification this creates an isolated environment
+3. `pit test` - Using the isolated environment test the current service using the specification
