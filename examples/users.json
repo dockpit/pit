@@ -4,6 +4,7 @@
 			"name": "show_user",
 			"cases": [
 				{
+					"name": "success",
 					"when": {
 						"method": "GET",
 						"path": "/users/1"

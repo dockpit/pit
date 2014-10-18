@@ -25,10 +25,7 @@
 					},
 					"then": {
 						"status_code": 201
-					},
-					"while": [
-						{"service": "users"}
-					]
+					}
 				}
 			]
 		},{
@@ -44,7 +41,7 @@
 						"status_code": 200
 					},
 					"while": [
-						{"service": "users"}
+						{"user_service": ["show_user.success"]}
 					]
 				}
 			]

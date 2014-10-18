@@ -13,10 +13,6 @@ type Expectations struct {
 	StatusCode int `json:"status_code"`
 }
 
-type Dependency struct {
-	Service string `json:"service"`
-}
-
 //Service endpoint case specification
 type Case struct {
 	caseData
@@ -35,10 +31,10 @@ func (c *Case) UnmarshalJSON(b []byte) error {
 }
 
 type caseData struct {
-	Name  string        `json:"name"`
-	When  *Conditions   `json:"when"`
-	Then  *Expectations `json:"then"`
-	While []*Dependency `json:"while"`
+	Name  string                `json:"name"`
+	When  *Conditions           `json:"when"`
+	Then  *Expectations         `json:"then"`
+	While []map[string][]string `json:"while"`
 }
 
 // Service endpoint specification
