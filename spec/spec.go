@@ -17,7 +17,20 @@ type Dependency struct {
 	Service string `json:"service"`
 }
 
+//Service endpoint case specification
 type Case struct {
+	caseData
+}
+
+func (c *Case) Study() (*Study, error) {
+	return NewStudy(c)
+}
+
+func (c *Case) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, &c.caseData)
+}
+
+type caseData struct {
 	When  *Conditions   `json:"when"`
 	Then  *Expectations `json:"then"`
 	While []*Dependency `json:"while"`

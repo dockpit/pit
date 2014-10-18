@@ -6,6 +6,7 @@ import (
 
 //Specification Endpoint Case interface
 type C interface {
+	Study() (*Study, error)
 }
 
 //Specification Endpoint interface
