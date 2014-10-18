@@ -1,0 +1,18 @@
+{
+	"endpoints": [
+		{
+			"name": "show_user",
+			"cases": [
+				{
+					"when": {
+						"method": "GET",
+						"path": "/users/1"
+					},
+					"then": {
+						"status_code": 200
+					}
+				}
+			]
+		}
+	]
+}

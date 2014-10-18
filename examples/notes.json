@@ -1,0 +1,50 @@
+{
+	"endpoints": [
+		{
+			"name": "list_notes",
+			"cases": [
+				{
+					"when": {
+						"method": "GET",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 200
+					}
+				}
+			]
+		},{
+			"name": "create_note",
+			"cases": [
+				{
+					"when": {
+						"method": "POST",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 201
+					},
+					"while": [
+						{"service": "users"}
+					]
+				}
+			]
+		},{
+			"name": "delete_notes",
+			"cases": [
+				{
+					"when": {
+						"method": "DELETE",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 200
+					},
+					"while": [
+						{"service": "users"}
+					]
+				}
+			]
+		}
+	]
+}
