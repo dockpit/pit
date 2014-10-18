@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
+
+	"github.com/dockpit/pit/command"
 )
 
 var Version = "0.0.0-DEV"
@@ -15,6 +17,25 @@ func main() {
 	app.Name = "dockpit"
 	app.Usage = "docker based microservice development environment"
 	app.Version = fmt.Sprintf("%s (%s)", Version, Build)
+
+	//specify output
+	out := os.Stdout
+
+	//init micros commands
+	cmds := []command.C{
+		command.NewMock(out),
+	}
+
+	//append to app
+	for _, c := range cmds {
+		app.Commands = append(app.Commands, cli.Command{
+			Name:        c.Name(),
+			Usage:       c.Usage(),
+			Action:      c.Action(),
+			Description: c.Description(),
+			Flags:       c.Flags(),
+		})
+	}
 
 	app.Run(os.Args)
 }
