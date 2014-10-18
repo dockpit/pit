@@ -2,7 +2,6 @@ package spec
 
 import (
 	"encoding/json"
-	"os"
 )
 
 type Factory struct {
@@ -18,11 +17,7 @@ func (f *Factory) Create(loc string) (S, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	//close if the loader reader is a file
-	if file, ok := r.(*os.File); ok {
-		defer file.Close()
-	}
+	defer r.Close()
 
 	s := &Spec{}
 

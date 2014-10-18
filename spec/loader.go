@@ -1,8 +1,8 @@
 package spec
 
 import (
-	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
 )
@@ -13,8 +13,8 @@ func NewLoader() *Loader {
 	return &Loader{}
 }
 
-func (l *Loader) Load(loc string) (io.Reader, error) {
-	var r io.Reader
+func (l *Loader) Load(loc string) (io.ReadCloser, error) {
+	var r io.ReadCloser
 
 	//check if its an url
 	u, err := url.Parse(loc)
@@ -30,8 +30,13 @@ func (l *Loader) Load(loc string) (io.Reader, error) {
 			return nil, err
 		}
 	} else {
-		//@todo implement loading from url
-		return nil, fmt.Errorf("Not implemented yet")
+		//else fetch using the default http agent
+		resp, err := http.Get(u.String())
+		if err != nil {
+			return nil, err
+		}
+
+		r = resp.Body
 	}
 
 	return r, nil

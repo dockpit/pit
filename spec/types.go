@@ -21,7 +21,7 @@ type S interface {
 
 //Loader interface
 type L interface {
-	Load(loc string) (io.Reader, error)
+	Load(loc string) (io.ReadCloser, error)
 }
 
 //Factory Interface
