@@ -41,7 +41,7 @@
 						"status_code": 200
 					},
 					"while": [
-						{"user_service": ["show_user.success"]}
+						{"user_service": ["show_user/success"]}
 					]
 				}
 			]

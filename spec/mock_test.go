@@ -57,6 +57,22 @@ func TestMockMux(t *testing.T) {
 		t.Fatalf("Expected recording count to be 1, got %d", rec.Count)
 	}
 
+	//second call should return 0, at it resets the recordings
+	resp, err = http.Get(fmt.Sprintf("%s/_recordings/list_notes/success", svr.URL))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	dec = json.NewDecoder(resp.Body)
+	err = dec.Decode(rec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if rec.Count != 0 {
+		t.Fatalf("Expected recording count to be 0, got %d", rec.Count)
+	}
+
 	//recorded of non called
 	resp, err = http.Get(fmt.Sprintf("%s/_recordings/delete_notes/success", svr.URL))
 	if err != nil {

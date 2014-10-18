@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -8,7 +9,7 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
-type TestFunc func(host string, c *http.Client) error
+type TestFunc func(host string, c *http.Client, depAddr map[string]string) error
 type AssertFunc func(resp *http.Response) error
 
 //Generated pattern for matching mock requests to the correct mock handler
@@ -56,7 +57,7 @@ func NewStudy(c *Case) (*Study, error) {
 		return nil, err
 	}
 
-	t, err := generateTest(r, a)
+	t, err := generateTest(c, r, a)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +120,8 @@ func generateAssert(c *Case) (AssertFunc, error) {
 }
 
 // Generates a testing function using the request, and assert func
-func generateTest(req *http.Request, a AssertFunc) (TestFunc, error) {
-	return func(host string, c *http.Client) error {
+func generateTest(c *Case, req *http.Request, a AssertFunc) (TestFunc, error) {
+	return func(host string, client *http.Client, depAddr map[string]string) error {
 
 		//parse overwrite host url
 		h, err := url.Parse(host)
@@ -133,9 +134,47 @@ func generateTest(req *http.Request, a AssertFunc) (TestFunc, error) {
 		req.URL.Scheme = h.Scheme
 
 		//do the actual request
-		resp, err := c.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			return err
+		}
+
+		//check dependency recordings
+		for _, dep := range c.caseData.While {
+			for loc, paths := range dep {
+				var addr string
+				var ok bool
+
+				if addr, ok = depAddr[loc]; !ok {
+					return fmt.Errorf("Test for case '%s' didn't get an addr for dependency '%s'", c.Name(), loc)
+				}
+
+				for _, path := range paths {
+
+					//get recorded access
+					resp, err = http.Get(fmt.Sprintf("%s/_recordings/%s", addr, path))
+					if err != nil {
+						return err
+					}
+
+					if resp.StatusCode > 201 {
+						return fmt.Errorf("Mock recording doesn't have data for '%s', returned %d", path, resp.StatusCode)
+					}
+
+					rec := &Recording{}
+					dec := json.NewDecoder(resp.Body)
+					err = dec.Decode(rec)
+					if err != nil {
+						return err
+					}
+
+					//dont actually count count
+					if rec.Count < 1 {
+						return fmt.Errorf("Expected dependency '%s#%s' to be called at least once", loc, path)
+					}
+				}
+
+			}
 		}
 
 		//and assert resp

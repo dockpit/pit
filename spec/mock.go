@@ -90,6 +90,11 @@ func (m *Mock) ListRecordings(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//reset after the data is provided
+	defer func() {
+		ep[cname] = &Recording{}
+	}()
+
 	encoder := json.NewEncoder(w)
 	err := encoder.Encode(rec)
 	if err != nil {

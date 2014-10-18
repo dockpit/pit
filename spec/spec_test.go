@@ -2,6 +2,7 @@ package spec_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,6 +20,20 @@ var case1 = `{
 	"then": {
 		"status_code": 201
 	}
+}`
+
+var case2 = `{
+	"name": "success",
+	"when": {
+		"method": "POST",
+		"path": "/notes"
+	},
+	"then": {
+		"status_code": 200
+	},
+	"while": [
+		{"user_service": ["show_user/success"]}
+	]
 }`
 
 func parse(data string, t *testing.T) *spec.Case {
@@ -46,7 +61,7 @@ func TestWhenThenBasicTestGeneration(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = st.Test(ts.URL, http.DefaultClient)
+	err = st.Test(ts.URL, http.DefaultClient, map[string]string{})
 	if err != nil {
 		t.Fatalf("Expected test to succeed, but got %s", err)
 	}
@@ -79,5 +94,30 @@ func TestWhenThenBasicMockGeneration(t *testing.T) {
 
 	if st.Pattern.Match(st.Request, &web.C{}) != true {
 		t.Fatal("Pattern Should match its own request")
+	}
+}
+
+func TestWhileGeneration(t *testing.T) {
+	rects := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `{"count": %d}`, 1)
+	}))
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "test", 200)
+	}))
+
+	defer ts.Close()
+
+	var c spec.C
+	c = parse(case2, t)
+
+	st, err := c.Study()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = st.Test(ts.URL, http.DefaultClient, map[string]string{"user_service": rects.URL})
+	if err != nil {
+		t.Fatalf("Expected test to succeed, but got %s", err)
 	}
 }
