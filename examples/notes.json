@@ -4,6 +4,7 @@
 			"name": "list_notes",
 			"cases": [
 				{
+					"name": "success",
 					"when": {
 						"method": "GET",
 						"path": "/notes"
@@ -17,6 +18,7 @@
 			"name": "create_note",
 			"cases": [
 				{
+					"name": "success",
 					"when": {
 						"method": "POST",
 						"path": "/notes"
@@ -33,6 +35,7 @@
 			"name": "delete_notes",
 			"cases": [
 				{
+					"name": "success",
 					"when": {
 						"method": "DELETE",
 						"path": "/notes"

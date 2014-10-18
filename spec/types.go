@@ -2,11 +2,19 @@ package spec
 
 import (
 	"io"
+
+	"github.com/zenazn/goji/web"
 )
+
+//Specfication Mock
+type M interface {
+	Mux() *web.Mux
+}
 
 //Specification Endpoint Case interface
 type C interface {
 	Study() (*Study, error)
+	Name() string
 }
 
 //Specification Endpoint interface
@@ -18,6 +26,7 @@ type EP interface {
 //Specification interface
 type S interface {
 	Endpoints() []EP
+	Mock() (M, error)
 }
 
 //Loader interface

@@ -26,11 +26,16 @@ func (c *Case) Study() (*Study, error) {
 	return NewStudy(c)
 }
 
+func (c *Case) Name() string {
+	return c.caseData.Name
+}
+
 func (c *Case) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &c.caseData)
 }
 
 type caseData struct {
+	Name  string        `json:"name"`
 	When  *Conditions   `json:"when"`
 	Then  *Expectations `json:"then"`
 	While []*Dependency `json:"while"`
@@ -83,4 +88,8 @@ func (s *Spec) Endpoints() []EP {
 	}
 
 	return res
+}
+
+func (s *Spec) Mock() (M, error) {
+	return NewMock(s)
 }
