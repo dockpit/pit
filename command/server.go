@@ -15,7 +15,7 @@ import (
 	"github.com/dockpit/pit/spec"
 )
 
-var tmpl_server = `Ran Mock Server`
+var tmpl_server = ``
 
 type Server struct {
 	*cmd
@@ -84,8 +84,8 @@ func (c *Server) Run(ctx *cli.Context) (*template.Template, interface{}, error) 
 		return nil, nil, err
 	}
 
-	//start goij server
-	goji.DefaultMux = mock.Mux()
+	//start goij server, reuse logging stack
+	goji.DefaultMux.Handle("/*", mock.Mux())
 	goji.Serve()
 
 	return template.Must(template.New("server.success").Parse(tmpl_server)), nil, nil
