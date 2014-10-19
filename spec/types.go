@@ -14,6 +14,7 @@ type M interface {
 //Specification Endpoint Case interface
 type C interface {
 	Study() (*Study, error)
+	Whiles() []map[string][]string
 	Name() string
 }
 
@@ -27,6 +28,7 @@ type EP interface {
 type S interface {
 	Endpoints() []EP
 	Mock() (M, error)
+	Dependencies() (*Dependencies, error)
 }
 
 //Loader interface

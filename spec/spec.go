@@ -26,6 +26,10 @@ func (c *Case) Name() string {
 	return c.caseData.Name
 }
 
+func (c *Case) Whiles() []map[string][]string {
+	return c.caseData.While
+}
+
 func (c *Case) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &c.caseData)
 }
@@ -88,4 +92,8 @@ func (s *Spec) Endpoints() []EP {
 
 func (s *Spec) Mock() (M, error) {
 	return NewMock(s)
+}
+
+func (s *Spec) Dependencies() (*Dependencies, error) {
+	return NewDependencies(s)
 }

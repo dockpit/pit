@@ -25,7 +25,10 @@
 					},
 					"then": {
 						"status_code": 201
-					}
+					},
+					"while": [
+						{"user_service": ["show_user/success"]}
+					]
 				}
 			]
 		},{
