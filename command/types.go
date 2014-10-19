@@ -8,10 +8,19 @@ import (
 	"text/template"
 
 	"github.com/codegangsta/cli"
+
+	"github.com/dockpit/pit/spec"
 )
 
 var SpecFilename = "dockpit.json"
 
+// Docker client abstraction interface
+type D interface {
+	StopAll() error
+	Start(*spec.Dependencies) error
+}
+
+// CLI Command interface
 type C interface {
 	Name() string
 	Description() string

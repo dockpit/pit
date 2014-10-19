@@ -17,6 +17,7 @@ var tmpl_mock = ``
 
 type Mock struct {
 	*cmd
+	Docker D
 }
 
 func NewMock(out io.Writer) *Mock {
@@ -38,7 +39,9 @@ func (c *Mock) Usage() string {
 }
 
 func (c *Mock) Flags() []cli.Flag {
-	return []cli.Flag{}
+	return []cli.Flag{
+		cli.StringFlag{Name: "docker, d", Value: "", Usage: fmt.Sprintf("The Docker host location, defaults to reading from DOCKER_HOST environment variable.")},
+	}
 }
 
 func (c *Mock) Action() func(ctx *cli.Context) {
@@ -71,12 +74,41 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
-	// @todo, fetch&map depencies
+	//ask spec to map its dependencies
+	deps, err := spec.Dependencies()
+	if err != nil {
+		return nil, nil, err
+	}
 
-	// @todo, stop running containers
-	// @todo, launch containers
+	//try docker host retrieval
+	host := strings.TrimSpace(ctx.String("docker"))
+	if host == "" {
+		host = os.Getenv("DOCKER_HOST")
+		if host == "" {
+			return nil, nil, fmt.Errorf("Could not retrieve DOCKER_HOST, not provided as option and not in env")
+		}
+	}
 
-	_ = spec
+	//create docker client
+	docker := c.Docker
+	if docker == nil {
+		docker, err = NewDocker(host)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	//stop all running dockpit containers
+	err = docker.StopAll()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//launch dependency containers
+	err = docker.Start(deps)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	return template.Must(template.New("mock.success").Parse(tmpl_mock)), nil, nil
 }
