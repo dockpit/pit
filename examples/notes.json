@@ -27,7 +27,7 @@
 						"status_code": 201
 					},
 					"while": [
-						{"user_service": ["show_user/success"]}
+						{"https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json": ["show_user/success"]}
 					]
 				}
 			]
@@ -44,7 +44,7 @@
 						"status_code": 200
 					},
 					"while": [
-						{"user_service": ["show_user/success"]}
+						{"https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json": ["show_user/success"]}
 					]
 				}
 			]

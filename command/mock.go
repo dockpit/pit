@@ -92,14 +92,15 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//create docker client
 	docker := c.Docker
 	if docker == nil {
-		docker, err = NewDocker(host, "")
+		//@todo add correct args
+		docker, err = NewDocker(host, "", "latest")
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 
-	//stop all running dockpit containers
-	err = docker.StopAll()
+	//remove all running dockpit containers
+	err = docker.RemoveAll()
 	if err != nil {
 		return nil, nil, err
 	}

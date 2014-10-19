@@ -28,7 +28,7 @@ func getclient(t *testing.T) command.D {
 		t.Skip("No DOCKER_CERT_PATH env variable setup")
 	}
 
-	d, err := command.NewDocker(host.String(), cert)
+	d, err := command.NewDocker(host.String(), cert, "latest")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func getclient(t *testing.T) command.D {
 	return d
 }
 
-func TestStart(t *testing.T) {
+func TestRemoveStart(t *testing.T) {
 	var d command.D
 	d = getclient(t)
 	_ = d
@@ -49,11 +49,19 @@ func TestStart(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	//fetch service deps
 	deps, err := s.Dependencies()
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	//remove all dockpit containers
+	err = d.RemoveAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//start new ones
 	err = d.Start(deps)
 	if err != nil {
 		t.Fatal(err)

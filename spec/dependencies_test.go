@@ -25,16 +25,16 @@ func TestDependencyMapping(t *testing.T) {
 		t.Fatal("Expected one service it depends on")
 	}
 
-	if len(deps.Map["user_service"]) != 1 {
-		t.Fatal("Expected user_service dep to have one endpoint")
+	if len(deps.Map["https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json"]) != 1 {
+		t.Fatal("Expected https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json dep to have one endpoint")
 	}
 
-	if len(deps.Map["user_service"]["show_user"]) != 1 {
-		t.Fatal("Expected user_service/show_user dep to have one case")
+	if len(deps.Map["https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json"]["show_user"]) != 1 {
+		t.Fatal("Expected https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json/show_user dep to have one case")
 	}
 
-	if deps.Map["user_service"]["show_user"]["success"] != true {
-		t.Fatal("Expected user_service/show_user/success to be true")
+	if deps.Map["https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json"]["show_user"]["success"] != true {
+		t.Fatal("Expected https://raw.githubusercontent.com/dockpit/pit/master/examples/users.json/show_user/success to be true")
 	}
 
 }

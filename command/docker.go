@@ -1,22 +1,31 @@
 package command
 
 import (
+	"crypto/md5"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/hex"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/fsouza/go-dockerclient"
 
 	"github.com/dockpit/pit/spec"
 )
 
+var NamePrefix = "dockpit"
+var ImageName = "dockpit/pit"
+
 type Docker struct {
-	client *docker.Client
+	client  *docker.Client
+	version string
 }
 
-func NewDocker(addr string, cert string) (*Docker, error) {
+func NewDocker(addr string, cert string, version string) (*Docker, error) {
 	c, err := docker.NewClient(addr)
 	if err != nil {
 		return nil, err
@@ -54,29 +63,78 @@ func NewDocker(addr string, cert string) (*Docker, error) {
 	//set docker client with new transport
 	c.HTTPClient = &http.Client{Transport: tr}
 
-	return &Docker{c}, nil
+	return &Docker{c, version}, nil
 }
 
-func (d *Docker) StopAll() error {
+func (d *Docker) toContainerName(serviceName string) string {
 
-	//@todo implement
+	//go make an hash that is always a valid name
+	h := md5.New()
+	io.WriteString(h, serviceName)
+
+	return fmt.Sprintf("%s.%s", NamePrefix, hex.EncodeToString(h.Sum(nil)))
+}
+
+func (d *Docker) RemoveAll() error {
+	lopts := docker.ListContainersOptions{All: true}
+	ropts := docker.RemoveContainerOptions{Force: true}
+
+	//get all containers
+	cs, err := d.client.ListContainers(lopts)
+	if err != nil {
+		return err
+	}
+
+	//remove all containers with the dockpit prefix
+	for _, c := range cs {
+		for _, name := range c.Names {
+			if strings.HasPrefix(name, "/"+NamePrefix) {
+
+				//remove the container if it matches
+				ropts.ID = c.ID
+				err := d.client.RemoveContainer(ropts)
+				if err != nil {
+					return err
+				}
+
+				//no longer care about other names
+				break
+			}
+		}
+	}
 
 	return nil
 }
 
 func (d *Docker) Start(deps *spec.Dependencies) error {
-	opts := docker.CreateContainerOptions{
-		Config: &docker.Config{},
+	copts := docker.CreateContainerOptions{
+		Config: &docker.Config{
+			Image: fmt.Sprintf("%s:%s", ImageName, d.version),
+			Cmd:   []string{"server"},
+		},
 	}
 
-	for sname, eps := range deps.Map {
+	sopts := &docker.HostConfig{PublishAllPorts: true}
 
-		//customize options
-		opts.Name = sname
+	for sname, _ := range deps.Map {
 
-		_ = eps
+		//set container name
+		copts.Name = d.toContainerName(sname)
 
-		//@todo implement
+		//set second cmd argument to the spec to load
+		copts.Config.Cmd = append(copts.Config.Cmd, sname)
+
+		//create container
+		c, err := d.client.CreateContainer(copts)
+		if err != nil {
+			return err
+		}
+
+		//start container
+		err = d.client.StartContainer(c.ID, sopts)
+		if err != nil {
+			return err
+		}
 
 	}
 

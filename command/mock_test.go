@@ -11,7 +11,7 @@ import (
 
 type mock1 struct{}
 
-func (m *mock1) StopAll() error                 { return nil }
+func (m *mock1) RemoveAll() error               { return nil }
 func (m *mock1) Start(*spec.Dependencies) error { return nil }
 
 func TestSingleSpecMocking(t *testing.T) {

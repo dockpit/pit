@@ -16,7 +16,7 @@ var SpecFilename = "dockpit.json"
 
 // Docker client abstraction interface
 type D interface {
-	StopAll() error
+	RemoveAll() error
 	Start(*spec.Dependencies) error
 }
 
