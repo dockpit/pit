@@ -1,5 +1,10 @@
-XC_ARCH = "386 amd64 arm"
-XC_OS = "linux darwin windows freebsd openbsd"
+# cross compile for now only works for darwin (cgo stuff as usual)
+# @see http://dominik.honnef.co/posts/2013/12/cross_compiling_go_and_hidden_uses_of_cgo/
+# XC_ARCH = "386 amd64 arm"
+# XC_OS = "linux darwin windows freebsd openbsd"
+
+XC_ARCH = "amd64"
+XC_OS = "darwin"
 BT_API_KEY = $$BINTRAY_API_KEY
 
 #cross-compile binaries
@@ -13,6 +18,7 @@ build:
 	    -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" \
 	    -output "bin/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 	    ./...
+	docker build -t dockpit/pit:`cat VERSION` .
 
 #build for local testing
 dev:
@@ -27,7 +33,7 @@ publish:
 	rm -fr bin/dist
 	mkdir -p bin/dist
 	for FOLDER in ./bin/*_* ; do \
-		NAME=`basename $$FOLDER` ; \
+		NAME=`basename $$FOLDER`_`CAT VERSION` ; \
 		ARCHIVE=bin/dist/$$NAME.zip ; \
 		echo Zipping: $$FOLDER... ; \
 		zip bin/dist/$$NAME.zip $$FOLDER/* ; \

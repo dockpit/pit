@@ -8,8 +8,6 @@ import (
 	"text/template"
 
 	"github.com/codegangsta/cli"
-
-	"github.com/advanderveer/micros/loader"
 )
 
 var SpecFilename = "dockpit.json"
@@ -42,23 +40,6 @@ func newCmd(out io.Writer) *cmd {
 
 func (c *cmd) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	return nil, nil, fmt.Errorf("Command '%s' is not yet implemented", ctx.Command.Name)
-}
-
-func (c *cmd) loadSpec(path string) (*loader.Spec, error) {
-	sfile, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer sfile.Close()
-
-	//load service spec
-	bl := loader.NewBasic()
-	spec, err := bl.Load(sfile)
-	if err != nil {
-		return nil, err
-	}
-
-	return spec, nil
 }
 
 func (c *cmd) templated(fn func(c *cli.Context) (*template.Template, interface{}, error)) func(ctx *cli.Context) {
