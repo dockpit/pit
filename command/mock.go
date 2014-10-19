@@ -92,7 +92,7 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//create docker client
 	docker := c.Docker
 	if docker == nil {
-		docker, err = NewDocker(host)
+		docker, err = NewDocker(host, "")
 		if err != nil {
 			return nil, nil, err
 		}

@@ -1,6 +1,7 @@
 package command_test
 
 import (
+	"net/url"
 	"os"
 	"testing"
 
@@ -9,12 +10,25 @@ import (
 )
 
 func getclient(t *testing.T) command.D {
-	host := os.Getenv("DOCKER_HOST")
-	if host == "" {
+	h := os.Getenv("DOCKER_HOST")
+	if h == "" {
 		t.Skip("No DOCKER_HOST env variable setup")
 	}
 
-	d, err := command.NewDocker(host)
+	host, err := url.Parse(h)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//change to http connection
+	host.Scheme = "https"
+
+	cert := os.Getenv("DOCKER_CERT_PATH")
+	if cert == "" {
+		t.Skip("No DOCKER_CERT_PATH env variable setup")
+	}
+
+	d, err := command.NewDocker(host.String(), cert)
 	if err != nil {
 		t.Fatal(err)
 	}
