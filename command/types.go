@@ -12,6 +12,8 @@ import (
 	"github.com/advanderveer/micros/loader"
 )
 
+var SpecFilename = "dockpit.json"
+
 type C interface {
 	Name() string
 	Description() string
@@ -26,9 +28,14 @@ type cmd struct {
 }
 
 func newCmd(out io.Writer) *cmd {
+
+	//if no specific output, use stdout
 	if out == nil {
 		out = os.Stdout
 	}
+
+	//redirect default log ouput
+	log.SetOutput(out)
 
 	return &cmd{out}
 }
