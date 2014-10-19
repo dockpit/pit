@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -26,7 +27,16 @@ type Docker struct {
 }
 
 func NewDocker(addr string, cert string, version string) (*Docker, error) {
-	c, err := docker.NewClient(addr)
+
+	host, err := url.Parse(addr)
+	if err != nil {
+		return nil, err
+	}
+
+	//change to http connection
+	host.Scheme = "https"
+
+	c, err := docker.NewClient(host.String())
 	if err != nil {
 		return nil, err
 	}
