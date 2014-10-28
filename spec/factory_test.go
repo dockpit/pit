@@ -11,7 +11,7 @@ func TestFactoryLoadingLocalFile(t *testing.T) {
 	l := spec.NewLoader()
 	f = spec.NewFactory(l)
 
-	s, err := f.Create("../examples/notes.json")
+	s, err := f.Create("../examples/notes/dockpit.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestFactoryLoadingRemoteFile(t *testing.T) {
 	l := spec.NewLoader()
 	f = spec.NewFactory(l)
 
-	s, err := f.Create("https://raw.githubusercontent.com/dockpit/pit/master/examples/notes.json")
+	s, err := f.Create("https://raw.githubusercontent.com/dockpit/pit/master/examples/notes/dockpit.json")
 	if err != nil {
 		t.Fatal(err)
 	}

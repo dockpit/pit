@@ -1,12 +1,12 @@
 package spec
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 )
 
 type Link struct {
@@ -24,13 +24,11 @@ func NewLink(loc string) (*Link, error) {
 		return nil, err
 	}
 
-	//expect to be turned into name
-	//	//@todo figure naming from link:
-	//	- read from json file
-	//	- read from json link
-	h := md5.New()
-	io.WriteString(h, loc)
-	name := hex.EncodeToString(h.Sum(nil))
+	//only support naming by dir for now
+	name := path.Base(path.Dir(loc))
+	if name == "" {
+		return nil, fmt.Errorf("Could not extract name from location %s, expected .../<name>/dockpit.json", loc)
+	}
 
 	return &Link{
 		Raw:  loc,

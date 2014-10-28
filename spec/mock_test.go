@@ -14,7 +14,7 @@ func TestMockMux(t *testing.T) {
 	l := spec.NewLoader()
 	f := spec.NewFactory(l)
 
-	s, err := f.Create("../examples/notes.json")
+	s, err := f.Create("../examples/notes/dockpit.json")
 	if err != nil {
 		t.Fatal(err)
 	}

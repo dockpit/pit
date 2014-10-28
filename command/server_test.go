@@ -38,6 +38,6 @@ func TestSingleSpecServing(t *testing.T) {
 	}()
 
 	//mock specific spec
-	AssertCommand(t, cmd, []string{"--bind", ":9000", "../examples/notes.json"}, `(?s).*9000.*200.*Received interrupt.*`, out)
+	AssertCommand(t, cmd, []string{"--bind", ":9000", "../examples/notes/dockpit.json"}, `(?s).*9000.*200.*Received interrupt.*`, out)
 
 }

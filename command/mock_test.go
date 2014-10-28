@@ -23,5 +23,5 @@ func TestSingleSpecMocking(t *testing.T) {
 	cmd.Docker = &mock1{}
 
 	//@todo implement check
-	AssertCommand(t, cmd, []string{"-d=tcp://bogus", "../examples/notes.json"}, `(?s).*Removing.*Starting.*`, out)
+	AssertCommand(t, cmd, []string{"-d=tcp://bogus", "../examples/notes/dockpit.json"}, `(?s).*Removing.*Starting.*`, out)
 }
