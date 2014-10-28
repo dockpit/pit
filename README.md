@@ -43,3 +43,10 @@ Below is an imaginary 'notes' endpoint that supports the listing, creation and d
 	]
 }
 ```
+
+Adjacent products
+-----------------
+
+- fig:
+- tug: https://news.ycombinator.com/item?id=8498804
+- crane: https://github.com/michaelsauter/crane
