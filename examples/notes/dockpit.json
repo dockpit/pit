@@ -1,0 +1,53 @@
+{
+	"endpoints": [
+		{
+			"name": "list_notes",
+			"cases": [
+				{
+					"name": "success",
+					"when": {
+						"method": "GET",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 200
+					}
+				}
+			]
+		},{
+			"name": "create_note",
+			"cases": [
+				{
+					"name": "success",
+					"when": {
+						"method": "POST",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 201
+					},
+					"while": [
+						{"https://raw.githubusercontent.com/dockpit/pit/master/examples/users/dockpit.json": ["show_user/success"]}
+					]
+				}
+			]
+		},{
+			"name": "delete_notes",
+			"cases": [
+				{
+					"name": "success",
+					"when": {
+						"method": "DELETE",
+						"path": "/notes"
+					},
+					"then": {
+						"status_code": 200
+					},
+					"while": [
+						{"https://raw.githubusercontent.com/dockpit/pit/master/examples/users/dockpit.json": ["show_user/success"]}
+					]
+				}
+			]
+		}
+	]
+}
