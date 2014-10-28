@@ -1,12 +1,9 @@
 package command
 
 import (
-	"crypto/md5"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/hex"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -27,7 +24,6 @@ type Docker struct {
 }
 
 func NewDocker(addr string, cert string, version string) (*Docker, error) {
-
 	host, err := url.Parse(addr)
 	if err != nil {
 		return nil, err
@@ -77,12 +73,7 @@ func NewDocker(addr string, cert string, version string) (*Docker, error) {
 }
 
 func (d *Docker) toContainerName(serviceName string) string {
-
-	//go make an hash that is always a valid name
-	h := md5.New()
-	io.WriteString(h, serviceName)
-
-	return fmt.Sprintf("%s.%s", NamePrefix, hex.EncodeToString(h.Sum(nil)))
+	return fmt.Sprintf("%s.%s", NamePrefix, serviceName)
 }
 
 func (d *Docker) RemoveAll() error {
@@ -128,8 +119,14 @@ func (d *Docker) Start(deps *spec.Dependencies) error {
 
 	for sname, _ := range deps.Map {
 
+		//assume link
+		link, err := spec.NewLink(sname)
+		if err != nil {
+			return err
+		}
+
 		//set container name
-		copts.Name = d.toContainerName(sname)
+		copts.Name = d.toContainerName(link.Name())
 
 		//set second cmd argument to the spec to load
 		copts.Config.Cmd = append(copts.Config.Cmd, sname)

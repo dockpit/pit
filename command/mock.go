@@ -17,12 +17,15 @@ var tmpl_mock = ``
 
 type Mock struct {
 	*cmd
+	version string
+
 	Docker D
 }
 
-func NewMock(out io.Writer) *Mock {
+func NewMock(out io.Writer, version string) *Mock {
 	return &Mock{
-		cmd: newCmd(out),
+		version: version,
+		cmd:     newCmd(out),
 	}
 }
 
@@ -102,24 +105,28 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//create docker client
 	docker := c.Docker
 	if docker == nil {
-		//@todo add correct args
-		docker, err = NewDocker(host, cert, "latest")
+
+		//create docker instance
+		docker, err = NewDocker(host, cert, c.version)
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 
 	//remove all running dockpit containers
+	fmt.Fprint(c.out, "Removing old dependency mock containers...")
 	err = docker.RemoveAll()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	//launch dependency containers
+	fmt.Fprint(c.out, "done!\nStarting new dependency mock containers...")
 	err = docker.Start(deps)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	fmt.Fprint(c.out, "done!\n")
 	return template.Must(template.New("mock.success").Parse(tmpl_mock)), nil, nil
 }

@@ -24,7 +24,7 @@ func main() {
 	//init micros commands
 	cmds := []command.C{
 		command.NewServer(out),
-		command.NewMock(out),
+		command.NewMock(out, Version),
 	}
 
 	//append to app

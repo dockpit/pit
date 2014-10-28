@@ -8,6 +8,11 @@
 			"Rev": "bb9189510af1f49580c073c9e59e8bf288f0df27"
 		},
 		{
+			"ImportPath": "github.com/fsouza/go-dockerclient",
+			"Comment": "0.2.1-267-g15d2c6e",
+			"Rev": "15d2c6e3eb670c545d0af0604d7f9aff3871af04"
+		},
+		{
 			"ImportPath": "github.com/zenazn/goji",
 			"Rev": "f70d2a33c1813a235a0f5f84bb5c2ce80aef57c3"
 		}
