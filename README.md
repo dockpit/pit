@@ -43,6 +43,12 @@ Below is an imaginary 'notes' endpoint that supports the listing, creation and d
 	]
 }
 ```
+JSON Schema&Specification 
+-----------------
+- http://orderly-json.org/ (http://orderly-json.org/)
+- http://json-schema.org/ (https://github.com/xeipuuv/gojsonschema)
+- https://github.com/apiaryio/gavel (https://github.com/apiaryio/gavel.js)
+
 
 Adjacent products
 -----------------
