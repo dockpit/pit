@@ -77,6 +77,10 @@ var (
 	// ErrMissingOutputStream is the error returned when no output stream
 	// is provided to some calls, like BuildImage.
 	ErrMissingOutputStream = errors.New("missing output stream")
+
+	// ErrMultipleContexts is the error returned when both a ContextDir and
+	// InputStream are provided in BuildImageOptions
+	ErrMultipleContexts = errors.New("image build may not be provided BOTH context dir and input stream")
 )
 
 // ListImages returns the list of available images in the server.
@@ -194,9 +198,16 @@ type PushImageOptions struct {
 // AuthConfiguration represents authentication options to use in the PushImage
 // method. It represents the authentication in the Docker index server.
 type AuthConfiguration struct {
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	Email    string `json:"email,omitempty"`
+	Username      string `json:"username,omitempty"`
+	Password      string `json:"password,omitempty"`
+	Email         string `json:"email,omitempty"`
+	ServerAddress string `json:"serveraddress,omitempty"`
+}
+
+// AuthConfigurations represents authentication options to use for the
+// PushImage method accommodating the new X-Registry-Config header
+type AuthConfigurations struct {
+	Configs map[string]AuthConfiguration `json:"configs"`
 }
 
 // PushImage pushes an image to a remote registry, logging progress to w.
@@ -212,12 +223,7 @@ func (c *Client) PushImage(opts PushImageOptions, auth AuthConfiguration) error 
 	name := opts.Name
 	opts.Name = ""
 	path := "/images/" + name + "/push?" + queryString(&opts)
-	var headers = make(map[string]string)
-	var buf bytes.Buffer
-	json.NewEncoder(&buf).Encode(auth)
-
-	headers["X-Registry-Auth"] = base64.URLEncoding.EncodeToString(buf.Bytes())
-
+	headers := headersWithAuth(auth)
 	return c.stream("POST", path, true, opts.RawJSONStream, headers, nil, opts.OutputStream, nil)
 }
 
@@ -241,11 +247,7 @@ func (c *Client) PullImage(opts PullImageOptions, auth AuthConfiguration) error 
 		return ErrNoSuchImage
 	}
 
-	var headers = make(map[string]string)
-	var buf bytes.Buffer
-	json.NewEncoder(&buf).Encode(auth)
-	headers["X-Registry-Auth"] = base64.URLEncoding.EncodeToString(buf.Bytes())
-
+	headers := headersWithAuth(auth)
 	return c.createImage(queryString(&opts), headers, nil, opts.OutputStream, opts.RawJSONStream)
 }
 
@@ -324,15 +326,18 @@ func (c *Client) ImportImage(opts ImportImageOptions) error {
 // For more details about the Docker building process, see
 // http://goo.gl/tlPXPu.
 type BuildImageOptions struct {
-	Name                string    `qs:"t"`
-	NoCache             bool      `qs:"nocache"`
-	SuppressOutput      bool      `qs:"q"`
-	RmTmpContainer      bool      `qs:"rm"`
-	ForceRmTmpContainer bool      `qs:"forcerm"`
-	InputStream         io.Reader `qs:"-"`
-	OutputStream        io.Writer `qs:"-"`
-	RawJSONStream       bool      `qs:"-"`
-	Remote              string    `qs:"remote"`
+	Name                string             `qs:"t"`
+	NoCache             bool               `qs:"nocache"`
+	SuppressOutput      bool               `qs:"q"`
+	RmTmpContainer      bool               `qs:"rm"`
+	ForceRmTmpContainer bool               `qs:"forcerm"`
+	InputStream         io.Reader          `qs:"-"`
+	OutputStream        io.Writer          `qs:"-"`
+	RawJSONStream       bool               `qs:"-"`
+	Remote              string             `qs:"remote"`
+	Auth                AuthConfiguration  `qs:"-"` // for older docker X-Registry-Auth header
+	AuthConfigs         AuthConfigurations `qs:"-"` // for newer docker X-Registry-Config header
+	ContextDir          string             `qs:"-"`
 }
 
 // BuildImage builds an image from a tarball's url or a Dockerfile in the input
@@ -343,15 +348,26 @@ func (c *Client) BuildImage(opts BuildImageOptions) error {
 	if opts.OutputStream == nil {
 		return ErrMissingOutputStream
 	}
-	var headers map[string]string
+	var headers = headersWithAuth(opts.Auth, opts.AuthConfigs)
+
 	if opts.Remote != "" && opts.Name == "" {
 		opts.Name = opts.Remote
 	}
-	if opts.InputStream != nil {
-		headers = map[string]string{"Content-Type": "application/tar"}
+	if opts.InputStream != nil || opts.ContextDir != "" {
+		headers["Content-Type"] = "application/tar"
 	} else if opts.Remote == "" {
 		return ErrMissingRepo
 	}
+	if opts.ContextDir != "" {
+		if opts.InputStream != nil {
+			return ErrMultipleContexts
+		}
+		var err error
+		if opts.InputStream, err = createTarStream(opts.ContextDir); err != nil {
+			return err
+		}
+	}
+
 	return c.stream("POST", fmt.Sprintf("/build?%s",
 		queryString(&opts)), true, opts.RawJSONStream, headers, opts.InputStream, opts.OutputStream, nil)
 }
@@ -387,6 +403,25 @@ func isURL(u string) bool {
 		return false
 	}
 	return p.Scheme == "http" || p.Scheme == "https"
+}
+
+func headersWithAuth(auths ...interface{}) map[string]string {
+	var headers = make(map[string]string)
+
+	for _, auth := range auths {
+		switch auth.(type) {
+		case AuthConfiguration:
+			var buf bytes.Buffer
+			json.NewEncoder(&buf).Encode(auth)
+			headers["X-Registry-Auth"] = base64.URLEncoding.EncodeToString(buf.Bytes())
+		case AuthConfigurations:
+			var buf bytes.Buffer
+			json.NewEncoder(&buf).Encode(auth)
+			headers["X-Registry-Config"] = base64.URLEncoding.EncodeToString(buf.Bytes())
+		}
+	}
+
+	return headers
 }
 
 // APIImageSearch reflect the result of a search on the dockerHub

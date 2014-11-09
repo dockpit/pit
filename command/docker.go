@@ -1,11 +1,7 @@
 package command
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"path/filepath"
 	"strings"
@@ -32,42 +28,10 @@ func NewDocker(addr string, cert string, version string) (*Docker, error) {
 	//change to http connection
 	host.Scheme = "https"
 
-	c, err := docker.NewClient(host.String())
+	c, err := docker.NewTLSClient(host.String(), filepath.Join(cert, "cert.pem"), filepath.Join(cert, "key.pem"), filepath.Join(cert, "ca.pem"))
 	if err != nil {
 		return nil, err
 	}
-
-	//we use our own transform and client to support boot2docker tls requirements
-	//@see https://github.com/boot2docker/boot2docker/issues/576
-	//@see http://stackoverflow.com/questions/21562269/golang-how-to-specify-certificate-in-tls-config-for-http-client
-	cas := x509.NewCertPool()
-	pemData, err := ioutil.ReadFile(filepath.Join(cert, "ca.pem"))
-	if err != nil {
-		return nil, err
-	}
-
-	//add to pool and configrue tls
-	cas.AppendCertsFromPEM(pemData)
-
-	//load pair
-	pair, err := tls.LoadX509KeyPair(filepath.Join(cert, "cert.pem"), filepath.Join(cert, "key.pem"))
-	if err != nil {
-		return nil, err
-	}
-
-	//create new tls config with the created ca and pair
-	conf := &tls.Config{
-		RootCAs:      cas,
-		Certificates: []tls.Certificate{pair},
-	}
-
-	//create our own transport
-	tr := &http.Transport{
-		TLSClientConfig: conf,
-	}
-
-	//set docker client with new transport
-	c.HTTPClient = &http.Client{Transport: tr}
 
 	return &Docker{c, version}, nil
 }
@@ -77,7 +41,7 @@ func (d *Docker) toContainerName(serviceName string) string {
 }
 
 func (d *Docker) RemoveAll() error {
-	lopts := docker.ListContainersOptions{All: true}
+	lopts := docker.ListContainersOptions{}
 	ropts := docker.RemoveContainerOptions{Force: true}
 
 	//get all containers
@@ -86,7 +50,7 @@ func (d *Docker) RemoveAll() error {
 		return err
 	}
 
-	//remove all containers with the dockpit prefix
+	// remove all containers with the dockpit prefix
 	for _, c := range cs {
 		for _, name := range c.Names {
 			if strings.HasPrefix(name, "/"+NamePrefix) {

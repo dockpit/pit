@@ -9,6 +9,8 @@ package docker
 
 import (
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -111,6 +113,7 @@ func (version ApiVersion) compare(other ApiVersion) int {
 type Client struct {
 	SkipServerVersionCheck bool
 	HTTPClient             *http.Client
+	TLSConfig              *tls.Config
 
 	endpoint            string
 	endpointURL         *url.URL
@@ -125,6 +128,18 @@ type Client struct {
 // server.
 func NewClient(endpoint string) (*Client, error) {
 	client, err := NewVersionedClient(endpoint, "")
+	if err != nil {
+		return nil, err
+	}
+	client.SkipServerVersionCheck = true
+	return client, nil
+}
+
+// NewTLSClient returns a Client instance ready for TLS communications with the givens
+// server endpoint, key and certificates . It will use the latest remote API version
+// available in the server.
+func NewTLSClient(endpoint string, cert, key, ca string) (*Client, error) {
+	client, err := NewVersionnedTLSClient(endpoint, cert, key, ca, "")
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +163,57 @@ func NewVersionedClient(endpoint string, apiVersionString string) (*Client, erro
 	}
 	return &Client{
 		HTTPClient:          http.DefaultClient,
+		endpoint:            endpoint,
+		endpointURL:         u,
+		eventMonitor:        new(eventMonitoringState),
+		requestedApiVersion: requestedApiVersion,
+	}, nil
+}
+
+// NewVersionnedTLSClient returns a Client instance ready for TLS communications with the givens
+// server endpoint, key and certificates, using a specific remote API version.
+func NewVersionnedTLSClient(endpoint string, cert, key, ca, apiVersionString string) (*Client, error) {
+	u, err := parseEndpoint(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	var requestedApiVersion ApiVersion
+	if strings.Contains(apiVersionString, ".") {
+		requestedApiVersion, err = NewApiVersion(apiVersionString)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if cert == "" || key == "" {
+		return nil, errors.New("Both cert and key path are required")
+	}
+	tlsCert, err := tls.LoadX509KeyPair(cert, key)
+	if err != nil {
+		return nil, err
+	}
+	tlsConfig := &tls.Config{Certificates: []tls.Certificate{tlsCert}}
+	if ca == "" {
+		tlsConfig.InsecureSkipVerify = true
+	} else {
+		cert, err := ioutil.ReadFile(ca)
+		if err != nil {
+			return nil, err
+		}
+		caPool := x509.NewCertPool()
+		if !caPool.AppendCertsFromPEM(cert) {
+			return nil, errors.New("Could not add RootCA pem")
+		}
+		tlsConfig.RootCAs = caPool
+	}
+	tr := &http.Transport{
+		TLSClientConfig: tlsConfig,
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &Client{
+		HTTPClient:          &http.Client{Transport: tr},
+		TLSConfig:           tlsConfig,
 		endpoint:            endpoint,
 		endpointURL:         u,
 		eventMonitor:        new(eventMonitoringState),
@@ -436,9 +502,8 @@ func (c *Client) getURL(path string) string {
 
 	if c.requestedApiVersion != nil {
 		return fmt.Sprintf("%s/v%s%s", urlStr, c.requestedApiVersion, path)
-	} else {
-		return fmt.Sprintf("%s%s", urlStr, path)
 	}
+	return fmt.Sprintf("%s%s", urlStr, path)
 }
 
 type jsonMessage struct {
@@ -520,7 +585,22 @@ func parseEndpoint(endpoint string) (*url.URL, error) {
 		return nil, ErrInvalidEndpoint
 	}
 	if u.Scheme == "tcp" {
-		u.Scheme = "http"
+		_, port, err := net.SplitHostPort(u.Host)
+		if err != nil {
+			if e, ok := err.(*net.AddrError); ok {
+				if e.Err == "missing port in address" {
+					return u, nil
+				}
+			}
+			return nil, ErrInvalidEndpoint
+		}
+
+		number, err := strconv.ParseInt(port, 10, 64)
+		if err == nil && number == 2376 {
+			u.Scheme = "https"
+		} else {
+			u.Scheme = "http"
+		}
 	}
 	if u.Scheme != "http" && u.Scheme != "https" && u.Scheme != "unix" {
 		return nil, ErrInvalidEndpoint
