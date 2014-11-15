@@ -52,10 +52,12 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 		return nil, nil, err
 	}
 
-	//define package by importlink
-	p := tool.NewPackage("github.com/dockpit/pit")
+	m := tool.NewManager(filepath.Join(wd, ".dockpit"))
 
-	tool.DownloadPackage(p, filepath.Join(wd, ".dockpit"))
+	_ = m
+
+	//download or update if dependency is already installed
+	// tool.DownloadPackage(p, filepath.Join(wd, ".dockpit"))
 
 	return template.Must(template.New("install.success").Parse(tmpl_install)), nil, nil
 }

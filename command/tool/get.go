@@ -12,16 +12,9 @@ import (
 	"strings"
 )
 
-// downloadRootCache records the version control repository
-// root directories we have already considered during the download.
-// For example, all the packages in the code.google.com/p/codesearch repo
-// share the same root (the directory for that path), and we only need
-// to run the hg commands to consider each repository once.
-var downloadRootCache = map[string]bool{}
-
 // downloadPackage runs the create or download command
 // to make the first copy of or update a copy of the given package.
-func DownloadPackage(p *Package, to string) error {
+func DownloadPackage(p *Package, to string, update bool) error {
 	var (
 		vcs            *vcsCmd
 		repo, rootPath string
@@ -54,11 +47,6 @@ func DownloadPackage(p *Package, to string) error {
 		p.SrcRoot = filepath.Join(list[0], "deps")
 	}
 	root := filepath.Join(p.SrcRoot, rootPath)
-	// If we've considered this repository already, don't do it again.
-	if downloadRootCache[root] {
-		return nil
-	}
-	downloadRootCache[root] = true
 
 	if buildV {
 		fmt.Fprintf(os.Stderr, "%s (download)\n", rootPath)
@@ -86,8 +74,9 @@ func DownloadPackage(p *Package, to string) error {
 		if err = vcs.create(root, repo); err != nil {
 			return err
 		}
-	} else {
-		// Metadata directory does exist; download incremental updates.
+	} else if update {
+
+		// Metadata directory does exist; if we want to download incremental updates.
 		if err = vcs.download(root); err != nil {
 			return err
 		}
