@@ -29,6 +29,9 @@ type CaseData struct {
 	While []While `json:"while"`
 }
 
+//
+//
+//
 type ContractData struct {
 	Name      string         `json:"name"`
 	Resources []ResourceData `json:"resources"`

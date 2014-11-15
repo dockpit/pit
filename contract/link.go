@@ -9,6 +9,9 @@ import (
 	"path"
 )
 
+//
+//
+//
 type Link struct {
 	Raw string
 	URL *url.URL

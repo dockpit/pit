@@ -16,12 +16,18 @@ func MockingError(msg string) error { return fmt.Errorf("Mocking ERROR: %s", msg
 
 type TestFunc func(host string, c *http.Client) error
 
+//
+//
+//
 type R interface {
 	Actions() ([]A, error)
 	Pattern() string
 	Name() string
 }
 
+//
+//
+//
 type A interface {
 	AddPair(p *Pair)
 	Method() string
@@ -29,6 +35,9 @@ type A interface {
 	Tests() []TestFunc
 }
 
+//
+//
+//
 type C interface {
 	Name() string
 	Resources() ([]R, error)
