@@ -9,7 +9,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
-	"github.com/dockpit/pit/command/tool"
+	"github.com/dockpit/debs"
 )
 
 var tmpl_install = ``
@@ -52,7 +52,11 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 		return nil, nil, err
 	}
 
-	m := tool.NewManager(filepath.Join(wd, ".dockpit"))
+	//parse spec for dependencies
+
+	//install all dependencies
+
+	m := debs.NewManager(filepath.Join(wd, ".dockpit"))
 
 	_ = m
 
