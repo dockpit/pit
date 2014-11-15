@@ -51,8 +51,7 @@ func DownloadPackage(p *Package, to string) error {
 			return fmt.Errorf("cannot download, $GOPATH not set. For more details see: go help gopath")
 		}
 
-		p.SrcRoot = filepath.Join(list[0], "src")
-		p.PkgRoot = filepath.Join(list[0], "pkg")
+		p.SrcRoot = filepath.Join(list[0], "deps")
 	}
 	root := filepath.Join(p.SrcRoot, rootPath)
 	// If we've considered this repository already, don't do it again.

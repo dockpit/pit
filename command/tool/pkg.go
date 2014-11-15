@@ -23,7 +23,6 @@ type Package struct {
 	//previously in .build
 	Name    string // package name
 	SrcRoot string // package source root directory ("" if unknown)
-	PkgRoot string // package install root directory ("" if unknown)
 
 }
 

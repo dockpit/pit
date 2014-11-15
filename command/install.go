@@ -52,7 +52,8 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 		return nil, nil, err
 	}
 
-	p := tool.NewPackage("github.com/facebookgo/stackerr")
+	//define package by importlink
+	p := tool.NewPackage("github.com/dockpit/pit")
 
 	tool.DownloadPackage(p, filepath.Join(wd, ".dockpit"))
 
