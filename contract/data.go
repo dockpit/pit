@@ -20,8 +20,8 @@ type Then struct {
 }
 
 type While struct {
-	Method string `json:"method"`
-	ID     string `json:"id"`
+	ID       string `json:"id"`
+	CaseName string `json:"case"`
 }
 
 type ResourceData struct {
