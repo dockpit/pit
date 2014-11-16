@@ -20,7 +20,7 @@ type Pair struct {
 	Response *http.Response
 }
 
-func NewPairFromData(data CaseData) (*Pair, error) {
+func NewPairFromData(data *CaseData) (*Pair, error) {
 
 	//create request from data
 	req, err := http.NewRequest(data.When.Method, data.When.Path, nil)
@@ -31,7 +31,7 @@ func NewPairFromData(data CaseData) (*Pair, error) {
 	//creat response from data
 	resp := &http.Response{}
 	resp.StatusCode = data.Then.StatusCode
-	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Content))
+	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Body))
 
 	return &Pair{req, resp}, nil
 }

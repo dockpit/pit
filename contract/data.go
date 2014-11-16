@@ -1,14 +1,22 @@
 package contract
 
+import (
+	"net/http"
+)
+
 type Given map[string]string
 
 type When struct {
-	Method string `json:"method"`
-	Path   string `json:"path"`
+	Method  string      `json:"method"`
+	Path    string      `json:"path"`
+	Headers http.Header `json:"headers"`
+	Body    string      `json:"body"`
 }
 type Then struct {
-	StatusCode int    `json:"code"`
-	Content    string `json:"content"`
+	StatusCode int         `json:"code"`
+	Status     string      `json:"status"`
+	Headers    http.Header `json:"headers"`
+	Body       string      `json:"body"`
 }
 
 type While struct {
@@ -17,9 +25,9 @@ type While struct {
 }
 
 type ResourceData struct {
-	Name    string     `json:"name"`
-	Pattern string     `json:"pattern"`
-	Cases   []CaseData `json:"cases"`
+	Name    string      `json:"name"`
+	Pattern string      `json:"pattern"`
+	Cases   []*CaseData `json:"cases"`
 }
 
 type CaseData struct {
@@ -33,6 +41,6 @@ type CaseData struct {
 //
 //
 type ContractData struct {
-	Name      string         `json:"name"`
-	Resources []ResourceData `json:"resources"`
+	Name      string          `json:"name"`
+	Resources []*ResourceData `json:"resources"`
 }
