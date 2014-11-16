@@ -30,15 +30,13 @@ func TestMapping(t *testing.T) {
 
 	//given a set of http cases
 	r = NewResource(
-		"users",
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA},
-		&Pair{req_userB, resp_userB},
-		&Pair{req_userC, resp_userC},
-		&Pair{req_userD, resp_userD},
+		&Pair{req_userA, resp_userA, []While{}},
+		&Pair{req_userB, resp_userB, []While{}},
+		&Pair{req_userC, resp_userC, []While{}},
+		&Pair{req_userD, resp_userD, []While{}},
 	)
 
-	assert.Equal(t, "users", r.Name())
 	assert.Equal(t, "/users/:user_id", r.Pattern())
 }
 
@@ -46,12 +44,11 @@ func TestHandler(t *testing.T) {
 
 	//given a set of http cases
 	r := NewResource(
-		"users",
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA},
-		&Pair{req_userB, resp_userB},
-		&Pair{req_userC, resp_userC},
-		&Pair{req_userD, resp_userD},
+		&Pair{req_userA, resp_userA, []While{}},
+		&Pair{req_userB, resp_userB, []While{}},
+		&Pair{req_userC, resp_userC, []While{}},
+		&Pair{req_userD, resp_userD, []While{}},
 	)
 
 	// get actions
@@ -89,12 +86,11 @@ func TestHandlerContent(t *testing.T) {
 
 	//given a set of http cases
 	r := NewResource(
-		"users",
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA},
-		&Pair{req_userB, resp_userB},
-		&Pair{req_userC, resp_userC},
-		&Pair{req_userD, resp_userD},
+		&Pair{req_userA, resp_userA, []While{}},
+		&Pair{req_userB, resp_userB, []While{}},
+		&Pair{req_userC, resp_userC, []While{}},
+		&Pair{req_userD, resp_userD, []While{}},
 	)
 
 	// get actions
@@ -129,12 +125,11 @@ func TestTests(t *testing.T) {
 
 	//given a set of http cases
 	r := NewResource(
-		"users",
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA},
-		&Pair{req_userB, resp_userB},
-		&Pair{req_userC, resp_userC},
-		&Pair{req_userD, resp_userD},
+		&Pair{req_userA, resp_userA, []While{}},
+		&Pair{req_userB, resp_userB, []While{}},
+		&Pair{req_userC, resp_userC, []While{}},
+		&Pair{req_userD, resp_userD, []While{}},
 	)
 
 	// get actions
@@ -171,11 +166,10 @@ func TestTestsContent(t *testing.T) {
 
 	//given a set of http cases
 	r := NewResource(
-		"users",
 		"/users/:user_id",
-		&Pair{req_userB, resp_userB},
-		&Pair{req_userC, resp_userC},
-		&Pair{req_userD, resp_userD},
+		&Pair{req_userB, resp_userB, []While{}},
+		&Pair{req_userC, resp_userC, []While{}},
+		&Pair{req_userD, resp_userD, []While{}},
 	)
 
 	// get actions

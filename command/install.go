@@ -10,6 +10,8 @@ import (
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/debs"
+	"github.com/dockpit/lang"
+	"github.com/dockpit/pit/contract"
 )
 
 var tmpl_install = ``
@@ -52,16 +54,33 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 		return nil, nil, err
 	}
 
-	//parse spec for dependencies
+	//parse the examples
+	p := lang.NewParser(filepath.Join(wd, ".dockpit", "examples"))
+	cd, err := p.Parse()
+	if err != nil {
+		return nil, nil, err
+	}
 
-	//install all dependencies
+	//create contract from data
+	contract, err := contract.NewContract(cd)
+	if err != nil {
+		return nil, nil, err
+	}
 
+	//retrieve all dependencies
+	deps, err := contract.Dependencies()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//use the manager to install all dependencies
 	m := debs.NewManager(filepath.Join(wd, ".dockpit"))
-
-	_ = m
-
-	//download or update if dependency is already installed
-	// tool.DownloadPackage(p, filepath.Join(wd, ".dockpit"))
+	for dep, _ := range deps {
+		err := m.Install(dep)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
 
 	return template.Must(template.New("install.success").Parse(tmpl_install)), nil, nil
 }

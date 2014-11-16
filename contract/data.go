@@ -25,12 +25,12 @@ type While struct {
 }
 
 type ResourceData struct {
-	Name    string      `json:"name"`
 	Pattern string      `json:"pattern"`
 	Cases   []*CaseData `json:"cases"`
 }
 
 type CaseData struct {
+	Name  string  `json:"name"`
 	Given Given   `json:"given"`
 	When  When    `json:"when"`
 	Then  Then    `json:"then"`

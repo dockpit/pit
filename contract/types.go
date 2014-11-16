@@ -19,17 +19,9 @@ type TestFunc func(host string, c *http.Client) error
 //
 //
 //
-type R interface {
-	Actions() ([]A, error)
-	Pattern() string
-	Name() string
-}
-
-//
-//
-//
 type A interface {
 	AddPair(p *Pair)
+	Pairs() []*Pair
 	Method() string
 	Handler() (web.Handler, error)
 	Tests() []TestFunc
@@ -38,7 +30,16 @@ type A interface {
 //
 //
 //
+type R interface {
+	Actions() ([]A, error)
+	Pattern() string
+}
+
+//
+//
+//
 type C interface {
 	Name() string
 	Resources() ([]R, error)
+	Dependencies() (map[string][]string, error)
 }

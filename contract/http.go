@@ -18,9 +18,14 @@ import (
 type Pair struct {
 	Request  *http.Request
 	Response *http.Response
+	While    []While
 }
 
 func NewPairFromData(data *CaseData) (*Pair, error) {
+
+	//@todo add header
+	//@todo add request body
+	//@todo add while
 
 	//create request from data
 	req, err := http.NewRequest(data.When.Method, data.When.Path, nil)
@@ -33,7 +38,7 @@ func NewPairFromData(data *CaseData) (*Pair, error) {
 	resp.StatusCode = data.Then.StatusCode
 	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Body))
 
-	return &Pair{req, resp}, nil
+	return &Pair{req, resp, data.While}, nil
 }
 
 func (p *Pair) BelongsToAction(a A) bool {
@@ -162,6 +167,10 @@ func NewAction(p *Pair) *Action {
 	}
 }
 
+func (a *Action) Pairs() []*Pair {
+	return a.pairs
+}
+
 func (a *Action) AddPair(p *Pair) {
 	a.pairs = append(a.pairs, p)
 }
@@ -203,17 +212,12 @@ func (a *Action) Handler() (web.Handler, error) {
 //
 //
 type Resource struct {
-	name    string
 	pattern string
 	cases   []*Pair
 }
 
-func NewResource(name, pattern string, cases ...*Pair) *Resource {
-	return &Resource{name, pattern, cases}
-}
-
-func (r *Resource) Name() string {
-	return r.name
+func NewResource(pattern string, cases ...*Pair) *Resource {
+	return &Resource{pattern, cases}
 }
 
 func (r *Resource) Pattern() string {

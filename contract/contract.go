@@ -25,7 +25,7 @@ func NewContract(data *ContractData) (*Contract, error) {
 			cases = append(cases, p)
 		}
 
-		res = append(res, NewResource(r.Name, r.Pattern, cases...))
+		res = append(res, NewResource(r.Pattern, cases...))
 	}
 
 	return &Contract{name: data.Name, resources: res}, nil
@@ -37,4 +37,38 @@ func (c *Contract) Name() string {
 
 func (c *Contract) Resources() ([]R, error) {
 	return c.resources, nil
+}
+
+func (c *Contract) Dependencies() (map[string][]string, error) {
+	deps := map[string][]string{}
+
+	res, err := c.Resources()
+	if err != nil {
+		return deps, err
+	}
+
+	for _, r := range res {
+		as, err := r.Actions()
+		if err != nil {
+			return deps, err
+		}
+
+		//loop over all pairs to map deps
+		for _, a := range as {
+			for _, p := range a.Pairs() {
+				for _, w := range p.While {
+					if _, ok := deps[w.ID]; !ok {
+						deps[w.ID] = []string{}
+
+						//@todo also add casenames?
+					}
+				}
+			}
+		}
+
+	}
+
+	//@retrieve deps from contract hyarchy
+
+	return deps, nil
 }

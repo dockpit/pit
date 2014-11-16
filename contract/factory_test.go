@@ -29,7 +29,7 @@ func TestFactoryLoading(t *testing.T) {
 	assert.Equal(t, "auth", data.Name)
 
 	//assert resource
-	assert.Equal(t, "users", data.Resources[0].Name)
+	// assert.Equal(t, "users", data.Resources[0].Name)
 	assert.Equal(t, "/users", data.Resources[0].Pattern)
 
 	//assert cases
@@ -41,7 +41,7 @@ func TestFactoryLoading(t *testing.T) {
 	assert.Equal(t, `[{"id": "32"}]`, data.Resources[0].Cases[0].Then.Body)
 
 	assert.Equal(t, "single user", data.Resources[0].Cases[0].While[0].CaseName)
-	assert.Equal(t, "github.com/dockpit/ex-store-user", data.Resources[0].Cases[0].While[0].ID)
+	assert.Equal(t, "github.com/dockpit/ex-store-customers", data.Resources[0].Cases[0].While[0].ID)
 }
 
 func TestFactoryDraft(t *testing.T) {
@@ -63,13 +63,22 @@ func TestFactoryDraft(t *testing.T) {
 	//assert contract data
 	assert.Equal(t, "auth", c.Name())
 
+	//assert dependencies
+	deps, err := c.Dependencies()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//should have 1 dependency with empty list of cases
+	assert.Equal(t, 1, len(deps))
+	assert.Equal(t, []string{}, deps["github.com/dockpit/ex-store-customers"])
+
 	//assert resource
 	resources, err := c.Resources()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "users", resources[0].Name())
 	assert.Equal(t, "/users", resources[0].Pattern())
 
 	//assert actions
