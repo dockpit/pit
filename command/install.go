@@ -95,10 +95,15 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 	//use the manager to install all dependencies into pit path
 	m := debs.NewManager(pp)
 	for dep, _ := range deps {
+		fmt.Fprintf(c.out, "Installing %s...", dep)
+
 		err := m.Install(dep)
 		if err != nil {
+			fmt.Fprintf(c.out, "ERROR \n")
 			return nil, nil, err
 		}
+
+		fmt.Fprintf(c.out, "done! \n")
 	}
 
 	return template.Must(template.New("install.success").Parse(tmpl_install)), nil, nil

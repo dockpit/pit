@@ -27,7 +27,7 @@ func TestInstallIntoTmp(t *testing.T) {
 
 	os.Setenv("PIT_PATH", tdir)
 
-	AssertCommand(t, cmd, []string{"-path", filepath.Join(wd, "..", ".dockpit", "examples")}, `successful`, out)
+	AssertCommand(t, cmd, []string{"-path", filepath.Join(wd, "..", ".dockpit", "examples")}, `(?s)Installing github\.com.*done\!.*successful`, out)
 
 	//should be able to read file from installation
 	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "ex-store-customers", "main.go"))
