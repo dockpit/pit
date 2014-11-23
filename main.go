@@ -25,6 +25,7 @@ func main() {
 	cmds := []command.C{
 		command.NewServer(out),
 		command.NewInstall(out),
+		command.NewBuild(out),
 		command.NewMock(out, Version),
 	}
 

@@ -14,6 +14,7 @@ import (
 	"github.com/dockpit/lang"
 	"github.com/dockpit/pit/contract"
 	"github.com/dockpit/pit/spec"
+	"github.com/dockpit/state"
 )
 
 var SpecFilename = "dockpit.json"
@@ -55,12 +56,19 @@ func (c *cmd) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	return nil, nil, fmt.Errorf("Command '%s' is not yet implemented", ctx.Command.Name)
 }
 
+func (c *cmd) DockerFlags() []cli.Flag {
+	return []cli.Flag{
+		cli.StringFlag{Name: "docker, d", Value: "", Usage: fmt.Sprintf("The Docker host location, defaults to reading from DOCKER_HOST environment variable.")},
+		cli.StringFlag{Name: "docker-cert, c", Value: "", Usage: fmt.Sprintf("The Docker Certificates Path location, defaults to reading from DOCKER_CERT_PATH environment variable.")},
+	}
+}
+
 func (c *cmd) BuildStatesFlags() []cli.Flag {
 
 	//get working dir
 	wd, err := os.Getwd()
 	if err == nil {
-		wd = filepath.Join(wd, ".dockpit", "statues")
+		wd = filepath.Join(wd, ".dockpit", "states")
 	} else {
 		wd = fmt.Sprintf("[%s]", err.Error())
 	}
@@ -83,6 +91,38 @@ func (c *cmd) ParseExampleFlags() []cli.Flag {
 	return []cli.Flag{
 		cli.StringFlag{Name: "examples, e", Value: wd, Usage: fmt.Sprintf(" Specify where to look for examples.")},
 	}
+}
+
+func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
+
+	//path to state context folders
+	path := strings.TrimSpace(ctx.String("states"))
+
+	//try docker host retrieval
+	host := strings.TrimSpace(ctx.String("docker"))
+	if host == "" {
+		host = os.Getenv("DOCKER_HOST")
+		if host == "" {
+			return nil, fmt.Errorf("Could not retrieve DOCKER_HOST, not provided as option and not in env")
+		}
+	}
+
+	//try docker cert retrieval
+	cert := strings.TrimSpace(ctx.String("docker-cert"))
+	if cert == "" {
+		cert = os.Getenv("DOCKER_CERT_PATH")
+		if cert == "" {
+			return nil, fmt.Errorf("Could not retrieve DOCKER_CERT_PATH, not provided as option and not in env")
+		}
+	}
+
+	//create state manager
+	m, err := state.NewManager(host, cert, path)
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
 func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
