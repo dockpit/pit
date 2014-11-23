@@ -33,8 +33,8 @@ func TestFactoryLoading(t *testing.T) {
 	assert.Equal(t, "/users", data.Resources[0].Pattern)
 
 	//assert cases
-	assert.Equal(t, "some users", data.Resources[0].Cases[0].Given["mongodb"])
-	assert.Equal(t, "some messages", data.Resources[0].Cases[0].Given["nsq"])
+	assert.Equal(t, "some users", data.Resources[0].Cases[0].Given["mongodb"].Name)
+	assert.Equal(t, "some messages", data.Resources[0].Cases[0].Given["nsq"].Name)
 	assert.Equal(t, "GET", data.Resources[0].Cases[0].When.Method)
 	assert.Equal(t, "/users", data.Resources[0].Cases[0].When.Path)
 	assert.Equal(t, 200, data.Resources[0].Cases[0].Then.StatusCode)

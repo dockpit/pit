@@ -4,7 +4,9 @@ import (
 	"net/http"
 )
 
-type Given map[string]string
+type Given struct {
+	Name string `json:"name"`
+}
 
 type When struct {
 	Method  string      `json:"method"`
@@ -30,11 +32,11 @@ type ResourceData struct {
 }
 
 type CaseData struct {
-	Name  string  `json:"name"`
-	Given Given   `json:"given"`
-	When  When    `json:"when"`
-	Then  Then    `json:"then"`
-	While []While `json:"while"`
+	Name  string           `json:"name"`
+	Given map[string]Given `json:"given"`
+	When  When             `json:"when"`
+	Then  Then             `json:"then"`
+	While []While          `json:"while"`
 }
 
 //
