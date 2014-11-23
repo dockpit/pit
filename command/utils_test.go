@@ -17,7 +17,11 @@ func AssertCommand(t *testing.T, cmd command.C, args []string, pattern string, o
 
 	//prepend zero-length string
 	args = append([]string{""}, args...)
-	app.Run(args)
+
+	err := app.Run(args)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	m, err := regexp.MatchString(pattern, out.String())
 	if err != nil {
@@ -27,4 +31,5 @@ func AssertCommand(t *testing.T, cmd command.C, args []string, pattern string, o
 	if !m {
 		t.Errorf("Out didn't match expected pattern /%s/, received: %s", pattern, out)
 	}
+
 }

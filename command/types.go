@@ -55,7 +55,10 @@ func (c *cmd) templated(fn func(c *cli.Context) (*template.Template, interface{}
 	return func(ctx *cli.Context) {
 		t, data, err := fn(ctx)
 		if err != nil {
-			log.Fatal(err, ", Command: '", ctx.Command.Name, "' Args: ", ctx.Args())
+			log.Println(err, ", Command: '", ctx.Command.Name, "' Args: ", ctx.Args())
+
+			//@todo set exit code to non-zero?
+			return
 		}
 
 		err = t.Execute(c.out, data)
