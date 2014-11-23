@@ -32,7 +32,7 @@ func (c *Install) Name() string {
 }
 
 func (c *Install) Description() string {
-	return fmt.Sprintf("...")
+	return fmt.Sprintf("Parse examples into a contract and extract all dependencies. Install each dependency into the Dockpit workspace which is expected to be specified as the PIT_PATH environment variable")
 }
 
 func (c *Install) Usage() string {
@@ -50,7 +50,7 @@ func (c *Install) Flags() []cli.Flag {
 	}
 
 	return []cli.Flag{
-		cli.StringFlag{Name: "path, p", Value: wd, Usage: fmt.Sprintf("Specify where to look for examples.")},
+		cli.StringFlag{Name: "path, p", Value: wd, Usage: fmt.Sprintf(" Specify where to look for examples.")},
 	}
 }
 
@@ -95,7 +95,7 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 	//use the manager to install all dependencies into pit path
 	m := debs.NewManager(pp)
 	for dep, _ := range deps {
-		fmt.Fprintf(c.out, "Installing %s...", dep)
+		fmt.Fprintf(c.out, "Installing %s:\n", dep)
 
 		err := m.Install(dep)
 		if err != nil {
@@ -103,7 +103,7 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 			return nil, nil, err
 		}
 
-		fmt.Fprintf(c.out, "done! \n")
+		fmt.Fprintf(c.out, "done!\n\n")
 	}
 
 	return template.Must(template.New("install.success").Parse(tmpl_install)), nil, nil
