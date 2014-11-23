@@ -31,10 +31,10 @@ func TestMapping(t *testing.T) {
 	//given a set of http cases
 	r = NewResource(
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA, []While{}},
-		&Pair{req_userB, resp_userB, []While{}},
-		&Pair{req_userC, resp_userC, []While{}},
-		&Pair{req_userD, resp_userD, []While{}},
+		&Pair{req_userA, resp_userA, []While{}, map[string]Given{}},
+		&Pair{req_userB, resp_userB, []While{}, map[string]Given{}},
+		&Pair{req_userC, resp_userC, []While{}, map[string]Given{}},
+		&Pair{req_userD, resp_userD, []While{}, map[string]Given{}},
 	)
 
 	assert.Equal(t, "/users/:user_id", r.Pattern())
@@ -45,10 +45,10 @@ func TestHandler(t *testing.T) {
 	//given a set of http cases
 	r := NewResource(
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA, []While{}},
-		&Pair{req_userB, resp_userB, []While{}},
-		&Pair{req_userC, resp_userC, []While{}},
-		&Pair{req_userD, resp_userD, []While{}},
+		&Pair{req_userA, resp_userA, []While{}, map[string]Given{}},
+		&Pair{req_userB, resp_userB, []While{}, map[string]Given{}},
+		&Pair{req_userC, resp_userC, []While{}, map[string]Given{}},
+		&Pair{req_userD, resp_userD, []While{}, map[string]Given{}},
 	)
 
 	// get actions
@@ -87,10 +87,10 @@ func TestHandlerContent(t *testing.T) {
 	//given a set of http cases
 	r := NewResource(
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA, []While{}},
-		&Pair{req_userB, resp_userB, []While{}},
-		&Pair{req_userC, resp_userC, []While{}},
-		&Pair{req_userD, resp_userD, []While{}},
+		&Pair{req_userA, resp_userA, []While{}, map[string]Given{}},
+		&Pair{req_userB, resp_userB, []While{}, map[string]Given{}},
+		&Pair{req_userC, resp_userC, []While{}, map[string]Given{}},
+		&Pair{req_userD, resp_userD, []While{}, map[string]Given{}},
 	)
 
 	// get actions
@@ -126,10 +126,10 @@ func TestTests(t *testing.T) {
 	//given a set of http cases
 	r := NewResource(
 		"/users/:user_id",
-		&Pair{req_userA, resp_userA, []While{}},
-		&Pair{req_userB, resp_userB, []While{}},
-		&Pair{req_userC, resp_userC, []While{}},
-		&Pair{req_userD, resp_userD, []While{}},
+		&Pair{req_userA, resp_userA, []While{}, map[string]Given{}},
+		&Pair{req_userB, resp_userB, []While{}, map[string]Given{}},
+		&Pair{req_userC, resp_userC, []While{}, map[string]Given{}},
+		&Pair{req_userD, resp_userD, []While{}, map[string]Given{}},
 	)
 
 	// get actions
@@ -167,9 +167,9 @@ func TestTestsContent(t *testing.T) {
 	//given a set of http cases
 	r := NewResource(
 		"/users/:user_id",
-		&Pair{req_userB, resp_userB, []While{}},
-		&Pair{req_userC, resp_userC, []While{}},
-		&Pair{req_userD, resp_userD, []While{}},
+		&Pair{req_userB, resp_userB, []While{}, map[string]Given{}},
+		&Pair{req_userC, resp_userC, []While{}, map[string]Given{}},
+		&Pair{req_userD, resp_userD, []While{}, map[string]Given{}},
 	)
 
 	// get actions

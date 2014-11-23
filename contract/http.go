@@ -19,6 +19,7 @@ type Pair struct {
 	Request  *http.Request
 	Response *http.Response
 	While    []While
+	Given    map[string]Given
 }
 
 func NewPairFromData(data *CaseData) (*Pair, error) {
@@ -38,7 +39,7 @@ func NewPairFromData(data *CaseData) (*Pair, error) {
 	resp.StatusCode = data.Then.StatusCode
 	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Body))
 
-	return &Pair{req, resp, data.While}, nil
+	return &Pair{req, resp, data.While, data.Given}, nil
 }
 
 func (p *Pair) BelongsToAction(a A) bool {

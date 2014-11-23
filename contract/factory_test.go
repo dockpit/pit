@@ -29,7 +29,6 @@ func TestFactoryLoading(t *testing.T) {
 	assert.Equal(t, "auth", data.Name)
 
 	//assert resource
-	// assert.Equal(t, "users", data.Resources[0].Name)
 	assert.Equal(t, "/users", data.Resources[0].Pattern)
 
 	//assert cases
@@ -72,6 +71,15 @@ func TestFactoryDraft(t *testing.T) {
 	//should have 1 dependency with empty list of cases
 	assert.Equal(t, 1, len(deps))
 	assert.Equal(t, []string{}, deps["github.com/dockpit/ex-store-customers"])
+
+	//assert states
+	states, err := c.States()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, 2, len(states))
+	assert.Equal(t, []string{"some users"}, states["mongodb"])
 
 	//assert resource
 	resources, err := c.Resources()

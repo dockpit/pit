@@ -1,5 +1,9 @@
 package contract
 
+import (
+// "fmt"
+)
+
 //
 //
 //
@@ -39,6 +43,42 @@ func (c *Contract) Resources() ([]R, error) {
 	return c.resources, nil
 }
 
+func (c *Contract) States() (map[string][]string, error) {
+	states := map[string][]string{}
+
+	res, err := c.Resources()
+	if err != nil {
+		return states, err
+	}
+
+	for _, r := range res {
+		as, err := r.Actions()
+		if err != nil {
+			return states, err
+		}
+
+		//loop over all pairs to map deps
+		for _, a := range as {
+			for _, p := range a.Pairs() {
+				for pname, g := range p.Given {
+
+					//add state
+					if _, ok := states[pname]; !ok {
+						states[pname] = []string{}
+					}
+
+					//@todo prevend duplicate snames?
+					states[pname] = append(states[pname], g.Name)
+
+				}
+			}
+		}
+
+	}
+
+	return states, nil
+}
+
 func (c *Contract) Dependencies() (map[string][]string, error) {
 	deps := map[string][]string{}
 
@@ -67,8 +107,6 @@ func (c *Contract) Dependencies() (map[string][]string, error) {
 		}
 
 	}
-
-	//@retrieve deps from contract hyarchy
 
 	return deps, nil
 }

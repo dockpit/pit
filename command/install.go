@@ -4,15 +4,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
-	"strings"
 	"text/template"
 
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/debs"
-	"github.com/dockpit/lang"
-	"github.com/dockpit/pit/contract"
 )
 
 var tmpl_install = `Installation successful!`
@@ -40,18 +36,10 @@ func (c *Install) Usage() string {
 }
 
 func (c *Install) Flags() []cli.Flag {
+	fs := []cli.Flag{}
+	fs = append(fs, c.ParseExampleFlags()...)
 
-	//get working dir
-	wd, err := os.Getwd()
-	if err == nil {
-		wd = filepath.Join(wd, ".dockpit", "examples")
-	} else {
-		wd = fmt.Sprintf("[%s]", err.Error())
-	}
-
-	return []cli.Flag{
-		cli.StringFlag{Name: "path, p", Value: wd, Usage: fmt.Sprintf(" Specify where to look for examples.")},
-	}
+	return fs
 }
 
 func (c *Install) Action() func(ctx *cli.Context) {
@@ -60,30 +48,16 @@ func (c *Install) Action() func(ctx *cli.Context) {
 
 func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
-	//retrieve path
-	path := strings.TrimSpace(ctx.String("path"))
-
 	//get pit path
 	pp := os.Getenv("PIT_PATH")
 	if pp == "" {
 		return nil, nil, fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
 	}
 
-	//parse the spec
-	p := lang.NewParser(path)
-	cd, err := p.Parse()
+	//get contract
+	contract, err := c.ParseExamples(ctx)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil, fmt.Errorf("Failed to open .dockpit/examples in '%s', is this a Dockpit project?", path)
-		}
-
-		return nil, nil, fmt.Errorf("Parsing error: %s", err)
-	}
-
-	//create contract from data
-	contract, err := contract.NewContract(cd)
-	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to create contract from parsed data: %s", err)
+		return nil, nil, err
 	}
 
 	//retrieve all dependencies

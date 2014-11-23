@@ -41,5 +41,6 @@ type R interface {
 type C interface {
 	Name() string
 	Resources() ([]R, error)
+	States() (map[string][]string, error)
 	Dependencies() (map[string][]string, error)
 }
