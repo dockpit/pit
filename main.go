@@ -26,7 +26,6 @@ func main() {
 		command.NewServe(out),
 		command.NewInstall(out),
 		command.NewBuild(out),
-		command.NewMock(out, Version),
 	}
 
 	//append to app

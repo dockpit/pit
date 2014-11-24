@@ -13,17 +13,10 @@ import (
 
 	"github.com/dockpit/lang"
 	"github.com/dockpit/pit/contract"
-	"github.com/dockpit/pit/spec"
 	"github.com/dockpit/state"
 )
 
 var SpecFilename = "dockpit.json"
-
-// Docker client abstraction interface
-type D interface {
-	RemoveAll() error
-	Start(*spec.Dependencies) error
-}
 
 // CLI Command interface
 type C interface {

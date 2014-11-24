@@ -138,6 +138,8 @@ func (p *Pair) GenerateTest() TestFunc {
 		req.URL.Host = h.Host
 		req.URL.Scheme = h.Scheme
 
+		//@todo switch state
+
 		//do the actual request
 		resp, err := client.Do(&req)
 		if err != nil {
@@ -148,6 +150,45 @@ func (p *Pair) GenerateTest() TestFunc {
 		if err := p.IsExpectedResponse(resp); err != nil {
 			return UnexpectedResponseError(p.Response, resp, err)
 		}
+
+		//@todo assert dependency recordings
+		//check dependency recordings
+		// for _, dep := range c.caseData.While {
+		// 	for loc, paths := range dep {
+		// 		var addr string
+		// 		var ok bool
+
+		// 		if addr, ok = depAddr[loc]; !ok {
+		// 			return fmt.Errorf("Test for case '%s' didn't get an addr for dependency '%s'", c.Name(), loc)
+		// 		}
+
+		// 		for _, path := range paths {
+
+		// 			//get recorded access
+		// 			resp, err = http.Get(fmt.Sprintf("%s/_recordings/%s", addr, path))
+		// 			if err != nil {
+		// 				return err
+		// 			}
+
+		// 			if resp.StatusCode > 201 {
+		// 				return fmt.Errorf("Mock recording doesn't have data for '%s', returned %d", path, resp.StatusCode)
+		// 			}
+
+		// 			rec := &Recording{}
+		// 			dec := json.NewDecoder(resp.Body)
+		// 			err = dec.Decode(rec)
+		// 			if err != nil {
+		// 				return err
+		// 			}
+
+		// 			//dont actually count count
+		// 			if rec.Count < 1 {
+		// 				return fmt.Errorf("Expected dependency '%s#%s' to be called at least once", loc, path)
+		// 			}
+		// 		}
+
+		// 	}
+		// }
 
 		return nil
 	}
