@@ -9,6 +9,8 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/zenazn/goji"
+
+	"github.com/dockpit/pit/contract"
 )
 
 var tmpl_serve = `Served successful!`
@@ -50,7 +52,7 @@ func (c *Serve) Action() func(ctx *cli.Context) {
 func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
 	//get contract
-	contract, err := c.ParseExamples(ctx)
+	ctr, err := c.ParseExamples(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -59,7 +61,8 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	flag.Set("bind", strings.TrimSpace(ctx.String("bind")))
 
 	//create mux from contrack
-	mux, err := contract.Mock()
+	mock := contract.NewMock(ctr)
+	mux, err := mock.Mux()
 	if err != nil {
 		return nil, nil, err
 	}

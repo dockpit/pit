@@ -41,7 +41,6 @@ type R interface {
 type C interface {
 	Name() string
 	Resources() ([]R, error)
-	Mock() (*web.Mux, error)
 	States() (map[string][]string, error)
 	Dependencies() (map[string][]string, error)
 }

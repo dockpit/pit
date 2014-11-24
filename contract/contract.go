@@ -1,15 +1,8 @@
 package contract
 
-import (
-	"fmt"
-	"net/http"
-
-	"github.com/zenazn/goji/web"
-)
-
 //
 //
-//
+// represents a service contract
 type Contract struct {
 	name      string
 	resources []R
@@ -44,53 +37,6 @@ func (c *Contract) Name() string {
 
 func (c *Contract) Resources() ([]R, error) {
 	return c.resources, nil
-}
-
-// walk resources, actions and pairs to map all necessary states to
-// create a router that mocks the contract
-func (c *Contract) Mock() (*web.Mux, error) {
-	mux := web.New()
-
-	res, err := c.Resources()
-	if err != nil {
-		return mux, err
-	}
-
-	//look at each resource
-	for _, r := range res {
-
-		acs, err := r.Actions()
-		if err != nil {
-			return mux, err
-		}
-
-		//create middleware that routes to the correct example
-		fn := func(ctx web.C, w http.ResponseWriter, r *http.Request) {
-
-			//match the request method tot the correct action
-			for _, a := range acs {
-
-				if a.Method() == r.Method {
-
-					//ask the action for a handle
-					h, err := a.Handler(r)
-					if err != nil {
-						http.Error(w, fmt.Sprintf("%s", err.Error()), http.StatusInternalServerError)
-						return
-					}
-
-					//serve mock and return
-					h.ServeHTTP(w, r)
-					return
-				}
-			}
-		}
-
-		//route everything that matches the resource pattern to the dynamic middleware
-		mux.Handle(r.Pattern(), fn)
-	}
-
-	return mux, nil
 }
 
 // walk resources, actions and pairs to map all necessary states
