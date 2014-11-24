@@ -2,10 +2,15 @@ package command_test
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/bmizerany/assert"
 
 	"github.com/dockpit/pit/command"
 )
@@ -30,12 +35,23 @@ func TestServe(t *testing.T) {
 	//a routine that stops the server after some time
 	go func() {
 		<-time.After(time.Millisecond * 100)
+		defer func() { p.Signal(os.Interrupt) }()
 
-		//@todo test server
+		resp, err := http.Get("http://localhost:9000/users")
+		if err != nil {
+			t.Error(err)
+		}
+		defer resp.Body.Close()
 
-		p.Signal(os.Interrupt)
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		assert.Equal(t, 200, resp.StatusCode, fmt.Sprintf("Expected server to return %d, but got %s: %s", 200, resp.Status, string(b)))
+		assert.Equal(t, string(b), "[]")
 	}()
 
-	AssertCommand(t, cmd, []string{"-examples", filepath.Join(wd, "..", ".dockpit", "examples")}, `(?s)gracefully shutting down`, out)
+	AssertCommand(t, cmd, []string{"--bind", ":9000", "-examples", filepath.Join(wd, "..", ".dockpit", "examples")}, `(?s)gracefully shutting down`, out)
 
 }

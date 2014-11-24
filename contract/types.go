@@ -23,7 +23,7 @@ type A interface {
 	AddPair(p *Pair)
 	Pairs() []*Pair
 	Method() string
-	Handler() (web.Handler, error)
+	Handler(*http.Request) (web.Handler, error)
 	Tests() []TestFunc
 }
 
@@ -41,6 +41,7 @@ type R interface {
 type C interface {
 	Name() string
 	Resources() ([]R, error)
+	Mock() (*web.Mux, error)
 	States() (map[string][]string, error)
 	Dependencies() (map[string][]string, error)
 }

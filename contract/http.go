@@ -190,7 +190,11 @@ func (a *Action) Tests() []TestFunc {
 	return tests
 }
 
-func (a *Action) Handler() (web.Handler, error) {
+func (a *Action) Handler(r *http.Request) (web.Handler, error) {
+
+	if r != nil {
+		//@todo use the request for more sophistication?
+	}
 
 	//pick the first example that specified a success like response
 	var ex *Pair

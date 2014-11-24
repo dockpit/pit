@@ -32,7 +32,7 @@ func (c *Install) Description() string {
 }
 
 func (c *Install) Usage() string {
-	return "Install a dependency"
+	return "Install dependencies"
 }
 
 func (c *Install) Flags() []cli.Flag {

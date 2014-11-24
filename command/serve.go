@@ -32,7 +32,7 @@ func (c *Serve) Description() string {
 }
 
 func (c *Serve) Usage() string {
-	return "serve a folder of examples as being a web service"
+	return "Serve a folder of examples"
 }
 
 func (c *Serve) Flags() []cli.Flag {
@@ -58,13 +58,14 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//transfer bind from ctx
 	flag.Set("bind", strings.TrimSpace(ctx.String("bind")))
 
-	//@todo create mock
-	fmt.Println(contract)
-
-	//@todo turn contract into mux
+	//create mux from contrack
+	mux, err := contract.Mock()
+	if err != nil {
+		return nil, nil, err
+	}
 
 	//start goij server, reuse logging stack
-	// goji.DefaultMux.Handle("/*", mock.Mux())
+	goji.DefaultMux.Handle("/*", mux)
 	goji.Serve()
 
 	return template.Must(template.New("serve.success").Parse(tmpl_serve)), nil, nil

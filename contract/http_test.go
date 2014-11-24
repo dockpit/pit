@@ -60,7 +60,7 @@ func TestHandler(t *testing.T) {
 	assert.Equal(t, 2, len(as))
 
 	//Handlers should write correctly
-	h1, err := as[1].Handler()
+	h1, err := as[1].Handler(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestHandler(t *testing.T) {
 	assert.Equal(t, 201, resp.StatusCode)
 
 	//Handlers should write correctly
-	h2, err := as[0].Handler()
+	h2, err := as[0].Handler(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func TestHandlerContent(t *testing.T) {
 	var a A
 	a = as[0]
 
-	h1, err := a.Handler()
+	h1, err := a.Handler(nil)
 	if err != nil {
 		t.Fatal(err)
 	}

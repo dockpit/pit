@@ -1,7 +1,10 @@
 package contract
 
 import (
-// "fmt"
+	"fmt"
+	"net/http"
+
+	"github.com/zenazn/goji/web"
 )
 
 //
@@ -43,6 +46,55 @@ func (c *Contract) Resources() ([]R, error) {
 	return c.resources, nil
 }
 
+// walk resources, actions and pairs to map all necessary states to
+// create a router that mocks the contract
+func (c *Contract) Mock() (*web.Mux, error) {
+	mux := web.New()
+
+	res, err := c.Resources()
+	if err != nil {
+		return mux, err
+	}
+
+	//look at each resource
+	for _, r := range res {
+
+		acs, err := r.Actions()
+		if err != nil {
+			return mux, err
+		}
+
+		//create middleware that routes to the correct example
+		fn := func(ctx web.C, w http.ResponseWriter, r *http.Request) {
+
+			//match the request method tot the correct action
+			for _, a := range acs {
+
+				if a.Method() == r.Method {
+
+					//ask the action for a handle
+					h, err := a.Handler(r)
+					if err != nil {
+						http.Error(w, fmt.Sprintf("%s", err.Error()), http.StatusInternalServerError)
+						return
+					}
+
+					//serve mock and return
+					h.ServeHTTP(w, r)
+					return
+				}
+			}
+		}
+
+		//route everything that matches the resource pattern to the dynamic middleware
+		mux.Handle(r.Pattern(), fn)
+	}
+
+	return mux, nil
+}
+
+// walk resources, actions and pairs to map all necessary states
+// to test against the contract
 func (c *Contract) States() (map[string][]string, error) {
 	states := map[string][]string{}
 
@@ -57,7 +109,7 @@ func (c *Contract) States() (map[string][]string, error) {
 			return states, err
 		}
 
-		//loop over all pairs to map deps
+		//loop over all pairs to map states
 		for _, a := range as {
 			for _, p := range a.Pairs() {
 				for pname, g := range p.Given {
@@ -73,12 +125,13 @@ func (c *Contract) States() (map[string][]string, error) {
 				}
 			}
 		}
-
 	}
 
 	return states, nil
 }
 
+// walk resources, actions and pairs to map all necessary dependencies
+// to be mocked for isolation
 func (c *Contract) Dependencies() (map[string][]string, error) {
 	deps := map[string][]string{}
 
@@ -105,7 +158,6 @@ func (c *Contract) Dependencies() (map[string][]string, error) {
 				}
 			}
 		}
-
 	}
 
 	return deps, nil
