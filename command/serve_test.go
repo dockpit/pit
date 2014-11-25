@@ -71,6 +71,6 @@ func TestServe(t *testing.T) {
 
 	}()
 
-	AssertCommand(t, cmd, []string{"--bind", ":9000", "-examples", filepath.Join(wd, "..", ".dockpit", "examples")}, `(?s)gracefully shutting down`, out)
+	AssertCommand(t, cmd, []string{"--bind", ":9000", "-examples", filepath.Join(wd, "..", ".dockpit", "examples")}, `(?s)Stopping`, out)
 
 }

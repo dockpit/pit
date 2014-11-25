@@ -68,6 +68,7 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 
 	//use the manager to install all dependencies into pit path
 	m := debs.NewManager(pp)
+	installation := map[string]string{}
 	for dep, _ := range deps {
 		fmt.Fprintf(c.out, "Installing %s:\n", dep)
 
@@ -77,8 +78,14 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 			return nil, nil, err
 		}
 
+		//add location installation
+		installation[dep], err = m.Locate(dep)
+		if err != nil {
+			return nil, nil, err
+		}
+
 		fmt.Fprintf(c.out, "done!\n\n")
 	}
 
-	return template.Must(template.New("install.success").Parse(tmpl_install)), nil, nil
+	return template.Must(template.New("install.success").Parse(tmpl_install)), installation, nil
 }

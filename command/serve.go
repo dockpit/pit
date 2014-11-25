@@ -1,14 +1,19 @@
 package command
 
 import (
-	"flag"
+	// "flag"
 	"fmt"
 	"io"
+	"net/http"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"text/template"
+	// "time"
 
 	"github.com/codegangsta/cli"
-	"github.com/zenazn/goji"
+	"github.com/zenazn/goji/bind"
 
 	"github.com/dockpit/pit/contract"
 )
@@ -51,25 +56,75 @@ func (c *Serve) Action() func(ctx *cli.Context) {
 
 func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
-	//get contract
-	ctr, err := c.ParseExamples(ctx)
+	//catch relevant signals for terminating and reloading
+	hup := make(chan os.Signal)
+	stop := make(chan os.Signal)
+	signal.Notify(hup, syscall.SIGHUP)
+	signal.Notify(stop, os.Kill, os.Interrupt)
+
+	//the listener can be reused
+	l := bind.Socket(strings.TrimSpace(ctx.String("bind")))
+
+	//reload http.DefaultServerMux
+	loadMux := func() error {
+
+		//get contract
+		ctr, err := c.ParseExamples(ctx)
+		if err != nil {
+			return err
+		}
+
+		//create mux from contract
+		mock := contract.NewMock(ctr)
+		mux, err := mock.Mux()
+		if err != nil {
+			return err
+		}
+
+		//create and replace default mux
+		h := http.NewServeMux()
+		h.Handle("/", mux)
+		http.DefaultServeMux = h
+
+		return nil
+	}
+
+	//handle signals
+	go func() {
+		for {
+			select {
+
+			//incase of a KILL/INT signal stop listening
+			case <-stop:
+
+				fmt.Fprintf(c.out, "Stopping... \n")
+
+				//close the current listener which
+				//unblocks the http.Serve()
+				l.Close()
+
+			//in case of a HUP signal reload the mux
+			case <-hup:
+				fmt.Fprintf(c.out, "Reloading... \n")
+
+				//reload the default mux
+				err := loadMux()
+				if err != nil {
+					fmt.Fprintln(c.out, err)
+				}
+			}
+		}
+	}()
+
+	//load and serve with default server mux
+	fmt.Fprintf(c.out, "Serving (%s)...\n", ctx.String("bind"))
+	err := loadMux()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	//transfer bind from ctx
-	flag.Set("bind", strings.TrimSpace(ctx.String("bind")))
+	http.Serve(l, nil)
 
-	//create mux from contrack
-	mock := contract.NewMock(ctr)
-	mux, err := mock.Mux()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	//start goij server, reuse logging stack
-	goji.DefaultMux.Handle("/*", mux)
-	goji.Serve()
-
+	//we're done serving, render results
 	return template.Must(template.New("serve.success").Parse(tmpl_serve)), nil, nil
 }

@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/codegangsta/cli"
+	"github.com/fsouza/go-dockerclient"
 
 	"github.com/dockpit/lang"
 	"github.com/dockpit/pit/contract"
@@ -86,17 +88,36 @@ func (c *cmd) ParseExampleFlags() []cli.Flag {
 	}
 }
 
-func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
+func (c *cmd) DockerClient(ctx *cli.Context) (*docker.Client, error) {
 
-	//path to state context folders
-	path := strings.TrimSpace(ctx.String("states"))
+	//fetch required args
+	host, cert, err := c.DockerHostCertArguments(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	//parse docker host addr as url
+	hurl, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+
+	//change to http connection
+	hurl.Scheme = "https"
+
+	//return client
+	return docker.NewTLSClient(hurl.String(), filepath.Join(cert, "cert.pem"), filepath.Join(cert, "key.pem"), filepath.Join(cert, "ca.pem"))
+
+}
+
+func (c *cmd) DockerHostCertArguments(ctx *cli.Context) (string, string, error) {
 
 	//try docker host retrieval
 	host := strings.TrimSpace(ctx.String("docker"))
 	if host == "" {
 		host = os.Getenv("DOCKER_HOST")
 		if host == "" {
-			return nil, fmt.Errorf("Could not retrieve DOCKER_HOST, not provided as option and not in env")
+			return "", "", fmt.Errorf("Could not retrieve DOCKER_HOST, not provided as option and not in env")
 		}
 	}
 
@@ -105,8 +126,20 @@ func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
 	if cert == "" {
 		cert = os.Getenv("DOCKER_CERT_PATH")
 		if cert == "" {
-			return nil, fmt.Errorf("Could not retrieve DOCKER_CERT_PATH, not provided as option and not in env")
+			return "", "", fmt.Errorf("Could not retrieve DOCKER_CERT_PATH, not provided as option and not in env")
 		}
+	}
+
+	return host, cert, nil
+}
+
+func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
+
+	//path to state context folders
+	path := strings.TrimSpace(ctx.String("states"))
+	host, cert, err := c.DockerHostCertArguments(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	//create state manager

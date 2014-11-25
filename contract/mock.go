@@ -92,13 +92,13 @@ func (m *Mock) Mux() (*web.Mux, error) {
 		}
 
 		//create middleware that routes to the correct example
-		fn := func(ctx web.C, w http.ResponseWriter, r *http.Request) {
+		fn := func(ctx web.C, w http.ResponseWriter, req *http.Request) {
 
 			//match the request method tot the correct action
 			for _, a := range acs {
 
 				//match by method
-				if a.Method() == r.Method {
+				if a.Method() == req.Method {
 
 					//lazily create recording
 					var rec *Recording
@@ -108,7 +108,7 @@ func (m *Mock) Mux() (*web.Mux, error) {
 					}
 
 					//ask the action for a handle
-					h, err := a.Handler(r)
+					h, err := a.Handler(req)
 					if err != nil {
 						http.Error(w, fmt.Sprintf("%s", err.Error()), http.StatusInternalServerError)
 						return
@@ -118,7 +118,7 @@ func (m *Mock) Mux() (*web.Mux, error) {
 					rec.Count++
 
 					//serve mock and return
-					h.ServeHTTP(w, r)
+					h.ServeHTTP(w, req)
 					return
 				}
 			}
