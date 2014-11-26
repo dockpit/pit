@@ -3,7 +3,10 @@ package contract
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/zenazn/goji/web"
 
@@ -35,10 +38,27 @@ func (m *Mock) UploadExamples(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//@todo empty old
+	//empty old directory
+	files, err := ioutil.ReadDir(m.dir)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	//untar
-	dirtar.Untar(m.dir, r.Body)
+	for _, f := range files {
+		err := os.RemoveAll(filepath.Join(m.dir, f.Name()))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	//untar into empty dir
+	err = dirtar.Untar(m.dir, r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	//all went well
 	w.WriteHeader(201)

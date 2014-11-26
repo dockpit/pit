@@ -96,7 +96,13 @@ func TestUploading(t *testing.T) {
 	//create an alternative path to read examples from since we will overwrite them
 	dir, err := ioutil.TempDir("", "dp_upl_")
 	if err != nil {
-		t.Fatal()
+		t.Fatal(err)
+	}
+
+	//write file that the mock should remove
+	err = ioutil.WriteFile(filepath.Join(dir, "test.go"), []byte{}, 0777)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	//a routine that stops the server after some time
@@ -140,6 +146,11 @@ func TestUploading(t *testing.T) {
 				t.Fatal("File should not have been empty")
 			}
 		}
+
+		//the old file should have been removed
+		_, err = os.Stat(filepath.Join(dir, "test.go"))
+		assert.Equal(t, true, os.IsNotExist(err), "test file should have been removed")
+
 	}()
 
 	AssertCommand(t, cmd, []string{"--bind", ":9000", "-examples", dir}, `(?s)Stopping`, out)
