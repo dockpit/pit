@@ -151,10 +151,14 @@ func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
 	return m, nil
 }
 
+func (c *cmd) ExamplesPath(ctx *cli.Context) string {
+	return strings.TrimSpace(ctx.String("examples"))
+}
+
 func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
 
 	//retrieve path
-	path := strings.TrimSpace(ctx.String("examples"))
+	path := c.ExamplesPath(ctx)
 
 	//parse the spec
 	p := lang.NewParser(path)

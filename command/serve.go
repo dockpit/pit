@@ -1,7 +1,6 @@
 package command
 
 import (
-	// "flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 	"strings"
 	"syscall"
 	"text/template"
-	// "time"
 
 	"github.com/codegangsta/cli"
 	"github.com/zenazn/goji/bind"
@@ -75,7 +73,7 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		}
 
 		//create mux from contract
-		mock := contract.NewMock(ctr)
+		mock := contract.NewMock(ctr, c.ExamplesPath(ctx))
 		mux, err := mock.Mux()
 		if err != nil {
 			return err
@@ -89,12 +87,13 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil
 	}
 
-	//handle signals
+	//handle signalsk
+	//@todo this probably causes run conditions within the http server
 	go func() {
 		for {
 			select {
 
-			//incase of a KILL/INT signal stop listening
+			//incase of a KILL/INT signal: stop listening
 			case <-stop:
 
 				fmt.Fprintf(c.out, "Stopping... \n")
@@ -103,7 +102,7 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 				//unblocks the http.Serve()
 				l.Close()
 
-			//in case of a HUP signal reload the mux
+			//in case of a HUP signal: reload the mux
 			case <-hup:
 				fmt.Fprintf(c.out, "Reloading... \n")
 

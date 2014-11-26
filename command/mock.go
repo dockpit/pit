@@ -1,13 +1,89 @@
 package command
 
 import (
+	"archive/tar"
+	"bytes"
 	"fmt"
 	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
 	"text/template"
+	"time"
 
 	"github.com/codegangsta/cli"
 	"github.com/fsouza/go-dockerclient"
 )
+
+//@todo, move this to some central place
+//dupblicate with state manager
+func Tar(dir string) (*bytes.Buffer, error) {
+
+	//create writers
+	in := bytes.NewBuffer(nil)
+	tw := tar.NewWriter(in)
+
+	//walk and tar all files in a dir
+	//@from http://stackoverflow.com/questions/13611100/how-to-write-a-directory-not-just-the-files-in-it-to-a-tar-gz-file-in-golang
+	visit := func(fpath string, fi os.FileInfo, err error) error {
+
+		//cancel walk if something went wrong
+		if err != nil {
+			return err
+		}
+
+		//skip root
+		if fpath == dir {
+			return nil
+		}
+
+		//dont 'add' dirs to archive
+		if fi.IsDir() {
+			return nil
+		}
+
+		f, err := os.Open(fpath)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		//use relative path inside archive
+		rel, err := filepath.Rel(dir, fpath)
+		if err != nil {
+			return err
+		}
+
+		//create header from file info struct
+		hdr, err := tar.FileInfoHeader(fi, rel)
+		if err != nil {
+			return err
+		}
+
+		//write header to archive
+		// hdr.Name = rel?
+		err = tw.WriteHeader(hdr)
+		if err != nil {
+			return err
+		}
+
+		//copy content into archive
+		if _, err = io.Copy(tw, f); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	//walk the context and create archive
+	if err := filepath.Walk(dir, visit); err != nil {
+		return nil, err
+	}
+
+	return in, nil
+}
 
 var tmpl_mock = `Mocked successful!`
 
@@ -72,9 +148,8 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//@todo remove all old containers
 
 	//loop over installation and create pit containers
-	for _, _ = range installation {
-
-		//@todo inject correct contract data
+	ids := map[string]*bytes.Buffer{}
+	for dep, dir := range installation {
 
 		//containers are created from the dockpit image
 		copts := docker.CreateContainerOptions{
@@ -90,16 +165,81 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		}
 
 		//create container
-		c, err := client.CreateContainer(copts)
+		container, err := client.CreateContainer(copts)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		//start container
-		err = client.StartContainer(c.ID, sopts)
+		err = client.StartContainer(container.ID, sopts)
 		if err != nil {
 			return nil, nil, err
 		}
+
+		//wait for container to start
+		//@todo very dirty business here
+		<-time.After(time.Millisecond * 200)
+
+		//tar examples
+		ids[container.ID], err = Tar(filepath.Join(dir, ".dockpit", "examples"))
+		if err != nil {
+			if os.IsNotExist(err) {
+				//@todo, the installed dependency doesnt have any examples, what shall we do?
+				return nil, nil, fmt.Errorf("The dependency %s did not provide any examples (%s)", dep, dir)
+			}
+
+			return nil, nil, err
+		}
+
+	}
+
+	//prepare url to post context to
+	host, _, err := c.DockerHostCertArguments(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	loc, err := url.Parse(host)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	loc.Scheme = "http"
+	loc.Path = "/_examples"
+
+	//get status
+	cs, err := client.ListContainers(docker.ListContainersOptions{})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//upload context
+	for _, container := range cs {
+
+		//we only care about containers we just launched
+		var tar *bytes.Buffer
+		var ok bool
+		if tar, ok = ids[container.ID]; !ok {
+			continue
+		}
+
+		//get the external port for 8000
+		//@todo make 8000 (private port) configurable
+		//@todo make :2376 (docker host port) configurable
+		for _, pconfig := range container.Ports {
+			if pconfig.PrivatePort == 8000 {
+				loc.Host = strings.Replace(loc.Host, ":2376", fmt.Sprintf(":%d", pconfig.PublicPort), 1)
+			}
+		}
+
+		//send request to upload
+		resp, err := http.Post(loc.String(), "application/x-tar", tar)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		//upload examples
+		fmt.Println(loc.String(), resp.Status)
 
 	}
 

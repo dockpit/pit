@@ -1,9 +1,14 @@
 package contract
 
 import (
+	"archive/tar"
 	"encoding/json"
 	"fmt"
+	"io"
+	// "io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/zenazn/goji/web"
 )
@@ -17,12 +22,66 @@ type Recording struct {
 // Represents a mocked contract
 type Mock struct {
 	contract C
+	dir      string
 
 	Recordings map[string]map[string]*Recording
 }
 
-func NewMock(c C) *Mock {
-	return &Mock{c, make(map[string]map[string]*Recording)}
+func NewMock(c C, dir string) *Mock {
+	return &Mock{c, dir, make(map[string]map[string]*Recording)}
+}
+
+//allow external programs to upload a new set of examples as a tar archive
+func (m *Mock) UploadExamples(c web.C, w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Content-Type") != "application/x-tar" {
+		http.Error(w, fmt.Sprintf("Expected Content-Type 'application/x-tar', received: '%s'", r.Header.Get("Content-Type")), http.StatusBadRequest)
+		return
+	}
+
+	//untar
+	files := []string{}
+	tr := tar.NewReader(r.Body)
+	for {
+		hdr, err := tr.Next()
+		if err == io.EOF {
+			// end of tar archive
+			break
+		}
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		//create and open files
+		//@todo this assumes the archives dir seperator is the same
+		path := filepath.Join(m.dir, hdr.Name)
+		f, err := os.Create(path)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		//copy tar content into file, effectively untarring
+		if _, err := io.Copy(f, tr); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		//not need for the file any longer
+		f.Close()
+		files = append(files, path)
+	}
+
+	//all went well
+	w.WriteHeader(201)
+
+	//report on resulting files
+	encoder := json.NewEncoder(w)
+	err := encoder.Encode(files)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 //allows the mock to return current recording through a http response
@@ -130,6 +189,7 @@ func (m *Mock) Mux() (*web.Mux, error) {
 
 	//allow the mock to report resource recordings
 	mux.Get("/_recordings", m.ListRecordings)
+	mux.Post("/_examples", m.UploadExamples)
 
 	return mux, nil
 }
