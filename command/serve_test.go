@@ -2,18 +2,17 @@ package command_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/bmizerany/assert"
 
+	"github.com/dockpit/dirtar"
 	"github.com/dockpit/pit/command"
 )
 
@@ -106,7 +105,8 @@ func TestUploading(t *testing.T) {
 		defer func() { p.Signal(os.Interrupt) }()
 
 		//tar current wd for kicks
-		data, err := command.Tar(wd)
+		data := bytes.NewBuffer(nil)
+		err := dirtar.Tar(wd, data)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -118,34 +118,28 @@ func TestUploading(t *testing.T) {
 		}
 		defer resp.Body.Close()
 
-		//decode and assert response
-		files := []string{}
-		dec := json.NewDecoder(resp.Body)
-		err = dec.Decode(&files)
+		//assert
+		assert.Equal(t, 201, resp.StatusCode, fmt.Sprintf("Expected server to return %d, but got %s", 200, resp.Status))
+
+		//read original
+		files, err := ioutil.ReadDir(wd)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		//assert
-		assert.Equal(t, 201, resp.StatusCode, fmt.Sprintf("Expected server to return %d, but got %s", 200, resp.Status))
-		assert.NotEqual(t, 0, len(files))
-
-		//check if each file actually was created an exists
-		for _, p := range files {
-			fi, err := os.Stat(p)
+		// check if each file actually was created in the new dir
+		// and is not empty
+		for _, f := range files {
+			fi, err := os.Stat(filepath.Join(dir, f.Name()))
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			//should be untarred in tempdir
-			assert.Equal(t, true, strings.HasPrefix(p, dir))
 
 			//not empty files?
 			if fi.Size() == 0 {
 				t.Fatal("File should not have been empty")
 			}
 		}
-
 	}()
 
 	AssertCommand(t, cmd, []string{"--bind", ":9000", "-examples", dir}, `(?s)Stopping`, out)

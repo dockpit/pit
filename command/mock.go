@@ -1,7 +1,6 @@
 package command
 
 import (
-	"archive/tar"
 	"bytes"
 	"fmt"
 	"io"
@@ -15,75 +14,9 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/fsouza/go-dockerclient"
+
+	"github.com/dockpit/dirtar"
 )
-
-//@todo, move this to some central place
-//dupblicate with state manager
-func Tar(dir string) (*bytes.Buffer, error) {
-
-	//create writers
-	in := bytes.NewBuffer(nil)
-	tw := tar.NewWriter(in)
-
-	//walk and tar all files in a dir
-	//@from http://stackoverflow.com/questions/13611100/how-to-write-a-directory-not-just-the-files-in-it-to-a-tar-gz-file-in-golang
-	visit := func(fpath string, fi os.FileInfo, err error) error {
-
-		//cancel walk if something went wrong
-		if err != nil {
-			return err
-		}
-
-		//skip root
-		if fpath == dir {
-			return nil
-		}
-
-		//dont 'add' dirs to archive
-		if fi.IsDir() {
-			return nil
-		}
-
-		f, err := os.Open(fpath)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		//use relative path inside archive
-		rel, err := filepath.Rel(dir, fpath)
-		if err != nil {
-			return err
-		}
-
-		//create header from file info struct
-		hdr, err := tar.FileInfoHeader(fi, rel)
-		if err != nil {
-			return err
-		}
-
-		//write header to archive
-		// hdr.Name = rel?
-		err = tw.WriteHeader(hdr)
-		if err != nil {
-			return err
-		}
-
-		//copy content into archive
-		if _, err = io.Copy(tw, f); err != nil {
-			return err
-		}
-
-		return nil
-	}
-
-	//walk the context and create archive
-	if err := filepath.Walk(dir, visit); err != nil {
-		return nil, err
-	}
-
-	return in, nil
-}
 
 var tmpl_mock = `Mocked successful!`
 
@@ -181,7 +114,13 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		<-time.After(time.Millisecond * 200)
 
 		//tar examples
-		ids[container.ID], err = Tar(filepath.Join(dir, ".dockpit", "examples"))
+		data := bytes.NewBuffer(nil)
+		err = dirtar.Tar(filepath.Join(dir, ".dockpit", "examples"), data)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		ids[container.ID] = data
 		if err != nil {
 			if os.IsNotExist(err) {
 				//@todo, the installed dependency doesnt have any examples, what shall we do?

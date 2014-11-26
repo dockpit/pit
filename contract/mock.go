@@ -1,16 +1,13 @@
 package contract
 
 import (
-	"archive/tar"
 	"encoding/json"
 	"fmt"
-	"io"
-	// "io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/zenazn/goji/web"
+
+	"github.com/dockpit/dirtar"
 )
 
 type Recording struct {
@@ -38,50 +35,13 @@ func (m *Mock) UploadExamples(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//@todo empty old
+
 	//untar
-	files := []string{}
-	tr := tar.NewReader(r.Body)
-	for {
-		hdr, err := tr.Next()
-		if err == io.EOF {
-			// end of tar archive
-			break
-		}
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		//create and open files
-		//@todo this assumes the archives dir seperator is the same
-		path := filepath.Join(m.dir, hdr.Name)
-		f, err := os.Create(path)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		//copy tar content into file, effectively untarring
-		if _, err := io.Copy(f, tr); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		//not need for the file any longer
-		f.Close()
-		files = append(files, path)
-	}
+	dirtar.Untar(m.dir, r.Body)
 
 	//all went well
 	w.WriteHeader(201)
-
-	//report on resulting files
-	encoder := json.NewEncoder(w)
-	err := encoder.Encode(files)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 }
 
 //allows the mock to return current recording through a http response
