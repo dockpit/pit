@@ -19,6 +19,7 @@ func TestMock(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	expath := filepath.Join(wd, "..", ".dockpit", "examples")
 	out := bytes.NewBuffer(nil)
 	cmd := command.NewMock(out, command.NewInstall(out))
 
@@ -29,7 +30,7 @@ func TestMock(t *testing.T) {
 
 	os.Setenv("PIT_PATH", tdir)
 
-	AssertCommand(t, cmd, []string{"-examples", filepath.Join(wd, "..", ".dockpit", "examples")}, `(?s)Mocked`, out)
+	AssertCommand(t, cmd, []string{"-examples", expath}, `(?s)Mocking.*done!.*http`, out)
 
 	//should have called install
 	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "ex-store-customers", "main.go"))
@@ -37,4 +38,8 @@ func TestMock(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	//unmock afterwards
+	cmd2 := command.NewUnmock(out)
+
+	AssertCommand(t, cmd2, []string{"-examples", expath}, `(?s)Unmocked`, out)
 }
