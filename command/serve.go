@@ -104,7 +104,7 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
 			//in case of a HUP signal: reload the mux
 			case <-hup:
-				fmt.Fprintf(c.out, "Reloading... \n")
+				fmt.Fprintf(c.out, "Reloading %s... \n", c.ExamplesPath(ctx))
 
 				//reload the default mux
 				err := loadMux()
@@ -116,7 +116,7 @@ func (c *Serve) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}()
 
 	//load and serve with default server mux
-	fmt.Fprintf(c.out, "Serving (%s)...\n", ctx.String("bind"))
+	fmt.Fprintf(c.out, "Serving on %s...\n", ctx.String("bind"))
 	err := loadMux()
 	if err != nil {
 		return nil, nil, err

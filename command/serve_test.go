@@ -100,7 +100,13 @@ func TestUploading(t *testing.T) {
 	}
 
 	//write file that the mock should remove
-	err = ioutil.WriteFile(filepath.Join(dir, "test.go"), []byte{}, 0777)
+	tpath := filepath.Join(dir, "- users", "'list all users'", "test.json")
+	err = os.MkdirAll(filepath.Dir(tpath), 0777)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = ioutil.WriteFile(tpath, []byte{}, 0777)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +154,7 @@ func TestUploading(t *testing.T) {
 		}
 
 		//the old file should have been removed
-		_, err = os.Stat(filepath.Join(dir, "test.go"))
+		_, err = os.Stat(tpath)
 		assert.Equal(t, true, os.IsNotExist(err), "test file should have been removed")
 
 	}()

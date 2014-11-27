@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"text/template"
 	"time"
 
@@ -84,10 +85,14 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	ids := map[string]*bytes.Buffer{}
 	for dep, dir := range installation {
 
+		iname := fmt.Sprintf("%s:%s", "dockpit/pit", "latest")
+		fmt.Fprintf(c.out, "Mocking %s using image %s...\n", dep, iname)
+
 		//containers are created from the dockpit image
 		copts := docker.CreateContainerOptions{
+			// Name: fmt.Sprintf("pitmock_%s", filepath.Base(dep)),
 			Config: &docker.Config{
-				Image: fmt.Sprintf("%s:%s", "dockpit/pit", "latest"),
+				Image: iname,
 				Cmd:   []string{"serve"},
 			},
 		}
@@ -97,11 +102,15 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 			PublishAllPorts: true,
 		}
 
+		fmt.Fprintf(c.out, "\tcreating container...")
+
 		//create container
 		container, err := client.CreateContainer(copts)
 		if err != nil {
 			return nil, nil, err
 		}
+
+		fmt.Fprintf(c.out, "done!\n\tstarting container %s...", container.ID)
 
 		//start container
 		err = client.StartContainer(container.ID, sopts)
@@ -115,7 +124,11 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
 		//tar examples
 		data := bytes.NewBuffer(nil)
-		err = dirtar.Tar(filepath.Join(dir, ".dockpit", "examples"), data)
+		tpath := filepath.Join(dir, ".dockpit", "examples")
+
+		fmt.Fprintf(c.out, "done!\n\ttarring examples @ %s...", tpath)
+
+		err = dirtar.Tar(tpath, data)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -130,6 +143,7 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 			return nil, nil, err
 		}
 
+		fmt.Fprintf(c.out, "done!\n")
 	}
 
 	//prepare url to post context to
@@ -152,7 +166,7 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
-	//upload context
+	//upload examples
 	for _, container := range cs {
 
 		//we only care about containers we just launched
@@ -161,6 +175,8 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		if tar, ok = ids[container.ID]; !ok {
 			continue
 		}
+
+		fmt.Fprintf(c.out, "Reload Examples of %s...\n", container.ID)
 
 		//get the external port for 8000
 		//@todo make 8000 (private port) configurable
@@ -171,16 +187,39 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 			}
 		}
 
+		fmt.Fprintf(c.out, "\tUploading %s...", container.ID)
+
 		//send request to upload
 		resp, err := http.Post(loc.String(), "application/x-tar", tar)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		//upload examples
-		fmt.Println(loc.String(), resp.Status)
+		//were the examples uploaded correctly?
+		if resp.StatusCode != 201 {
+			return nil, nil, fmt.Errorf("Failed to upload examples to container '%s' %s", container.ID, container.Names)
+		}
 
+		fmt.Fprintf(c.out, "done!\n\tSending HUP signal...")
+
+		//wait for container to settle?
+		//@todo very dirty business here
+		<-time.After(time.Millisecond * 200)
+
+		//send HUP signal to 'root' process to reload examples
+		//@from http://stackoverflow.com/questions/25687131/how-to-send-signal-to-program-run-in-a-docker-container
+		err = client.KillContainer(docker.KillContainerOptions{
+			ID:     container.ID,
+			Signal: docker.Signal(syscall.SIGHUP),
+		})
+
+		if err != nil {
+			return nil, nil, err
+		}
+
+		//report progress
+		fmt.Fprintf(c.out, "done!\n\tMock %s complete - %s://%s\n\n", container.Names, loc.Scheme, loc.Host)
 	}
 
-	return template.Must(template.New("Mock.success").Parse(tmpl_mock)), nil, nil
+	return template.Must(template.New("mock.success").Parse(tmpl_mock)), nil, nil
 }

@@ -19,6 +19,7 @@ build:
 	    -output "bin/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 	    ./...
 	docker build -t dockpit/pit:`cat VERSION` .
+	docker tag dockpit/pit:`cat VERSION` dockpit/pit:latest
 
 #build for local testing
 dev:
@@ -42,4 +43,4 @@ publish:
 
 #run all unit tests
 test:
-	godep go test ./... 
+	go test ./... 

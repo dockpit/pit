@@ -21,11 +21,15 @@ func main() {
 	//specify output
 	out := os.Stdout
 
+	//create reused commands
+	icmd := command.NewInstall(out)
+
 	//init micros commands
 	cmds := []command.C{
 		command.NewServe(out),
-		command.NewInstall(out),
 		command.NewBuild(out),
+		icmd,
+		command.NewMock(out, icmd),
 	}
 
 	//append to app
