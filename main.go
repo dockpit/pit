@@ -26,7 +26,6 @@ func main() {
 
 	//init micros commands
 	cmds := []command.C{
-		command.NewServe(out),
 		command.NewBuild(out),
 		icmd,
 		command.NewMock(out, icmd),
