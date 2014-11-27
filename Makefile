@@ -18,8 +18,6 @@ build:
 	    -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" \
 	    -output "bin/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 	    ./...
-	docker build -t dockpit/pit:`cat VERSION` .
-	docker tag dockpit/pit:`cat VERSION` dockpit/pit:latest
 
 #build for local testing
 dev:
