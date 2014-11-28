@@ -14,15 +14,17 @@ var tmpl_test = `Tested successful!`
 type Test struct {
 	*cmd
 
-	mock  *Mock  //the mock command
-	build *Build // the build command
+	mock   *Mock   //the mock command
+	unmock *Unmock //the unmock command
+	build  *Build  // the build command
 }
 
-func NewTest(out io.Writer, mock *Mock, build *Build) *Test {
+func NewTest(out io.Writer, mock *Mock, unmock *Unmock, build *Build) *Test {
 	return &Test{
-		cmd:   newCmd(out),
-		mock:  mock,
-		build: build,
+		cmd:    newCmd(out),
+		mock:   mock,
+		unmock: unmock,
+		build:  build,
 	}
 }
 
@@ -91,15 +93,19 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
 				err := tt(host, http.DefaultClient)
 				if err != nil {
-					//@todo handle broken tests better
+					//@todo handle failed tests better
 
-					return nil, nil, err
+					fmt.Fprintf(c.out, "%s\n", err.Error())
 				}
 			}
 		}
 	}
 
-	// @todo unmock
+	//unmock afterwards
+	_, _, err = c.unmock.Run(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	return template.Must(template.New("test.success").Parse(tmpl_test)), nil, nil
 }

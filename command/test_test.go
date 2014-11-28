@@ -16,10 +16,18 @@ import (
 )
 
 func TestTest(t *testing.T) {
+
+	//simulate an implementation that complies the example contract
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		if r.URL.Path == "/users" {
+			fmt.Fprintf(w, `[]`)
+		} else if r.URL.Path == "/users/21" {
+			fmt.Fprintf(w, `{"id": 21}`)
+		}
+
 		//@todo, call mocked dependencies
-		fmt.Fprintf(w, "[]")
+
 	}))
 
 	wd, err := os.Getwd()
@@ -32,8 +40,9 @@ func TestTest(t *testing.T) {
 	out := bytes.NewBuffer(nil)
 
 	mock := command.NewMock(out, command.NewInstall(out))
+	unmock := command.NewUnmock(out)
 	build := command.NewBuild(out)
-	test := command.NewTest(out, mock, build)
+	test := command.NewTest(out, mock, unmock, build)
 
 	tdir, err := ioutil.TempDir("", "dp_tinstallinfotmp")
 	if err != nil {
