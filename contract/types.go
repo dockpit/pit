@@ -2,6 +2,7 @@ package contract
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/zenazn/goji/web"
@@ -14,7 +15,15 @@ func UnexpectedResponseError(exp *http.Response, got *http.Response, err error) 
 func TestingError(msg string) error { return fmt.Errorf("Test ERROR: %s", msg) }
 func MockingError(msg string) error { return fmt.Errorf("Mocking ERROR: %s", msg) }
 
-type TestFunc func(host string, c *http.Client) error
+//
+type StateManager interface {
+	Build(pname, sname string, out io.Writer) (string, error)
+	Start(pname, sname string) error
+	Stop(pname, sname string) error
+}
+
+//
+type TestFunc func(host string, c *http.Client, sm StateManager) error
 
 //
 //

@@ -9,7 +9,8 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var tmpl_test = `Tested successful!`
+var tmpl_test_success = `Tested successful!`
+var tmpl_test_failed = `test failed!`
 
 type Test struct {
 	*cmd
@@ -76,12 +77,19 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
-	//run all tests
+	//get the state manager
+	sm, err := c.StateManager(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//run all tests, for all resources
 	res, err := contract.Resources()
 	if err != nil {
 		return nil, nil, err
 	}
 
+	errs := []error{}
 	for _, r := range res {
 		acs, err := r.Actions()
 		if err != nil {
@@ -91,9 +99,12 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		for _, a := range acs {
 			for _, tt := range a.Tests() {
 
-				err := tt(host, http.DefaultClient)
+				err := tt(host, http.DefaultClient, sm)
 				if err != nil {
 					//@todo handle failed tests better
+
+					//gather testing errors
+					errs = append(errs, err)
 
 					fmt.Fprintf(c.out, "%s\n", err.Error())
 				}
@@ -107,5 +118,10 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
-	return template.Must(template.New("test.success").Parse(tmpl_test)), nil, nil
+	//we got some testing errs
+	if len(errs) > 0 {
+		return template.Must(template.New("test.failed").Parse(tmpl_test_failed)), errs, fmt.Errorf("Test failed")
+	}
+
+	return template.Must(template.New("test.success").Parse(tmpl_test_success)), nil, nil
 }

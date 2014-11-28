@@ -2,6 +2,7 @@ package contract_test
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +14,16 @@ import (
 	. "github.com/dockpit/pit/contract"
 )
 
+//mock statemanager
+type mockStateManager struct{}
+
+func (m *mockStateManager) Build(pname, sname string, out io.Writer) (string, error) {
+	return "123", nil
+}
+func (m *mockStateManager) Start(pname, sname string) error { return nil }
+func (m *mockStateManager) Stop(pname, sname string) error  { return nil }
+
+// reqs
 var req_userA, _ = http.NewRequest("GET", "/users/21", nil)
 var resp_userA = &http.Response{StatusCode: 200, Body: ioutil.NopCloser(strings.NewReader(`{"id": "21"}`))}
 
@@ -149,7 +160,7 @@ func TestTests(t *testing.T) {
 		w.WriteHeader(201)
 	}))
 
-	err = ts[0](success.URL, http.DefaultClient)
+	err = ts[0](success.URL, http.DefaultClient, &mockStateManager{})
 	assert.Equal(t, nil, err)
 
 	//failing test
@@ -157,7 +168,7 @@ func TestTests(t *testing.T) {
 		w.WriteHeader(200)
 	}))
 
-	err = ts[0](failing.URL, http.DefaultClient)
+	err = ts[0](failing.URL, http.DefaultClient, &mockStateManager{})
 	assert.NotEqual(t, nil, err)
 
 }
@@ -190,7 +201,7 @@ func TestTestsContent(t *testing.T) {
 		fmt.Fprint(w, `{"id": "11"}`)
 	}))
 
-	err = ts[0](success.URL, http.DefaultClient)
+	err = ts[0](success.URL, http.DefaultClient, &mockStateManager{})
 	assert.Equal(t, nil, err)
 
 	//failing test
@@ -199,7 +210,7 @@ func TestTestsContent(t *testing.T) {
 		fmt.Fprint(w, `{"id":"11"}`) //very strict byte by byte check
 	}))
 
-	err = ts[0](failing.URL, http.DefaultClient)
+	err = ts[0](failing.URL, http.DefaultClient, &mockStateManager{})
 	assert.NotEqual(t, nil, err)
 
 }
