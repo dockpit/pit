@@ -3,7 +3,6 @@
 		"github.com/dockpit/ex-store-customers": ["8000:4321"]
 	},
 	"states": {
-		"mysql": ["3306:3306"],
-		"mongodb": ["27017:27017"]
+		"mysql": ["3306:3306"]
 	}
 }

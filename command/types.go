@@ -14,6 +14,7 @@ import (
 	"github.com/fsouza/go-dockerclient"
 
 	"github.com/dockpit/lang"
+	"github.com/dockpit/pit/config"
 	"github.com/dockpit/pit/contract"
 	"github.com/dockpit/state"
 )
@@ -71,6 +72,26 @@ func (c *cmd) BuildStatesFlags() []cli.Flag {
 	return []cli.Flag{
 		cli.StringFlag{Name: "states, s", Value: wd, Usage: fmt.Sprintf(" Specify where to look for states.")},
 	}
+}
+
+func (c *cmd) LoadConfig() (config.C, error) {
+
+	//get working dir
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	l := config.NewLoader(wd)
+	conf, err := l.Load()
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("Could not find dockpit configuration file (dockpit.json) in '%s'", wd)
+		}
+		return nil, err
+	}
+
+	return conf, err
 }
 
 func (c *cmd) ParseExampleFlags() []cli.Flag {

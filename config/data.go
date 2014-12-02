@@ -8,6 +8,6 @@ type StateProviderConfigData []string
 
 //
 type ConfigData struct {
-	Dependencies   map[string]*DependencyConfigData    `json:"dependencies"`
-	StateProviders map[string]*StateProviderConfigData `json:"state_providers"`
+	Dependencies   map[string]*DependencyConfigData    `json:"deps"`
+	StateProviders map[string]*StateProviderConfigData `json:"states"`
 }

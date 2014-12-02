@@ -1,5 +1,9 @@
 package config
 
+import (
+	"github.com/fsouza/go-dockerclient"
+)
+
 //
 type StateProviderConfig struct {
 	Name      string
@@ -8,8 +12,8 @@ type StateProviderConfig struct {
 
 //
 type DependencyConfig struct {
-	Name      string
-	PortSpecs []string
+	Name         string
+	PortBindings map[docker.Port][]docker.PortBinding
 }
 
 //
@@ -25,9 +29,16 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 	//parse deps into port configs
 	depsconf := []*DependencyConfig{}
 	for dep, confs := range cd.Dependencies {
+		portb := map[docker.Port][]docker.PortBinding{}
+
+		//@todo parse private public
+		for _, conf := range *confs {
+			_ = conf
+		}
+
 		depsconf = append(depsconf, &DependencyConfig{
-			Name:      dep,
-			PortSpecs: *confs,
+			Name:         dep,
+			PortBindings: portb,
 		})
 	}
 
@@ -41,6 +52,17 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 	}
 
 	return &Config{cd, depsconf, spconf}, nil
+}
+
+func (c *Config) PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding {
+	res := map[docker.Port][]docker.PortBinding{}
+
+	//@todo implement
+	// for _, dep := range c.depConfigs {
+
+	// }
+
+	return res
 }
 
 func (c *Config) DependencyConfigs() []DependencyC {

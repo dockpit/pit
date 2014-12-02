@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/codegangsta/cli"
+	"github.com/fsouza/go-dockerclient"
 
 	"github.com/dockpit/mock/manager"
 )
@@ -71,18 +72,31 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
+	//load configuration
+	conf, err := c.LoadConfig()
+	if err != nil {
+		return nil, nil, err
+	}
+
 	m, err := manager.NewManager(host, cert)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	_ = conf
 
 	//start the mock of each installation
 	for dep, in := range installation {
 
 		fmt.Fprintf(c.out, "Mocking %s...", dep)
 
+		//@todo get from configuration
+		portb := map[docker.Port][]docker.PortBinding{
+			docker.Port("8000/tcp"): []docker.PortBinding{docker.PortBinding{HostPort: "11000"}},
+		}
+
 		//@todo centralize this?
-		mc, err := m.Start(filepath.Join(in, ".dockpit", "examples"))
+		mc, err := m.Start(filepath.Join(in, ".dockpit", "examples"), portb)
 		if err != nil {
 			return nil, nil, err
 		}
