@@ -1,0 +1,9 @@
+{
+	"dependencies": {
+		"github.com/dockpit/ex-store-customers": ["8000:4321"]
+	},
+	"state_providers": {
+		"mysql": ["3306:3306"],
+		"mongodb": ["27017:27017"]
+	}
+}
