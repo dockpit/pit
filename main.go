@@ -30,6 +30,7 @@ func main() {
 		icmd,
 		command.NewMock(out, icmd),
 		command.NewUnmock(out),
+		command.NewTest(out),
 	}
 
 	//append to app

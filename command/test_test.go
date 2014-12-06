@@ -21,9 +21,9 @@ func TestTest(t *testing.T) {
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if r.URL.Path == "/users" {
-			fmt.Fprintf(w, `[]`)
+			fmt.Fprintf(w, `[]`+"\n")
 		} else if r.URL.Path == "/users/21" {
-			fmt.Fprintf(w, `{"id": 21}`)
+			fmt.Fprintf(w, `{"id": 21}`+"\n")
 		}
 
 		//@todo, call mocked dependencies
@@ -39,10 +39,7 @@ func TestTest(t *testing.T) {
 	stpath := filepath.Join(wd, "..", ".manifest", "states")
 	out := bytes.NewBuffer(nil)
 
-	mock := command.NewMock(out, command.NewInstall(out))
-	unmock := command.NewUnmock(out)
-	build := command.NewBuild(out)
-	test := command.NewTest(out, mock, unmock, build)
+	test := command.NewTest(out)
 
 	tdir, err := ioutil.TempDir("", "dp_tinstallinfotmp")
 	if err != nil {

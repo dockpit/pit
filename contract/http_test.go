@@ -198,7 +198,7 @@ func TestTestsContent(t *testing.T) {
 	//success test
 	success := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprint(w, `{"id": "11"}`)
+		fmt.Fprint(w, `{"id": "11"}`+"\n")
 	}))
 
 	err = ts[0](success.URL, http.DefaultClient, &mockStateManager{})
@@ -207,7 +207,7 @@ func TestTestsContent(t *testing.T) {
 	//failing test
 	failing := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		fmt.Fprint(w, `{"id":"11"}`) //very strict byte by byte check
+		fmt.Fprint(w, `{"id":"11"}`+"\n") //very strict byte by byte check
 	}))
 
 	err = ts[0](failing.URL, http.DefaultClient, &mockStateManager{})

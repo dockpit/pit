@@ -88,6 +88,14 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 		resp.Body = ioutil.NopCloser(buff)
 	}
 
+	//for now add an line feed (fair comparision)
+	//@todo make this configurabe
+	//@todo check if al ready is there
+	lf := []byte("\n")[0]
+	if len(c1) > 0 && c1[len(c1)-1] != lf {
+		c1 = append(c1, lf)
+	}
+
 	if !bytes.Equal(c1, c2) {
 		return fmt.Errorf("Content not equal, expected %s got: %s", string(c1), string(c2))
 	}

@@ -9,23 +9,18 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var tmpl_test_success = `Tested successful!`
-var tmpl_test_failed = `test failed!`
+var tmpl_test_success = `Tested successful!
+`
+var tmpl_test_failed = `Test failed...
+`
 
 type Test struct {
 	*cmd
-
-	mock   *Mock   //the mock command
-	unmock *Unmock //the unmock command
-	build  *Build  // the build command
 }
 
-func NewTest(out io.Writer, mock *Mock, unmock *Unmock, build *Build) *Test {
+func NewTest(out io.Writer) *Test {
 	return &Test{
-		cmd:    newCmd(out),
-		mock:   mock,
-		unmock: unmock,
-		build:  build,
+		cmd: newCmd(out),
 	}
 }
 
@@ -43,7 +38,9 @@ func (c *Test) Usage() string {
 
 func (c *Test) Flags() []cli.Flag {
 	fs := []cli.Flag{}
-	fs = append(fs, c.build.Flags()...) //this also covers the flags for running the mock command
+
+	fs = append(fs, c.ParseExampleFlags()...)
+	fs = append(fs, c.BuildStatesFlags()...)
 
 	return fs
 }
@@ -57,18 +54,6 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	host := ctx.Args().First()
 	if host == "" {
 		return nil, nil, fmt.Errorf("Please provide the address (e.g http://localhost:8000) to test as a first argument")
-	}
-
-	//run mock command
-	_, _, err := c.mock.Run(ctx)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	//run build command
-	_, _, err = c.build.Run(ctx)
-	if err != nil {
-		return nil, nil, err
 	}
 
 	//get contract
@@ -110,12 +95,6 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 				}
 			}
 		}
-	}
-
-	//unmock afterwards
-	_, _, err = c.unmock.Run(ctx)
-	if err != nil {
-		return nil, nil, err
 	}
 
 	//we got some testing errs
