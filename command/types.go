@@ -163,8 +163,13 @@ func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
 		return nil, err
 	}
 
+	conf, err := c.LoadConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	//create state manager
-	m, err := state.NewManager(host, cert, path)
+	m, err := state.NewManager(host, cert, path, conf)
 	if err != nil {
 		return nil, err
 	}
