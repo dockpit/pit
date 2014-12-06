@@ -13,4 +13,5 @@ type C interface {
 	ProviderConfigs() []StateProviderC
 
 	PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding
+	PortBindingsForState(pname string) map[docker.Port][]docker.PortBinding
 }

@@ -34,4 +34,11 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, 1, len(deppc["8000/tcp"]))
 	assert.Equal(t, "4321", deppc["8000/tcp"][0].HostPort)
 
+	//state provider spec
+	mysqlpc := c.PortBindingsForState("mysql")
+
+	// assert bindings
+	assert.Equal(t, 1, len(mysqlpc["3306/tcp"]))
+	assert.Equal(t, "3306", mysqlpc["3306/tcp"][0].HostPort)
+
 }
