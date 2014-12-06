@@ -64,7 +64,7 @@ func (c *cmd) BuildStatesFlags() []cli.Flag {
 	//get working dir
 	wd, err := os.Getwd()
 	if err == nil {
-		wd = filepath.Join(wd, ".dockpit", "states")
+		wd = filepath.Join(wd, ".manifest", "states")
 	} else {
 		wd = fmt.Sprintf("[%s]", err.Error())
 	}
@@ -99,7 +99,7 @@ func (c *cmd) ParseExampleFlags() []cli.Flag {
 	//get working dir
 	wd, err := os.Getwd()
 	if err == nil {
-		wd = filepath.Join(wd, ".dockpit", "examples")
+		wd = filepath.Join(wd, ".manifest", "examples")
 	} else {
 		wd = fmt.Sprintf("[%s]", err.Error())
 	}
@@ -186,7 +186,7 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
 	cd, err := p.Parse()
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("Failed to open .dockpit/examples in '%s', is this a Dockpit project?", path)
+			return nil, fmt.Errorf("Failed to open .manifest/examples in '%s', is this a Dockpit project?", path)
 		}
 
 		return nil, fmt.Errorf("Parsing error: %s", err)

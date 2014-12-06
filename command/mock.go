@@ -96,7 +96,7 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		}
 
 		//@todo centralize this?
-		mc, err := m.Start(filepath.Join(in, ".dockpit", "examples"), portb)
+		mc, err := m.Start(filepath.Join(in, ".manifest", "examples"), portb)
 		if err != nil {
 			return nil, nil, err
 		}

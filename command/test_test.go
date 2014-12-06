@@ -35,8 +35,8 @@ func TestTest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expath := filepath.Join(wd, "..", ".dockpit", "examples")
-	stpath := filepath.Join(wd, "..", ".dockpit", "states")
+	expath := filepath.Join(wd, "..", ".manifest", "examples")
+	stpath := filepath.Join(wd, "..", ".manifest", "states")
 	out := bytes.NewBuffer(nil)
 
 	mock := command.NewMock(out, command.NewInstall(out))

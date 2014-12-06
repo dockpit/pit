@@ -19,7 +19,7 @@ func TestMock(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expath := filepath.Join(wd, "..", ".dockpit", "examples")
+	expath := filepath.Join(wd, "..", ".manifest", "examples")
 	out := bytes.NewBuffer(nil)
 	cmd := command.NewMock(out, command.NewInstall(out))
 
