@@ -1,6 +1,9 @@
 package config
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/fsouza/go-dockerclient"
 )
 
@@ -33,7 +36,12 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 
 		//@todo parse private public
 		for _, conf := range *confs {
-			_ = conf
+			parts := strings.SplitN(conf, ":", 2)
+			if len(parts) != 2 {
+				return nil, fmt.Errorf("Invalid port format '%s'", conf)
+			}
+
+			portb[docker.Port(parts[0]+"/tcp")] = []docker.PortBinding{docker.PortBinding{HostPort: parts[1]}}
 		}
 
 		depsconf = append(depsconf, &DependencyConfig{
@@ -56,11 +64,11 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 
 func (c *Config) PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding {
 	res := map[docker.Port][]docker.PortBinding{}
-
-	//@todo implement
-	// for _, dep := range c.depConfigs {
-
-	// }
+	for _, depc := range c.depConfigs {
+		if depc.Name == dep {
+			return depc.PortBindings
+		}
+	}
 
 	return res
 }
