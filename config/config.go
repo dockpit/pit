@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/fsouza/go-dockerclient"
+	"github.com/dockpit/go-dockerclient"
 )
 
 //
@@ -29,12 +29,14 @@ type Config struct {
 
 func NewConfig(cd *ConfigData) (*Config, error) {
 
+	//@todo remove code duplication below
+
 	//parse deps into port configs
 	depsconf := []*DependencyConfig{}
 	for dep, confs := range cd.Dependencies {
 		portb := map[docker.Port][]docker.PortBinding{}
 
-		//@todo parse private public
+		//parse public, private
 		for _, conf := range *confs {
 			parts := strings.SplitN(conf, ":", 2)
 			if len(parts) != 2 {
@@ -55,7 +57,7 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 	for pname, confs := range cd.StateProviders {
 		portb := map[docker.Port][]docker.PortBinding{}
 
-		//@todo parse private public
+		//parse public, private
 		for _, conf := range *confs {
 			parts := strings.SplitN(conf, ":", 2)
 			if len(parts) != 2 {

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/fsouza/go-dockerclient"
+	"github.com/dockpit/go-dockerclient"
 )
 
 type DependencyC interface{}

@@ -20,6 +20,8 @@ func TestTest(t *testing.T) {
 	//simulate an implementation that complies the example contract
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		//@todo, get dat a from state
+
 		if r.URL.Path == "/users" {
 			fmt.Fprintf(w, `[]`+"\n")
 		} else if r.URL.Path == "/users/21" {
