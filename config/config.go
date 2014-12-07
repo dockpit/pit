@@ -2,16 +2,29 @@ package config
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
+	"time"
 
 	"github.com/dockpit/go-dockerclient"
 )
 
 //
 type StateProviderConfig struct {
-	Name         string
-	PortBindings map[docker.Port][]docker.PortBinding
+	Name string
+
+	portBindings map[docker.Port][]docker.PortBinding
+	readyExp     *regexp.Regexp
+	cmd          []string
+	readyTimeout time.Duration
 }
+
+func (s *StateProviderConfig) PortBindings() map[docker.Port][]docker.PortBinding {
+	return s.portBindings
+}
+func (s *StateProviderConfig) ReadyExp() *regexp.Regexp    { return s.readyExp }
+func (s *StateProviderConfig) ReadyTimeout() time.Duration { return s.readyTimeout }
+func (s *StateProviderConfig) Cmd() []string               { return s.cmd }
 
 //
 type DependencyConfig struct {
@@ -54,33 +67,64 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 
 	//parse state provider config
 	spconf := []*StateProviderConfig{}
-	for pname, confs := range cd.StateProviders {
+	for pname, conf := range cd.StateProviders {
 		portb := map[docker.Port][]docker.PortBinding{}
 
-		//parse public, private
-		for _, conf := range *confs {
-			parts := strings.SplitN(conf, ":", 2)
+		//parse public, private ports
+		for _, pconf := range conf.Ports {
+
+			parts := strings.SplitN(pconf, ":", 2)
 			if len(parts) != 2 {
-				return nil, fmt.Errorf("Invalid port format: '%s'", conf)
+				return nil, fmt.Errorf("Invalid port format: '%s'", pconf)
 			}
 
 			portb[docker.Port(parts[0]+"/tcp")] = []docker.PortBinding{docker.PortBinding{HostPort: parts[1]}}
 		}
 
+		//get regexp to determine when the state provider is ready
+		exp, err := regexp.Compile(conf.ReadyPattern)
+		if err != nil {
+			return nil, err
+		}
+
+		//get timeout by parsing duration
+		if conf.ReadyTimeout == "" {
+			return nil, fmt.Errorf("No 'ready_timeout' for provider: %s", pname)
+		}
+
+		d, err := time.ParseDuration(conf.ReadyTimeout)
+		if err != nil {
+			return nil, err
+		}
+
 		spconf = append(spconf, &StateProviderConfig{
-			Name:         pname,
-			PortBindings: portb,
+			Name: pname,
+
+			portBindings: portb,
+			readyExp:     exp,
+			cmd:          conf.Cmd,
+			readyTimeout: d,
 		})
 	}
 
 	return &Config{cd, depsconf, spconf}, nil
 }
 
+func (c *Config) StateProviderConfig(pname string) StateProviderC {
+	for _, spc := range c.spConfigs {
+		if spc.Name == pname {
+			return spc
+		}
+	}
+
+	return nil
+}
+
 func (c *Config) PortBindingsForState(pname string) map[docker.Port][]docker.PortBinding {
 	res := map[docker.Port][]docker.PortBinding{}
 	for _, spc := range c.spConfigs {
 		if spc.Name == pname {
-			return spc.PortBindings
+			return spc.portBindings
 		}
 	}
 

@@ -1,2 +1,1 @@
-mysql: 'a single user'
 mongo: 'several users'

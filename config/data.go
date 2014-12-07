@@ -4,7 +4,12 @@ package config
 type DependencyConfigData []string
 
 //
-type StateProviderConfigData []string
+type StateProviderConfigData struct {
+	Ports        []string `json:"ports"`
+	ReadyPattern string   `json:"ready_pattern"`
+	ReadyTimeout string   `json:"ready_timeout"`
+	Cmd          []string `json:"command"`
+}
 
 //
 type ConfigData struct {

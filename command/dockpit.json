@@ -3,6 +3,11 @@
 		"github.com/dockpit/ex-store-customers": ["8000:4321"]
 	},
 	"states": {
-		"mysql": ["3306:3306"]
+		"mongo": {
+			"ports": ["3306:3306"],
+			"ready_timeout": "1s",
+			"ready_pattern": ".*waiting for connections.*",
+			"command": ["--nojournal"]
+		}
 	}
 }

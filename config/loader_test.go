@@ -3,6 +3,7 @@ package config_test
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/bmizerany/assert"
 
@@ -35,10 +36,18 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, "4321", deppc["8000/tcp"][0].HostPort)
 
 	//state provider spec
-	mysqlpc := c.PortBindingsForState("mysql")
 
 	// assert bindings
-	assert.Equal(t, 1, len(mysqlpc["3306/tcp"]))
-	assert.Equal(t, "3306", mysqlpc["3306/tcp"][0].HostPort)
+
+	// assert mongo state provider
+	mongoc := c.StateProviderConfig("mongodb")
+
+	assert.Equal(t, time.Second*10, mongoc.ReadyTimeout())
+	assert.Equal(t, []string{"--nojournal"}, mongoc.Cmd())
+	assert.Equal(t, true, mongoc.ReadyExp().MatchString("is waiting for conn"))
+
+	mongpc := mongoc.PortBindings()
+	assert.Equal(t, 1, len(mongpc["27017/tcp"]))
+	assert.Equal(t, "27017", mongpc["27017/tcp"][0].HostPort)
 
 }
