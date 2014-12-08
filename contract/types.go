@@ -7,6 +7,7 @@ import (
 
 	"github.com/zenazn/goji/web"
 
+	"github.com/dockpit/pit/config"
 	"github.com/dockpit/state"
 )
 
@@ -25,7 +26,7 @@ type StateManager interface {
 }
 
 //
-type TestFunc func(host string, c *http.Client, sm StateManager) error
+type TestFunc func(host, dhost string, c *http.Client, sm StateManager, conf config.C) error
 
 //
 //

@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"github.com/zenazn/goji/web"
+
+	"github.com/dockpit/pit/config"
 )
 
 //
@@ -131,7 +133,7 @@ func (p *Pair) GenerateHandler() web.Handler {
 }
 
 func (p *Pair) GenerateTest() TestFunc {
-	return func(host string, client *http.Client, sm StateManager) error {
+	return func(host, dhost string, client *http.Client, sm StateManager, conf config.C) error {
 
 		//copy request from example pair
 		req := *p.Request
@@ -171,6 +173,31 @@ func (p *Pair) GenerateTest() TestFunc {
 		//let the pair assert itself
 		if err := p.IsExpectedResponse(resp); err != nil {
 			return UnexpectedResponseError(p.Response, resp, err)
+		}
+
+		//ask each mocked dependency if it was called
+		for _, while := range p.While {
+			portb := conf.PortBindingsForDep(while.ID)
+
+			//@todo, grabbig the first (seems fundamentally flawed)
+			//@see github.com/dockpit/mock/manager/manager.go
+			var port string
+			for _, pb := range portb {
+				port = pb[0].HostPort
+				break
+			}
+
+			//parse host and form endpoint to get recordings from
+			dhosturl, err := url.Parse(dhost)
+			if err != nil {
+				return err
+			}
+
+			ep := fmt.Sprintf("%s:%s/", strings.SplitN(dhosturl.Host, ":", 2)[0], port)
+
+			//@todo, do actualy request to retrieve recordings
+			//"http://localhost:9000/_recordings?pattern=%2Fusers&method=GET"
+			_ = ep
 		}
 
 		//@todo assert dependency recordings

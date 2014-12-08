@@ -68,6 +68,18 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
+	//fetch docker host
+	dhost, _, err := c.DockerHostCertArguments(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//load configuration
+	conf, err := c.LoadConfig()
+	if err != nil {
+		return nil, nil, err
+	}
+
 	//run all tests, for all resources
 	res, err := contract.Resources()
 	if err != nil {
@@ -84,7 +96,7 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		for _, a := range acs {
 			for _, tt := range a.Tests() {
 
-				err := tt(host, http.DefaultClient, sm)
+				err := tt(host, dhost, http.DefaultClient, sm, conf)
 				if err != nil {
 					//@todo handle failed tests better
 
