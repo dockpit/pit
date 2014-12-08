@@ -12,6 +12,7 @@ import (
 	"github.com/bmizerany/assert"
 
 	. "github.com/dockpit/pit/contract"
+	"github.com/dockpit/state"
 )
 
 //mock statemanager
@@ -20,8 +21,8 @@ type mockStateManager struct{}
 func (m *mockStateManager) Build(pname, sname string, out io.Writer) (string, error) {
 	return "123", nil
 }
-func (m *mockStateManager) Start(pname, sname string) error { return nil }
-func (m *mockStateManager) Stop(pname, sname string) error  { return nil }
+func (m *mockStateManager) Start(pname, sname string) (*state.StateContainer, error) { return nil, nil }
+func (m *mockStateManager) Stop(pname, sname string) error                           { return nil }
 
 // reqs
 var req_userA, _ = http.NewRequest("GET", "/users/21", nil)

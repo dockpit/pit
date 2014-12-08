@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/zenazn/goji/web"
+
+	"github.com/dockpit/state"
 )
 
 func UnexpectedResponseError(exp *http.Response, got *http.Response, err error) error {
@@ -18,7 +20,7 @@ func MockingError(msg string) error { return fmt.Errorf("Mocking ERROR: %s", msg
 //
 type StateManager interface {
 	Build(pname, sname string, out io.Writer) (string, error)
-	Start(pname, sname string) error
+	Start(pname, sname string) (*state.StateContainer, error)
 	Stop(pname, sname string) error
 }
 

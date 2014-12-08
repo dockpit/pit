@@ -148,7 +148,7 @@ func (p *Pair) GenerateTest() TestFunc {
 
 		//start states
 		for pname, g := range p.Given {
-			err := sm.Start(pname, g.Name)
+			_, err := sm.Start(pname, g.Name)
 			if err != nil {
 				return err
 			}
