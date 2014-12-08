@@ -9,7 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
+	"labix.org/v2/mgo"
 	// "github.com/bmizerany/assert"
 
 	"github.com/dockpit/pit/command"
@@ -20,9 +22,15 @@ func TestTest(t *testing.T) {
 	//simulate an implementation that complies the example contract
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		//@todo, get dat a from state
-
 		if r.URL.Path == "/users" {
+
+			//simulate state access
+			_, err := mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
 			fmt.Fprintf(w, `[]`+"\n")
 		} else if r.URL.Path == "/users/21" {
 			fmt.Fprintf(w, `{"id": 21}`+"\n")
