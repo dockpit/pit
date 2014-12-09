@@ -2,6 +2,7 @@ package contract
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -18,6 +19,7 @@ import (
 //
 //
 type Pair struct {
+	Name     string
 	Request  *http.Request
 	Response *http.Response
 	While    []While
@@ -41,7 +43,7 @@ func NewPairFromData(data *CaseData) (*Pair, error) {
 	resp.StatusCode = data.Then.StatusCode
 	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Body))
 
-	return &Pair{req, resp, data.While, data.Given}, nil
+	return &Pair{data.Name, req, resp, data.While, data.Given}, nil
 }
 
 func (p *Pair) BelongsToAction(a A) bool {
@@ -193,51 +195,45 @@ func (p *Pair) GenerateTest() TestFunc {
 				return err
 			}
 
-			ep := fmt.Sprintf("%s:%s/", strings.SplitN(dhosturl.Host, ":", 2)[0], port)
+			//create rec url
+			recurl, err := url.Parse(fmt.Sprintf("http://%s:%s/_recordings?method=%s&path=%s",
+				strings.SplitN(dhosturl.Host, ":", 2)[0],
+				port,
+				url.QueryEscape(while.Method),
+				url.QueryEscape(while.Path), //@todo use pattern instead of path?
+			))
 
-			//@todo, do actualy request to retrieve recordings
-			//"http://localhost:9000/_recordings?pattern=%2Fusers&method=GET"
-			_ = ep
+			if err != nil {
+				return err
+			}
+
+			//request actual recording
+			recresp, err := http.Get(recurl.String())
+			if err != nil {
+				//@todo if we get connection refused it probably means the mock isn't running, report
+				//specialized error?
+
+				return err
+			}
+
+			//receiving something else then 200 is probably bad
+			if recresp.StatusCode > 200 {
+				return fmt.Errorf("Mock recording doesn't have data for %s %s %s, returned: %d", while.ID, while.Method, while.Path, recresp.StatusCode)
+			}
+
+			//decode to get information
+			rec := &struct{ Count int }{}
+			dec := json.NewDecoder(recresp.Body)
+			err = dec.Decode(rec)
+			if err != nil {
+				return err
+			}
+
+			//count mock
+			if rec.Count < 1 {
+				return fmt.Errorf("Mock %s (%s %s) should have been called at least once", while.ID, while.Method, while.Path)
+			}
 		}
-
-		//@todo assert dependency recordings
-		//check dependency recordings
-		// for _, dep := range c.caseData.While {
-		// 	for loc, paths := range dep {
-		// 		var addr string
-		// 		var ok bool
-
-		// 		if addr, ok = depAddr[loc]; !ok {
-		// 			return fmt.Errorf("Test for case '%s' didn't get an addr for dependency '%s'", c.Name(), loc)
-		// 		}
-
-		// 		for _, path := range paths {
-
-		// 			//get recorded access
-		// 			resp, err = http.Get(fmt.Sprintf("%s/_recordings/%s", addr, path))
-		// 			if err != nil {
-		// 				return err
-		// 			}
-
-		// 			if resp.StatusCode > 201 {
-		// 				return fmt.Errorf("Mock recording doesn't have data for '%s', returned %d", path, resp.StatusCode)
-		// 			}
-
-		// 			rec := &Recording{}
-		// 			dec := json.NewDecoder(resp.Body)
-		// 			err = dec.Decode(rec)
-		// 			if err != nil {
-		// 				return err
-		// 			}
-
-		// 			//dont actually count count
-		// 			if rec.Count < 1 {
-		// 				return fmt.Errorf("Expected dependency '%s#%s' to be called at least once", loc, path)
-		// 			}
-		// 		}
-
-		// 	}
-		// }
 
 		return nil
 	}

@@ -17,6 +17,18 @@ import (
 	"github.com/dockpit/pit/command"
 )
 
+func mock(t *testing.T, expath string) {
+	out := bytes.NewBuffer(nil)
+	cmd := command.NewMock(out, command.NewInstall(out))
+	AssertCommand(t, cmd, []string{"-examples", expath}, `(?s)Mocking.*done!.*http`, out)
+}
+
+func unmock(t *testing.T, expath string) {
+	out := bytes.NewBuffer(nil)
+	cmd2 := command.NewUnmock(out)
+	AssertCommand(t, cmd2, []string{"-examples", expath}, `(?s)Unmocked`, out)
+}
+
 func TestTest(t *testing.T) {
 
 	//simulate an implementation that complies the example contract
@@ -24,8 +36,15 @@ func TestTest(t *testing.T) {
 
 		if r.URL.Path == "/users" {
 
+			//call dependency
+			_, err := http.Get("http://192.168.59.103:4321/customers")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
 			//simulate state access
-			_, err := mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)
+			_, err = mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -35,8 +54,6 @@ func TestTest(t *testing.T) {
 		} else if r.URL.Path == "/users/21" {
 			fmt.Fprintf(w, `{"id": 21}`+"\n")
 		}
-
-		//@todo, call mocked dependencies
 
 	}))
 
@@ -58,6 +75,13 @@ func TestTest(t *testing.T) {
 
 	os.Setenv("PIT_PATH", tdir)
 
+	//mock
+	mock(t, expath)
+
+	//run test
 	AssertCommand(t, test, []string{"-examples", expath, "-states", stpath, svr.URL}, `(?s)Tested.*successful`, out)
+
+	//unmock
+	unmock(t, expath)
 
 }

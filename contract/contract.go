@@ -47,6 +47,7 @@ func (c *Contract) States() (map[string][]string, error) {
 	res, err := c.Resources()
 	if err != nil {
 		return states, err
+
 	}
 
 	for _, r := range res {

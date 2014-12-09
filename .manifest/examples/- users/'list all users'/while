@@ -1,1 +1,1 @@
-github.com/dockpit/ex-store-customers 'list all customers'
+github.com/dockpit/ex-store-customers GET /customers
