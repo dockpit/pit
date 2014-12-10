@@ -42,7 +42,7 @@ var req_userC, _ = http.NewRequest("GET", "/users/444", nil)
 var resp_userC = &http.Response{StatusCode: 200, Body: ioutil.NopCloser(strings.NewReader(`{"id": "444"}`))}
 
 var req_userD, _ = http.NewRequest("POST", "/users/13", nil)
-var resp_userD = &http.Response{StatusCode: 201}
+var resp_userD = &http.Response{StatusCode: 201, Header: http.Header{"Encoding": []string{"gzip"}}}
 
 func TestMapping(t *testing.T) {
 	var r R
@@ -87,6 +87,7 @@ func TestHandler(t *testing.T) {
 	svr1 := httptest.NewServer(h1)
 	resp, _ := http.Post(svr1.URL, "application/json", nil)
 	assert.Equal(t, 201, resp.StatusCode)
+	assert.Equal(t, "gzip", resp.Header.Get("Encoding"))
 
 	//Handlers should write correctly
 	h2, err := as[0].Handler(nil)
@@ -165,6 +166,8 @@ func TestTests(t *testing.T) {
 
 	//success test
 	success := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Encoding", "gzip")
 		w.WriteHeader(201)
 	}))
 

@@ -28,20 +28,20 @@ type Pair struct {
 
 func NewPairFromData(data *CaseData) (*Pair, error) {
 
-	//@todo add header
-	//@todo add request body
-	//@todo add while
-
 	//create request from data
-	req, err := http.NewRequest(data.When.Method, data.When.Path, nil)
+	req, err := http.NewRequest(data.When.Method, data.When.Path, strings.NewReader(data.When.Body))
 	if err != nil {
 		return nil, err
 	}
 
-	//creat response from data
+	//add headers to request
+	req.Header = data.When.Headers
+
+	//create expected response from data
 	resp := &http.Response{}
 	resp.StatusCode = data.Then.StatusCode
 	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Body))
+	resp.Header = data.Then.Headers
 
 	return &Pair{data.Name, req, resp, data.While, data.Given}, nil
 }
@@ -104,7 +104,23 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 		return fmt.Errorf("Content not equal, expected %s got: %s", string(c1), string(c2))
 	}
 
-	// @todo assert other headers
+	//check if resp has _at least_ the expected headers
+ExpVals:
+	for key, expvals := range p.Response.Header {
+		val := resp.Header.Get(key)
+		if val == "" {
+			return fmt.Errorf("Expected response with '%s' header", key)
+		}
+
+		for _, expval := range expvals {
+			if expval == val {
+				break ExpVals
+			}
+		}
+
+		//not any of the expected values
+		return fmt.Errorf("Expected '%s' header to have one of the following values: %s, received: %s", key, expvals, val)
+	}
 
 	return nil
 }
@@ -116,7 +132,14 @@ func (p *Pair) IsSuccessLike() bool {
 func (p *Pair) GenerateHandler() web.Handler {
 	return web.HandlerFunc(func(ctx web.C, w http.ResponseWriter, r *http.Request) {
 
-		//write headers by example
+		//add headers
+		for key, vals := range p.Response.Header {
+			for _, val := range vals {
+				w.Header().Add(key, val)
+			}
+		}
+
+		//write status code and headers
 		w.WriteHeader(p.Response.StatusCode)
 
 		//copy body without consuming the original
@@ -128,8 +151,6 @@ func (p *Pair) GenerateHandler() web.Handler {
 			//'reset' original response body
 			p.Response.Body = ioutil.NopCloser(buff)
 		}
-
-		// @todo write other headers
 
 	})
 }
@@ -200,7 +221,7 @@ func (p *Pair) GenerateTest() TestFunc {
 				strings.SplitN(dhosturl.Host, ":", 2)[0],
 				port,
 				url.QueryEscape(while.Method),
-				url.QueryEscape(while.Path), //@todo use pattern instead of path?
+				url.QueryEscape(while.Path),
 			))
 
 			if err != nil {
@@ -210,10 +231,9 @@ func (p *Pair) GenerateTest() TestFunc {
 			//request actual recording
 			recresp, err := http.Get(recurl.String())
 			if err != nil {
-				//@todo if we get connection refused it probably means the mock isn't running, report
-				//specialized error?
 
-				return err
+				//cant connect to mock?
+				return fmt.Errorf("Error while attempt to request dependency: '%s', are the mocks running?", err.Error())
 			}
 
 			//receiving something else then 200 is probably bad
