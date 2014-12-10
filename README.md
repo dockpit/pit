@@ -8,9 +8,6 @@ A command line tool for (micro)service developers that allows them to define con
 
 ## TODO
 - format test output to be readable
-- actually assert
-	* http headers
-	* request body
 - centralized `.manifest` folder name and substructure 
 - investigate what to do with services that expose multiple ports for testing
 - windows support, in particular:
