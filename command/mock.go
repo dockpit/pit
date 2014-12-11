@@ -91,7 +91,7 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		portb := conf.PortBindingsForDep(dep)
 
 		//@todo centralize this?
-		mc, err := m.Start(filepath.Join(in, ".manifest", "examples"), portb)
+		mc, err := m.Start(filepath.Join(in, ManifestExamplesPath), portb)
 		if err != nil {
 			return nil, nil, err
 		}

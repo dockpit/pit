@@ -90,7 +90,7 @@ func (c *Unmock) Run(ctx *cli.Context) (*template.Template, interface{}, error) 
 		}
 
 		//@todo centralize subpath .dockpit/examples
-		err = mm.Stop(filepath.Join(in, ".manifest", "examples"))
+		err = mm.Stop(filepath.Join(in, ManifestExamplesPath))
 		if err != nil {
 			return nil, nil, err
 		}

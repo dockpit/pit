@@ -8,7 +8,7 @@ A command line tool for (micro)service developers that allows them to define con
 
 ## TODO
 - format test output to be readable
-- centralized `.manifest` folder name and substructure 
+- easily `switch` to a different case to prepare situation for isolation in development
 - investigate what to do with services that expose multiple ports for testing
 - windows support, in particular:
 	* dirtar directory seperator

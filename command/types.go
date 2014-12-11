@@ -19,6 +19,8 @@ import (
 	"github.com/dockpit/state"
 )
 
+var ManifestStatesPath = filepath.Join(".manifest", "states")
+var ManifestExamplesPath = filepath.Join(".manifest", "examples")
 var SpecFilename = "dockpit.json"
 
 // CLI Command interface
@@ -64,7 +66,7 @@ func (c *cmd) BuildStatesFlags() []cli.Flag {
 	//get working dir
 	wd, err := os.Getwd()
 	if err == nil {
-		wd = filepath.Join(wd, ".manifest", "states")
+		wd = filepath.Join(wd, ManifestStatesPath)
 	} else {
 		wd = fmt.Sprintf("[%s]", err.Error())
 	}
@@ -99,7 +101,7 @@ func (c *cmd) ParseExampleFlags() []cli.Flag {
 	//get working dir
 	wd, err := os.Getwd()
 	if err == nil {
-		wd = filepath.Join(wd, ".manifest", "examples")
+		wd = filepath.Join(wd, ManifestExamplesPath)
 	} else {
 		wd = fmt.Sprintf("[%s]", err.Error())
 	}
@@ -191,7 +193,7 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
 	cd, err := p.Parse()
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("Failed to open .manifest/examples in '%s', is this a Dockpit project?", path)
+			return nil, fmt.Errorf("Failed to open examples in '%s', is this a Dockpit project?", path)
 		}
 
 		return nil, fmt.Errorf("Parsing error: %s", err)

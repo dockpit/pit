@@ -20,7 +20,7 @@ func TestBuildingOfStates(t *testing.T) {
 	cmd := command.NewBuild(out)
 
 	AssertCommand(t, cmd, []string{
-		"-examples", filepath.Join(wd, "..", ".manifest", "examples"),
-		"-states", filepath.Join(wd, "..", ".manifest", "states"),
+		"-examples", filepath.Join(wd, "..", command.ManifestExamplesPath),
+		"-states", filepath.Join(wd, "..", command.ManifestStatesPath),
 	}, `(?s)built.*successful`, out)
 }

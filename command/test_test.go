@@ -62,8 +62,8 @@ func TestTest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expath := filepath.Join(wd, "..", ".manifest", "examples")
-	stpath := filepath.Join(wd, "..", ".manifest", "states")
+	expath := filepath.Join(wd, "..", command.ManifestExamplesPath)
+	stpath := filepath.Join(wd, "..", command.ManifestStatesPath)
 	out := bytes.NewBuffer(nil)
 
 	test := command.NewTest(out)
