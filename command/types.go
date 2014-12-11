@@ -21,7 +21,6 @@ import (
 
 var ManifestStatesPath = filepath.Join(".manifest", "states")
 var ManifestExamplesPath = filepath.Join(".manifest", "examples")
-var SpecFilename = "dockpit.json"
 
 // CLI Command interface
 type C interface {
@@ -76,19 +75,34 @@ func (c *cmd) BuildStatesFlags() []cli.Flag {
 	}
 }
 
-func (c *cmd) LoadConfig() (config.C, error) {
+func (c *cmd) ConfigFlags() []cli.Flag {
 
 	//get working dir
 	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
+	if err == nil {
+		wd = filepath.Join(wd)
+	} else {
+		wd = fmt.Sprintf("[%s]", err.Error())
 	}
 
-	l := config.NewLoader(wd)
+	return []cli.Flag{
+		cli.StringFlag{Name: "config", Value: wd, Usage: fmt.Sprintf("path to the the directory that contains the configuration file.")},
+	}
+}
+
+func (c *cmd) LoadConfig(ctx *cli.Context) (config.C, error) {
+
+	//get working dir
+	confdir := strings.TrimSpace(ctx.String("config"))
+	if confdir == "" {
+		return nil, fmt.Errorf("Please specify directory where the configuration file is located (-config)")
+	}
+
+	l := config.NewLoader(confdir)
 	conf, err := l.Load()
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("Could not find dockpit configuration file (dockpit.json) in '%s'", wd)
+			return nil, fmt.Errorf("Could not find dockpit configuration file (dockpit.json) in '%s'", confdir)
 		}
 		return nil, err
 	}
@@ -165,7 +179,7 @@ func (c *cmd) StateManager(ctx *cli.Context) (*state.Manager, error) {
 		return nil, err
 	}
 
-	conf, err := c.LoadConfig()
+	conf, err := c.LoadConfig(ctx)
 	if err != nil {
 		return nil, err
 	}

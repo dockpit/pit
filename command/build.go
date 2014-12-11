@@ -38,6 +38,7 @@ func (c *Build) Usage() string {
 
 func (c *Build) Flags() []cli.Flag {
 	fs := []cli.Flag{}
+	fs = append(fs, c.ConfigFlags()...)
 	fs = append(fs, c.ParseExampleFlags()...)
 	fs = append(fs, c.BuildStatesFlags()...)
 	fs = append(fs, c.DockerFlags()...)

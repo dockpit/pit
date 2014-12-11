@@ -19,7 +19,7 @@ func TestMock(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expath := filepath.Join(wd, "..", command.ManifestExamplesPath)
+	expath := filepath.Join(wd, "test_example", command.ManifestExamplesPath)
 	out := bytes.NewBuffer(nil)
 	cmd := command.NewMock(out, command.NewInstall(out))
 
@@ -30,7 +30,10 @@ func TestMock(t *testing.T) {
 
 	os.Setenv("PIT_PATH", tdir)
 
-	AssertCommand(t, cmd, []string{"-examples", expath}, `(?s)Mocking.*done!.*http`, out)
+	AssertCommand(t, cmd, []string{
+		"-config", filepath.Join(wd, "test_example"),
+		"-examples", expath,
+	}, `(?s)Mocking.*done!.*http`, out)
 
 	//should have called install
 	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "ex-store-customers", "main.go"))

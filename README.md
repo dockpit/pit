@@ -7,10 +7,11 @@ A command line tool for (micro)service developers that allows them to define con
 - When dependencies are mocked you can run the test cases quickly and reliably to make sure the service is implemented correctly.
 
 ## TODO
-- format test output to be readable
-- easily `switch` to a different case to prepare situation for isolation in development
 - investigate what to do with services that expose multiple ports for testing
-- windows support, in particular:
+
+- (major) format test output to be readable
+- (major) easily `switch` to a different case to prepare situation for isolation in development
+- (major) windows support, in particular:
 	* dirtar directory seperator
 
 - (optional) make it easy to see files of failed test cases, maybe easily open it using pit? (e.g pit open $!)

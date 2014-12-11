@@ -41,6 +41,7 @@ func (c *Mock) Usage() string {
 func (c *Mock) Flags() []cli.Flag {
 	fs := []cli.Flag{}
 	fs = append(fs, c.install.Flags()...)
+	fs = append(fs, c.ConfigFlags()...)
 	fs = append(fs, c.DockerFlags()...)
 
 	return fs
@@ -72,7 +73,7 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}
 
 	//load configuration
-	conf, err := c.LoadConfig()
+	conf, err := c.LoadConfig(ctx)
 	if err != nil {
 		return nil, nil, err
 	}

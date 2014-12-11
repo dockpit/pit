@@ -39,6 +39,7 @@ func (c *Test) Usage() string {
 func (c *Test) Flags() []cli.Flag {
 	fs := []cli.Flag{}
 
+	fs = append(fs, c.ConfigFlags()...)
 	fs = append(fs, c.ParseExampleFlags()...)
 	fs = append(fs, c.BuildStatesFlags()...)
 
@@ -75,7 +76,7 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}
 
 	//load configuration
-	conf, err := c.LoadConfig()
+	conf, err := c.LoadConfig(ctx)
 	if err != nil {
 		return nil, nil, err
 	}

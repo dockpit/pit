@@ -17,10 +17,10 @@ import (
 	"github.com/dockpit/pit/command"
 )
 
-func mock(t *testing.T, expath string) {
+func mock(t *testing.T, expath, confpath string) {
 	out := bytes.NewBuffer(nil)
 	cmd := command.NewMock(out, command.NewInstall(out))
-	AssertCommand(t, cmd, []string{"-examples", expath}, `(?s)Mocking.*done!.*http`, out)
+	AssertCommand(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocking.*done!.*http`, out)
 }
 
 func unmock(t *testing.T, expath string) {
@@ -62,8 +62,9 @@ func TestTest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expath := filepath.Join(wd, "..", command.ManifestExamplesPath)
-	stpath := filepath.Join(wd, "..", command.ManifestStatesPath)
+	confpath := filepath.Join(wd, "test_example")
+	expath := filepath.Join(confpath, command.ManifestExamplesPath)
+	stpath := filepath.Join(confpath, command.ManifestStatesPath)
 	out := bytes.NewBuffer(nil)
 
 	test := command.NewTest(out)
@@ -76,10 +77,10 @@ func TestTest(t *testing.T) {
 	os.Setenv("PIT_PATH", tdir)
 
 	//mock
-	mock(t, expath)
+	mock(t, expath, confpath)
 
 	//run test
-	AssertCommand(t, test, []string{"-examples", expath, "-states", stpath, svr.URL}, `(?s)Tested.*successful`, out)
+	AssertCommand(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, svr.URL}, `(?s)Tested.*successful`, out)
 
 	//unmock
 	unmock(t, expath)
