@@ -10,6 +10,7 @@ A command line tool for (micro)service developers that allows them to define con
 - investigate what to do with services that expose multiple ports for testing
 
 - (major) format test output to be readable
+	* inform when there are no examples to test against instead of just saying 'success'
 - (major) easily `switch` to a different case to prepare situation for isolation in development
 - (major) windows support, in particular:
 	* dirtar directory seperator
