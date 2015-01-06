@@ -12,7 +12,13 @@ type StateProviderConfigData struct {
 }
 
 //
+type RunData struct {
+	Command []string `json:"command"`
+}
+
+//
 type ConfigData struct {
 	Dependencies   map[string]*DependencyConfigData    `json:"deps"`
 	StateProviders map[string]*StateProviderConfigData `json:"states"`
+	Run            *RunData                            `json:"run"`
 }

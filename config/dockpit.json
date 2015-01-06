@@ -13,5 +13,8 @@
 			"ready_timeout": "10s",
 			"command": ["--nojournal"]
 		}
+	},
+	"run": {
+		"command": ["ls", "-la"]
 	}
 }

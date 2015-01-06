@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os/exec"
 	"regexp"
 	"strings"
 	"time"
@@ -38,9 +39,10 @@ type Config struct {
 
 	depConfigs []*DependencyConfig
 	spConfigs  []*StateProviderConfig
+	runCmd     *exec.Cmd
 }
 
-func NewConfig(cd *ConfigData) (*Config, error) {
+func Parse(cd *ConfigData) (*Config, error) {
 
 	//@todo remove code duplication below
 
@@ -107,7 +109,25 @@ func NewConfig(cd *ConfigData) (*Config, error) {
 		})
 	}
 
-	return &Config{cd, depsconf, spconf}, nil
+	//parse run into a cmd if anything is specified
+	var rcmd *exec.Cmd
+	if cd.Run != nil && len(cd.Run.Command) > 0 {
+		rcmd = exec.Command(cd.Run.Command[0], cd.Run.Command[1:]...)
+	}
+
+	return &Config{cd, depsconf, spconf, rcmd}, nil
+}
+
+func (c *Config) RunCommand(overwrite *exec.Cmd) (*exec.Cmd, error) {
+	if overwrite != nil {
+		c.runCmd = overwrite
+	}
+
+	if c.runCmd == nil {
+		return nil, fmt.Errorf("No configuration for starting your service, edit the configuration file (%s) or provide as command line argument.", ConfigFile)
+	}
+
+	return c.runCmd, nil
 }
 
 func (c *Config) StateProviderConfig(pname string) StateProviderC {

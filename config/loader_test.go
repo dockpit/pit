@@ -2,6 +2,7 @@ package config_test
 
 import (
 	"os"
+	"os/exec"
 	"testing"
 	"time"
 
@@ -50,4 +51,35 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, 1, len(mongpc["27017/tcp"]))
 	assert.Equal(t, "27017", mongpc["27017/tcp"][0].HostPort)
 
+	// assert run command with nil (assume config has a run command for us configured)
+	cmd, err := c.RunCommand(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, cmd.Args, []string{"ls", "-la"})
+
+}
+
+func TestCommandOverwrite(t *testing.T) {
+	var c config.C
+
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	l := config.NewLoader(wd)
+
+	c, err = l.Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cmd, err := c.RunCommand(exec.Command("ls", "-l"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, cmd.Args, []string{"ls", "-l"})
 }

@@ -17,7 +17,7 @@ func NewLoader(dir string) *Loader {
 func (l *Loader) Load() (C, error) {
 
 	//open file
-	f, err := os.Open(filepath.Join(l.dir, "dockpit.json"))
+	f, err := os.Open(filepath.Join(l.dir, ConfigFile))
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (l *Loader) Load() (C, error) {
 	}
 
 	//domain specific parsing
-	c, err := NewConfig(cd)
+	c, err := Parse(cd)
 	if err != nil {
 		return nil, err
 	}

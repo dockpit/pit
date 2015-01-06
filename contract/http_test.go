@@ -26,7 +26,7 @@ func (m *mockStateManager) Start(pname, sname string) (*state.StateContainer, er
 func (m *mockStateManager) Stop(pname, sname string) error                           { return nil }
 
 //test conf
-var empty_test_conf, _ = config.NewConfig(&config.ConfigData{
+var empty_test_conf, _ = config.Parse(&config.ConfigData{
 	Dependencies:   map[string]*config.DependencyConfigData{},
 	StateProviders: map[string]*config.StateProviderConfigData{},
 })
