@@ -9,5 +9,8 @@
 			"ready_pattern": ".*waiting for connections.*",
 			"command": ["--nojournal"]
 		}
+	},
+	"run": {
+		"command": ["/tmp/test"]
 	}
 }

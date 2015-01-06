@@ -113,6 +113,7 @@ func Parse(cd *ConfigData) (*Config, error) {
 	var rcmd *exec.Cmd
 	if cd.Run != nil && len(cd.Run.Command) > 0 {
 		rcmd = exec.Command(cd.Run.Command[0], cd.Run.Command[1:]...)
+		rcmd.Dir = cd.Run.Dir
 	}
 
 	return &Config{cd, depsconf, spconf, rcmd}, nil

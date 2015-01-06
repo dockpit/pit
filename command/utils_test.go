@@ -29,7 +29,7 @@ func AssertCommand(t *testing.T, cmd command.C, args []string, pattern string, o
 	}
 
 	if !m {
-		t.Errorf("Out didn't match expected pattern /%s/, received: %s", pattern, out)
+		t.Errorf("Out didn't match expected pattern /%s/, received: '%s'", pattern, out)
 	}
 
 }

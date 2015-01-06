@@ -58,6 +58,7 @@ func TestLoaderLoad(t *testing.T) {
 	}
 
 	assert.Equal(t, cmd.Args, []string{"ls", "-la"})
+	assert.Equal(t, cmd.Dir, "..")
 
 }
 

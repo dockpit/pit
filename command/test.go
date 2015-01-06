@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"text/template"
+	"time"
 
 	"github.com/codegangsta/cli"
 )
@@ -80,6 +82,39 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+
+	//get command from configuration
+	cmd, err := conf.RunCommand(nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// @todo about using go run:
+	// - http://stackoverflow.com/questions/24982845/process-kill-on-child-processes
+	// - https://groups.google.com/forum/#!searchin/golang-nuts/interrupt$20signal/golang-nuts/nayHpf8dVxI/_QO30bLWtrcJ
+
+	//run it but continue
+	err = cmd.Start()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	defer func() {
+		fmt.Println("Signalling...")
+		err = cmd.Process.Signal(os.Interrupt)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		eerr := cmd.Wait()
+		fmt.Println(eerr)
+	}()
+
+	fmt.Printf("Waiting on %s...\n", cmd.Args)
+	<-time.After(time.Second)
 
 	//run all tests, for all resources
 	res, err := contract.Resources()

@@ -15,6 +15,7 @@
 		}
 	},
 	"run": {
-		"command": ["ls", "-la"]
+		"command": ["ls", "-la"],
+		"dir": ".."
 	}
 }

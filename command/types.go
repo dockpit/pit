@@ -224,9 +224,13 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
 
 func (c *cmd) templated(fn func(c *cli.Context) (*template.Template, interface{}, error)) func(ctx *cli.Context) {
 	return func(ctx *cli.Context) {
+		//@todo, remove with duplication in constructor
+		log.SetOutput(c.out)
+
 		t, data, err := fn(ctx)
 		if err != nil {
-			log.Println(err, ", Command: '", ctx.Command.Name, "' Args: ", ctx.Args())
+
+			log.Printf("%s - Command: %s %s", err, ctx.Command.Name, ctx.Args())
 
 			//@todo set exit code to non-zero?
 			return
