@@ -101,7 +101,7 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 	}
 
 	if !bytes.Equal(c1, c2) {
-		return fmt.Errorf("Content not equal, expected %s got: %s", string(c1), string(c2))
+		return fmt.Errorf("Content not equal, expected '%s' got: '%s'", string(c1), string(c2))
 	}
 
 	//check if resp has _at least_ the expected headers
