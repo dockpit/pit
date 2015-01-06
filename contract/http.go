@@ -61,7 +61,7 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 
 	//assert response code
 	if p.Response.StatusCode != resp.StatusCode {
-		return fmt.Errorf("StatusCode not equal, expected %d got: %d", p.Response.StatusCode, resp.StatusCode)
+		return fmt.Errorf("StatusCode not equal, expected '%d' got: '%d'", p.Response.StatusCode, resp.StatusCode)
 	}
 
 	//get expected content
@@ -195,7 +195,7 @@ func (p *Pair) GenerateTest() TestFunc {
 
 		//let the pair assert itself
 		if err := p.IsExpectedResponse(resp); err != nil {
-			return UnexpectedResponseError(p.Response, resp, err)
+			return UnexpectedResponseError(req, p.Response, resp, err)
 		}
 
 		//ask each mocked dependency if it was called
