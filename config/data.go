@@ -13,8 +13,10 @@ type StateProviderConfigData struct {
 
 //
 type RunData struct {
-	Command []string `json:"command"`
-	Dir     string   `json:"dir"`
+	Command      []string `json:"command"`
+	Dir          string   `json:"dir"`
+	ReadyPattern string   `json:"ready_pattern"`
+	ReadyTimeout string   `json:"ready_timeout"`
 }
 
 //

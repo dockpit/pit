@@ -11,6 +11,8 @@
 		}
 	},
 	"run": {
-		"command": ["/tmp/test"]
+		"command": ["/tmp/test"],
+		"ready_timeout": "2s",
+		"ready_pattern": "Starting Goji"
 	}
 }

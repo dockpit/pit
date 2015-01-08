@@ -6,6 +6,12 @@ A command line tool for (micro)service developers that allows them to define con
 
 - When dependencies are mocked you can run the test cases quickly and reliably to make sure the service is implemented correctly.
 
+## Warnings
+- Using `go run` in run command
+	// @todo about using go run:
+	// - http://stackoverflow.com/questions/24982845/process-kill-on-child-processes
+	// - https://groups.google.com/forum/#!searchin/golang-nuts/interrupt$20signal/golang-nuts/nayHpf8dVxI/_QO30bLWtrcJ
+
 ## TODO
 - investigate what to do with services that expose multiple ports for testing
 

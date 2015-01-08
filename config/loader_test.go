@@ -2,7 +2,6 @@ package config_test
 
 import (
 	"os"
-	"os/exec"
 	"testing"
 	"time"
 
@@ -52,35 +51,11 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, "27017", mongpc["27017/tcp"][0].HostPort)
 
 	// assert run command with nil (assume config has a run command for us configured)
-	cmd, err := c.RunCommand(nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	rconf := c.RunConfig()
 
-	assert.Equal(t, cmd.Args, []string{"ls", "-la"})
-	assert.Equal(t, cmd.Dir, "..")
+	assert.Equal(t, rconf.Cmd, []string{"ls", "-la"})
+	assert.Equal(t, rconf.Dir, "..")
+	assert.Equal(t, rconf.ReadyTimeout, time.Second*2)
+	assert.Equal(t, true, rconf.ReadyExp.MatchString("2015/01/08 12:15:17.019258 Starting Goji on [::]:8000"))
 
-}
-
-func TestCommandOverwrite(t *testing.T) {
-	var c config.C
-
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	l := config.NewLoader(wd)
-
-	c, err = l.Load()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	cmd, err := c.RunCommand(exec.Command("ls", "-l"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	assert.Equal(t, cmd.Args, []string{"ls", "-l"})
 }

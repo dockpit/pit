@@ -1,7 +1,6 @@
 package config
 
 import (
-	"os/exec"
 	"regexp"
 	"time"
 
@@ -10,8 +9,7 @@ import (
 
 var ConfigFile = "dockpit.json"
 
-type DependencyC interface {
-}
+type DependencyC interface{}
 
 type StateProviderC interface {
 	PortBindings() map[docker.Port][]docker.PortBinding
@@ -25,5 +23,5 @@ type C interface {
 	ProviderConfigs() []StateProviderC
 	PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding
 	StateProviderConfig(pname string) StateProviderC
-	RunCommand(overwrite *exec.Cmd) (*exec.Cmd, error)
+	RunConfig() *RunConfig
 }

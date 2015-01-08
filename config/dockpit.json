@@ -16,6 +16,8 @@
 	},
 	"run": {
 		"command": ["ls", "-la"],
-		"dir": ".."
+		"dir": "..",
+		"ready_timeout": "2s",
+		"ready_pattern": "Starting Goji"
 	}
 }

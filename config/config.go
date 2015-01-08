@@ -2,13 +2,48 @@ package config
 
 import (
 	"fmt"
-	"os/exec"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/dockpit/go-dockerclient"
 )
+
+//
+type RunConfig struct {
+	ReadyExp     *regexp.Regexp
+	Cmd          []string
+	ReadyTimeout time.Duration
+	Dir          string
+}
+
+func ParseRunConfig(data *RunData) (*RunConfig, error) {
+	var err error
+	conf := &RunConfig{}
+
+	if data.ReadyPattern == "" {
+		data.ReadyPattern = ".*"
+	}
+
+	if data.ReadyTimeout == "" {
+		data.ReadyTimeout = "100ms"
+	}
+
+	conf.ReadyTimeout, err = time.ParseDuration(data.ReadyTimeout)
+	if err != nil {
+		return nil, err
+	}
+
+	conf.ReadyExp, err = regexp.Compile(data.ReadyPattern)
+	if err != nil {
+		return nil, err
+	}
+
+	conf.Cmd = data.Command
+	conf.Dir = data.Dir
+
+	return conf, nil
+}
 
 //
 type StateProviderConfig struct {
@@ -39,7 +74,7 @@ type Config struct {
 
 	depConfigs []*DependencyConfig
 	spConfigs  []*StateProviderConfig
-	runCmd     *exec.Cmd
+	runConfig  *RunConfig
 }
 
 func Parse(cd *ConfigData) (*Config, error) {
@@ -109,26 +144,21 @@ func Parse(cd *ConfigData) (*Config, error) {
 		})
 	}
 
-	//parse run into a cmd if anything is specified
-	var rcmd *exec.Cmd
-	if cd.Run != nil && len(cd.Run.Command) > 0 {
-		rcmd = exec.Command(cd.Run.Command[0], cd.Run.Command[1:]...)
-		rcmd.Dir = cd.Run.Dir
+	//parse data about running the tested service, default to empty struct
+	if cd.Run == nil {
+		cd.Run = &RunData{}
 	}
 
-	return &Config{cd, depsconf, spconf, rcmd}, nil
+	rconf, err := ParseRunConfig(cd.Run)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Config{cd, depsconf, spconf, rconf}, nil
 }
 
-func (c *Config) RunCommand(overwrite *exec.Cmd) (*exec.Cmd, error) {
-	if overwrite != nil {
-		c.runCmd = overwrite
-	}
-
-	if c.runCmd == nil {
-		return nil, fmt.Errorf("No configuration for starting your service, edit the configuration file (%s) or provide as command line argument.", ConfigFile)
-	}
-
-	return c.runCmd, nil
+func (c *Config) RunConfig() *RunConfig {
+	return c.runConfig
 }
 
 func (c *Config) StateProviderConfig(pname string) StateProviderC {

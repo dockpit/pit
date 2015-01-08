@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
+
+	"github.com/dockpit/exec"
 )
 
 var tmpl_test_success = `Tested successful!
@@ -84,37 +86,20 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}
 
 	//get command from configuration
-	cmd, err := conf.RunCommand(nil)
+	run := conf.RunConfig().Cmd
+
+	//create command that can has timedout start& stop
+	tcmd := exec.Command(run[0], run[1:]...)
+	tcmd.Stdout = os.Stdout
+	tcmd.Stderr = os.Stderr
+
+	err = tcmd.StartWithTimeout(conf.RunConfig().ReadyTimeout, conf.RunConfig().ReadyExp)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// @todo about using go run:
-	// - http://stackoverflow.com/questions/24982845/process-kill-on-child-processes
-	// - https://groups.google.com/forum/#!searchin/golang-nuts/interrupt$20signal/golang-nuts/nayHpf8dVxI/_QO30bLWtrcJ
-
-	//run it but continue
-	err = cmd.Start()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	defer func() {
-		fmt.Println("Signalling...")
-		err = cmd.Process.Signal(os.Interrupt)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		eerr := cmd.Wait()
-		fmt.Println(eerr)
-	}()
-
-	fmt.Printf("Waiting on %s...\n", cmd.Args)
-	<-time.After(time.Second)
+	//@todo make this configurable
+	defer tcmd.StopWithTimeout(time.Second)
 
 	//run all tests, for all resources
 	res, err := contract.Resources()
