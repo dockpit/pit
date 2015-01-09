@@ -8,6 +8,7 @@ type StateProviderConfigData struct {
 	Ports        []string `json:"ports"`
 	ReadyPattern string   `json:"ready_pattern"`
 	ReadyTimeout string   `json:"ready_timeout"`
+	DefaultState string   `json:"default_state"`
 	Cmd          []string `json:"command"`
 }
 

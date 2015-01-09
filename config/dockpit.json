@@ -11,7 +11,8 @@
 			"ports": ["27017:27017"],
 			"ready_pattern": ".*waiting.*",
 			"ready_timeout": "10s",
-			"command": ["--nojournal"]
+			"command": ["--nojournal"],
+			"default_state": "no users"
 		}
 	},
 	"run": {

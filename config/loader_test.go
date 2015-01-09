@@ -37,11 +37,15 @@ func TestLoaderLoad(t *testing.T) {
 
 	//state provider spec
 
-	// assert bindings
+	// assert mysql state provider
+	mysqlc := c.StateProviderConfig("mysql")
+
+	assert.Equal(t, "default", mysqlc.DefaultState())
 
 	// assert mongo state provider
 	mongoc := c.StateProviderConfig("mongodb")
 
+	assert.Equal(t, "no users", mongoc.DefaultState())
 	assert.Equal(t, time.Second*10, mongoc.ReadyTimeout())
 	assert.Equal(t, []string{"--nojournal"}, mongoc.Cmd())
 	assert.Equal(t, true, mongoc.ReadyExp().MatchString("is waiting for conn"))

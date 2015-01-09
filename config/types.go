@@ -12,9 +12,11 @@ var ConfigFile = "dockpit.json"
 type DependencyC interface{}
 
 type StateProviderC interface {
+	Name() string
 	PortBindings() map[docker.Port][]docker.PortBinding
 	ReadyExp() *regexp.Regexp
 	ReadyTimeout() time.Duration
+	DefaultState() string
 	Cmd() []string
 }
 

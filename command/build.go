@@ -64,6 +64,19 @@ func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
+	//load configuration
+	conf, err := c.LoadConfig(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//add default states
+	for _, pc := range conf.ProviderConfigs() {
+		if sts, ok := states[pc.Name()]; ok {
+			states[pc.Name()] = append(sts, pc.DefaultState())
+		}
+	}
+
 	//get the state manager
 	m, err := c.StateManager(ctx)
 	if err != nil {

@@ -23,5 +23,5 @@ func TestBuildingOfStates(t *testing.T) {
 		"-config", filepath.Join(wd, "test_example"),
 		"-examples", filepath.Join(wd, "test_example", command.ManifestExamplesPath),
 		"-states", filepath.Join(wd, "test_example", command.ManifestStatesPath),
-	}, `(?s)built.*successful`, out)
+	}, `(?s)pitstate_mongo_52f3cc.*pitstate_mongo_1815bee1bdd121d.*successful`, out)
 }

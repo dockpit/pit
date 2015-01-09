@@ -47,12 +47,13 @@ func ParseRunConfig(data *RunData) (*RunConfig, error) {
 
 //
 type StateProviderConfig struct {
-	Name string
+	name string
 
 	portBindings map[docker.Port][]docker.PortBinding
 	readyExp     *regexp.Regexp
 	cmd          []string
 	readyTimeout time.Duration
+	defaultState string
 }
 
 func (s *StateProviderConfig) PortBindings() map[docker.Port][]docker.PortBinding {
@@ -61,6 +62,8 @@ func (s *StateProviderConfig) PortBindings() map[docker.Port][]docker.PortBindin
 func (s *StateProviderConfig) ReadyExp() *regexp.Regexp    { return s.readyExp }
 func (s *StateProviderConfig) ReadyTimeout() time.Duration { return s.readyTimeout }
 func (s *StateProviderConfig) Cmd() []string               { return s.cmd }
+func (s *StateProviderConfig) Name() string                { return s.name }
+func (s *StateProviderConfig) DefaultState() string        { return s.defaultState }
 
 //
 type DependencyConfig struct {
@@ -134,13 +137,19 @@ func Parse(cd *ConfigData) (*Config, error) {
 			return nil, err
 		}
 
+		//default state
+		if conf.DefaultState == "" {
+			conf.DefaultState = "default"
+		}
+
 		spconf = append(spconf, &StateProviderConfig{
-			Name: pname,
+			name: pname,
 
 			portBindings: portb,
 			readyExp:     exp,
 			cmd:          conf.Cmd,
 			readyTimeout: d,
+			defaultState: conf.DefaultState,
 		})
 	}
 
@@ -163,7 +172,7 @@ func (c *Config) RunConfig() *RunConfig {
 
 func (c *Config) StateProviderConfig(pname string) StateProviderC {
 	for _, spc := range c.spConfigs {
-		if spc.Name == pname {
+		if spc.name == pname {
 			return spc
 		}
 	}
@@ -174,7 +183,7 @@ func (c *Config) StateProviderConfig(pname string) StateProviderC {
 func (c *Config) PortBindingsForState(pname string) map[docker.Port][]docker.PortBinding {
 	res := map[docker.Port][]docker.PortBinding{}
 	for _, spc := range c.spConfigs {
-		if spc.Name == pname {
+		if spc.name == pname {
 			return spc.portBindings
 		}
 	}
