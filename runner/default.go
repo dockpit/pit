@@ -94,7 +94,7 @@ func (d *Default) Run(conf config.C, c contract.C, sm *state.Manager, subject *u
 
 	//loop over each resource in the contract
 	for _, r := range res {
-		fmt.Fprintf(d.out, "Resource '%s'", r.Pattern())
+		fmt.Fprintf(d.out, "%s\n", r.Pattern())
 
 		acs, err := r.Actions()
 		if err != nil {
@@ -103,6 +103,7 @@ func (d *Default) Run(conf config.C, c contract.C, sm *state.Manager, subject *u
 
 		//loop over each action
 		for _, a := range acs {
+			fmt.Fprintf(d.out, "%s %s\n", a.Method(), r.Pattern())
 
 			//for each test
 			for _, p := range a.Pairs() {
