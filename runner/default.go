@@ -31,9 +31,23 @@ func (d *Default) Name() string { return "default" }
 func (d *Default) RunOne(conf config.C, p *contract.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
 	t := p.GenerateTest()
 
-	//start states
+	//map states in contract
+	states := map[string]string{}
 	for pname, g := range p.Given {
-		_, err := sm.Start(pname, g.Name)
+		states[pname] = g.Name
+
+	}
+
+	//add default states if given doesn't give one
+	for _, pc := range conf.ProviderConfigs() {
+		if _, ok := states[pc.Name()]; !ok {
+			states[pc.Name()] = pc.DefaultState()
+		}
+	}
+
+	//actually start the states
+	for pname, sname := range states {
+		_, err := sm.Start(pname, sname)
 		if err != nil {
 			return err
 		}
@@ -41,8 +55,8 @@ func (d *Default) RunOne(conf config.C, p *contract.Pair, sm *state.Manager, sub
 
 	//stop states
 	defer func() {
-		for pname, g := range p.Given {
-			err := sm.Stop(pname, g.Name)
+		for pname, sname := range states {
+			err := sm.Stop(pname, sname)
 			if err != nil {
 				reerr = err
 				return

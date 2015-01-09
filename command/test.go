@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	// "os"
 	"text/template"
-	// "time"
 
 	"github.com/codegangsta/cli"
 

@@ -29,7 +29,15 @@ func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, `[]`+"\n")
 	} else if r.URL.Path == "/users/21" {
-		fmt.Fprintf(w, `{"id": 21}`+"\n")
+
+		_, err := mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.NotFound(w, r)
+		return
 	}
 }
 
