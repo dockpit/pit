@@ -156,7 +156,7 @@ func (p *Pair) GenerateHandler() web.Handler {
 }
 
 func (p *Pair) GenerateTest() TestFunc {
-	return func(host, dhost string, client *http.Client, sm StateManager, conf config.C) error {
+	return func(host, dhost string, client *http.Client, conf config.C) error {
 
 		//copy request from example pair
 		req := *p.Request
@@ -171,26 +171,10 @@ func (p *Pair) GenerateTest() TestFunc {
 		req.URL.Host = h.Host
 		req.URL.Scheme = h.Scheme
 
-		//start states
-		for pname, g := range p.Given {
-			_, err := sm.Start(pname, g.Name)
-			if err != nil {
-				return err
-			}
-		}
-
 		//do the actual request
 		resp, err := client.Do(&req)
 		if err != nil {
 			return err
-		}
-
-		//stop states
-		for pname, g := range p.Given {
-			err := sm.Stop(pname, g.Name)
-			if err != nil {
-				return err
-			}
 		}
 
 		//let the pair assert itself

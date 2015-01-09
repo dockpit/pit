@@ -5,7 +5,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
+	"github.com/dockpit/exec"
 	"github.com/dockpit/pit/config"
 	"github.com/dockpit/pit/contract"
 	"github.com/dockpit/state"
@@ -26,6 +28,50 @@ type Default struct {
 
 func (d *Default) Name() string { return "default" }
 
+func (d *Default) RunOne(conf config.C, p *contract.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
+	t := p.GenerateTest()
+
+	//start states
+	for pname, g := range p.Given {
+		_, err := sm.Start(pname, g.Name)
+		if err != nil {
+			return err
+		}
+	}
+
+	//stop states
+	defer func() {
+		for pname, g := range p.Given {
+			err := sm.Stop(pname, g.Name)
+			if err != nil {
+				reerr = err
+				return
+			}
+		}
+	}()
+
+	//start subject
+	tcmd := exec.Command(conf.RunConfig().Cmd[0], conf.RunConfig().Cmd[1:]...)
+	tcmd.Stdout = d.out
+	tcmd.Stderr = d.out
+
+	err := tcmd.StartWithTimeout(conf.RunConfig().ReadyTimeout, conf.RunConfig().ReadyExp)
+	if err != nil {
+		return err
+	}
+
+	//stop subject, @todo this to be configurable
+	defer tcmd.StopWithTimeout(time.Second * 2)
+
+	//execute the actual test
+	err = t(subject.String(), docker.String(), http.DefaultClient, conf)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (d *Default) Run(conf config.C, c contract.C, sm *state.Manager, subject *url.URL, docker *url.URL) error {
 	res, err := c.Resources()
 	if err != nil {
@@ -45,70 +91,14 @@ func (d *Default) Run(conf config.C, c contract.C, sm *state.Manager, subject *u
 		for _, a := range acs {
 
 			//for each test
-			for _, tt := range a.Tests() {
-
-				//execute the actual test
-				err := tt(subject.String(), docker.String(), http.DefaultClient, sm, conf)
+			for _, p := range a.Pairs() {
+				err = d.RunOne(conf, p, sm, subject, docker)
 				if err != nil {
 					return err
 				}
-
 			}
 		}
 	}
 
 	return nil
 }
-
-// //start default states for each provider
-// for _, pc := range conf.ProviderConfigs() {
-// 	_, err = sm.Start(pc.Name(), pc.DefaultState())
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-// }
-
-// //get command from configuration
-// run := conf.RunConfig().Cmd
-
-// //create command that can has timedout start& stop
-// tcmd := exec.Command(run[0], run[1:]...)
-// tcmd.Stdout = os.Stdout
-// tcmd.Stderr = os.Stderr
-
-// err = tcmd.StartWithTimeout(conf.RunConfig().ReadyTimeout, conf.RunConfig().ReadyExp)
-// if err != nil {
-// 	return nil, nil, err
-// }
-
-// //@todo make this configurable
-// defer tcmd.StopWithTimeout(time.Second)
-
-// //run all tests, for all resources
-// res, err := contract.Resources()
-// if err != nil {
-// 	return nil, nil, err
-// }
-
-// errs := []error{}
-// for _, r := range res {
-// 	acs, err := r.Actions()
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-
-// 	for _, a := range acs {
-// 		for _, tt := range a.Tests() {
-
-// 			err := tt(host, dhost, http.DefaultClient, sm, conf)
-// 			if err != nil {
-// 				//@todo handle failed tests better
-
-// 				//gather testing errors
-// 				errs = append(errs, err)
-
-// 				fmt.Fprintf(c.out, "%s\n", err.Error())
-// 			}
-// 		}
-// 	}
-// }

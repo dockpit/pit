@@ -26,7 +26,7 @@ type StateManager interface {
 }
 
 //
-type TestFunc func(host, dhost string, c *http.Client, sm StateManager, conf config.C) error
+type TestFunc func(host, dhost string, c *http.Client, conf config.C) error
 
 //
 //
