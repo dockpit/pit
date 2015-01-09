@@ -86,7 +86,7 @@ func (d *Default) RunOne(conf config.C, p *contract.Pair, sm *state.Manager, sub
 	return nil
 }
 
-func (d *Default) Run(conf config.C, c contract.C, sm *state.Manager, subject *url.URL, docker *url.URL) error {
+func (d *Default) Run(conf config.C, c contract.C, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) error {
 	res, err := c.Resources()
 	if err != nil {
 		return err
@@ -107,9 +107,13 @@ func (d *Default) Run(conf config.C, c contract.C, sm *state.Manager, subject *u
 
 			//for each test
 			for _, p := range a.Pairs() {
-				err = d.RunOne(conf, p, sm, subject, docker)
-				if err != nil {
-					return err
+				if sel.ShouldRun(p) {
+					err = d.RunOne(conf, p, sm, subject, docker)
+					if err != nil {
+						return err
+					}
+				} else {
+					fmt.Fprintf(d.out, "skipping\n")
 				}
 			}
 		}

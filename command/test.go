@@ -13,8 +13,6 @@ import (
 
 var tmpl_test_success = `Tested successful!
 `
-var tmpl_test_failed = `Test failed...
-`
 
 type Test struct {
 	*cmd
@@ -88,6 +86,17 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
+	//see if we want to run a subset
+	selin := ctx.Args().Get(1)
+	if selin == "" {
+		selin = "*"
+	}
+
+	sel, err := runner.Parse(selin)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	//load configuration
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
@@ -101,7 +110,7 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}
 
 	//run tests
-	err = r.Run(conf, contract, sm, hurl, durl)
+	err = r.Run(conf, contract, sel, sm, hurl, durl)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -10,15 +10,13 @@ import (
 	"github.com/dockpit/state"
 )
 
-type Suite interface {
-	SetUp() error
-	Run() error
-	TearDown() error
+type Selector interface {
+	ShouldRun(*contract.Pair) bool
 }
 
 type Runner interface {
 	Name() string
-	Run(config.C, contract.C, *state.Manager, *url.URL, *url.URL) error
+	Run(config.C, contract.C, Selector, *state.Manager, *url.URL, *url.URL) error
 }
 
 func Create(name string, w io.Writer) (Runner, error) {
