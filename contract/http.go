@@ -59,11 +59,6 @@ func (p *Pair) BelongsToAction(a A) bool {
 func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 	var err error
 
-	//assert response code
-	if p.Response.StatusCode != resp.StatusCode {
-		return fmt.Errorf("StatusCode not equal, expected '%d' got: '%d'", p.Response.StatusCode, resp.StatusCode)
-	}
-
 	//get expected content
 	c1 := []byte{}
 	if p.Response.Body != nil {
@@ -90,6 +85,11 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 		}
 
 		resp.Body = ioutil.NopCloser(buff)
+	}
+
+	//assert response code
+	if p.Response.StatusCode != resp.StatusCode {
+		return fmt.Errorf("StatusCode not equal, expected '%d' got: '%d', content: '%s'", p.Response.StatusCode, resp.StatusCode, string(c2))
 	}
 
 	//for now add an line feed (fair comparision)
