@@ -12,6 +12,8 @@ import (
 
 	"github.com/zenazn/goji/web"
 
+	"github.com/dockpit/contrast"
+	"github.com/dockpit/contrast/assert"
 	"github.com/dockpit/pit/config"
 )
 
@@ -92,19 +94,21 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 		return fmt.Errorf("StatusCode not equal, expected '%d' got: '%d', content: '%s'", p.Response.StatusCode, resp.StatusCode, string(c2))
 	}
 
-	//for now add an line feed (fair comparision)
-	//@todo make this configurabe
-	//@todo check if al ready is there
-	lf := []byte("\n")[0]
-	if len(c1) > 0 && c1[len(c1)-1] != lf {
-		c1 = append(c1, lf)
-	}
+	//determine content mime type by looking at the example body
+	mime := http.DetectContentType(c1)
 
-	if !bytes.Equal(c1, c2) {
-		return fmt.Errorf("Content not equal, expected '%s' got: '%s'", string(c1), string(c2))
+	//create parser using mimetype
+	ats := []*assert.Archetype{}
+	parser := contrast.Parser(mime, ats)
+
+	//assert content
+	err = contrast.Assert(c1, c2, parser)
+	if err != nil {
+		return fmt.Errorf("Content Assertion: %s", err)
 	}
 
 	//check if resp has _at least_ the expected headers
+	//@todo switch from _at teast_ to (strict) equal for consitency with content assertion
 ExpVals:
 	for key, expvals := range p.Response.Header {
 		val := resp.Header.Get(key)
