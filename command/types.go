@@ -14,8 +14,8 @@ import (
 	"github.com/fsouza/go-dockerclient"
 
 	"github.com/dockpit/lang"
+	"github.com/dockpit/lang/manifest"
 	"github.com/dockpit/pit/config"
-	"github.com/dockpit/pit/contract"
 	"github.com/dockpit/state"
 )
 
@@ -197,7 +197,7 @@ func (c *cmd) ExamplesPath(ctx *cli.Context) string {
 	return strings.TrimSpace(ctx.String("examples"))
 }
 
-func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
+func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.C, error) {
 
 	//retrieve path
 	path := c.ExamplesPath(ctx)
@@ -214,7 +214,7 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (contract.C, error) {
 	}
 
 	//create contract from data
-	contract, err := contract.NewContract(cd)
+	contract, err := manifest.NewContract(cd)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create contract from parsed data: %s", err)
 	}

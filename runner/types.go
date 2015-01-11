@@ -5,18 +5,18 @@ import (
 	"io"
 	"net/url"
 
+	"github.com/dockpit/lang/manifest"
 	"github.com/dockpit/pit/config"
-	"github.com/dockpit/pit/contract"
 	"github.com/dockpit/state"
 )
 
 type Selector interface {
-	ShouldRun(*contract.Pair) bool
+	ShouldRun(*manifest.Pair) bool
 }
 
 type Runner interface {
 	Name() string
-	Run(config.C, contract.C, Selector, *state.Manager, *url.URL, *url.URL) error
+	Run(config.C, manifest.C, Selector, *state.Manager, *url.URL, *url.URL) error
 }
 
 func Create(name string, w io.Writer) (Runner, error) {

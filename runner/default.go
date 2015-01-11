@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/dockpit/exec"
+	"github.com/dockpit/lang/manifest"
 	"github.com/dockpit/pit/config"
-	"github.com/dockpit/pit/contract"
 	"github.com/dockpit/state"
 )
 
@@ -28,7 +28,7 @@ type Default struct {
 
 func (d *Default) Name() string { return "default" }
 
-func (d *Default) RunOne(conf config.C, p *contract.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
+func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
 	t := p.GenerateTest()
 
 	//map states in contract
@@ -86,7 +86,7 @@ func (d *Default) RunOne(conf config.C, p *contract.Pair, sm *state.Manager, sub
 	return nil
 }
 
-func (d *Default) Run(conf config.C, c contract.C, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) error {
+func (d *Default) Run(conf config.C, c manifest.C, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) error {
 	res, err := c.Resources()
 	if err != nil {
 		return err

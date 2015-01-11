@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/dockpit/lang"
-	"github.com/dockpit/pit/contract"
+	"github.com/dockpit/lang/manifest"
 )
 
 //
 type AllSelector struct{}
 
-func (a *AllSelector) ShouldRun(*contract.Pair) bool {
+func (a *AllSelector) ShouldRun(*manifest.Pair) bool {
 	return true
 }
 
@@ -19,7 +19,7 @@ type CaseSelector struct {
 	Case string
 }
 
-func (a *CaseSelector) ShouldRun(p *contract.Pair) bool {
+func (a *CaseSelector) ShouldRun(p *manifest.Pair) bool {
 	return p.Name == a.Case
 }
 
