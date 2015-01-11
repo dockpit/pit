@@ -3,8 +3,8 @@
 # XC_ARCH = "386 amd64 arm"
 # XC_OS = "linux darwin windows freebsd openbsd"
 
-XC_ARCH = "amd64"
-XC_OS = "darwin"
+XC_ARCH = "386 amd64"
+XC_OS = "darwin linux"
 BT_API_KEY = $$BINTRAY_API_KEY
 
 #cross-compile binaries
