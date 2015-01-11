@@ -16,7 +16,7 @@ type Selector interface {
 
 type Runner interface {
 	Name() string
-	Run(config.C, manifest.C, Selector, *state.Manager, *url.URL, *url.URL) error
+	Run(config.C, manifest.M, Selector, *state.Manager, *url.URL, *url.URL) error
 }
 
 func Create(name string, w io.Writer) (Runner, error) {

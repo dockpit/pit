@@ -28,7 +28,7 @@ func (c *Install) Name() string {
 }
 
 func (c *Install) Description() string {
-	return fmt.Sprintf("Parse examples into a contract and extract all dependencies. Install each dependency into the Dockpit workspace which is expected to be specified as the PIT_PATH environment variable")
+	return fmt.Sprintf("Parse examples into a manifest and extract all dependencies. Install each dependency into the Dockpit workspace which is expected to be specified as the PIT_PATH environment variable")
 }
 
 func (c *Install) Usage() string {
@@ -54,32 +54,32 @@ func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error)
 		return nil, nil, fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
 	}
 
-	//get contract
-	contract, err := c.ParseExamples(ctx)
+	//get manifest
+	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	//retrieve all dependencies
-	deps, err := contract.Dependencies()
+	deps, err := m.Dependencies()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	//use the manager to install all dependencies into pit path
-	m := debs.NewManager(pp)
+	dm := debs.NewManager(pp)
 	installation := map[string]string{}
 	for dep, _ := range deps {
 		fmt.Fprintf(c.out, "Installing %s:\n", dep)
 
-		err := m.Install(dep)
+		err := dm.Install(dep)
 		if err != nil {
 			fmt.Fprintf(c.out, "ERROR \n")
 			return nil, nil, err
 		}
 
 		//add location installation
-		installation[dep], err = m.Locate(dep)
+		installation[dep], err = dm.Locate(dep)
 		if err != nil {
 			return nil, nil, err
 		}

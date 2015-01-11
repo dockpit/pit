@@ -63,14 +63,14 @@ func (c *Unmock) Run(ctx *cli.Context) (*template.Template, interface{}, error) 
 		return nil, nil, err
 	}
 
-	//get contract
-	contract, err := c.ParseExamples(ctx)
+	//get manifest
+	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	//retrieve all dependencies
-	deps, err := contract.Dependencies()
+	deps, err := m.Dependencies()
 	if err != nil {
 		return nil, nil, err
 	}

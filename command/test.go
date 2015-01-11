@@ -63,8 +63,8 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		return nil, nil, err
 	}
 
-	//get contract
-	contract, err := c.ParseExamples(ctx)
+	//get manifest
+	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -110,7 +110,7 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}
 
 	//run tests
-	err = r.Run(conf, contract, sel, sm, hurl, durl)
+	err = r.Run(conf, m, sel, sm, hurl, durl)
 	if err != nil {
 		return nil, nil, err
 	}

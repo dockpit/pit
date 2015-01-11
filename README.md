@@ -12,7 +12,7 @@ A command line tool for (micro)service developers that allows them to define con
 	// - http://stackoverflow.com/questions/24982845/process-kill-on-child-processes
 	// - https://groups.google.com/forum/#!searchin/golang-nuts/interrupt$20signal/golang-nuts/nayHpf8dVxI/_QO30bLWtrcJ
 
-## backlog
+## Backlog
 - (major) overhaul cli output
 	* test result output
 	* inform when there are no examples to test against instead of just saying 'success'
@@ -23,7 +23,18 @@ A command line tool for (micro)service developers that allows them to define con
 	* os.Interrupt signal
 
 - (minor) panics cause test containers to be left open, which cause subsequent tests to not run
+## Refactor & Cleanup
+- Switch to testify/assert everywhere
+- switch to a single docker client everywhere (remove dependency on docker repo pkg)
+	- remove portbinding form config package (nothing in there is really docker(client)specific )
+- Remove dependency for integration testing on ex-store-customer (use pit-token package instead)
+- rename all contract references in lang/manifest to manifest
+- rename 'contrast' package to something more functional
+- move archetype struct to lang/manifest
 
-## TODO
+## Documentation
+- add godoc and examples for each sub package
+
+## Roadmap
 - investigate what to do with services that expose multiple ports for testing
 - (optional) also prevent double case names in contract package

@@ -31,7 +31,7 @@ func (d *Default) Name() string { return "default" }
 func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
 	t := p.GenerateTest()
 
-	//map states in contract
+	//map states in manifest
 	states := map[string]string{}
 	for pname, g := range p.Given {
 		states[pname] = g.Name
@@ -86,13 +86,13 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 	return nil
 }
 
-func (d *Default) Run(conf config.C, c manifest.C, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) error {
-	res, err := c.Resources()
+func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) error {
+	res, err := m.Resources()
 	if err != nil {
 		return err
 	}
 
-	//loop over each resource in the contract
+	//loop over each resource in the manifest
 	for _, r := range res {
 		fmt.Fprintf(d.out, "%s\n", r.Pattern())
 

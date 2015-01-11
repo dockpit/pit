@@ -197,14 +197,14 @@ func (c *cmd) ExamplesPath(ctx *cli.Context) string {
 	return strings.TrimSpace(ctx.String("examples"))
 }
 
-func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.C, error) {
+func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.M, error) {
 
 	//retrieve path
 	path := c.ExamplesPath(ctx)
 
 	//parse the spec
 	p := lang.NewParser(path)
-	cd, err := p.Parse()
+	md, err := p.Parse()
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, fmt.Errorf("Failed to open examples in '%s', is this a Dockpit project?", path)
@@ -213,13 +213,13 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.C, error) {
 		return nil, fmt.Errorf("Parsing error: %s", err)
 	}
 
-	//create contract from data
-	contract, err := manifest.NewContract(cd)
+	//create manifest from data
+	m, err := manifest.NewManifest(md)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create contract from parsed data: %s", err)
+		return nil, fmt.Errorf("Failed to create manifest from parsed data: %s", err)
 	}
 
-	return contract, nil
+	return m, nil
 }
 
 func (c *cmd) templated(fn func(c *cli.Context) (*template.Template, interface{}, error)) func(ctx *cli.Context) {

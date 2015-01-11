@@ -52,14 +52,14 @@ func (c *Build) Action() func(ctx *cli.Context) {
 
 func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
-	//get contract
-	contract, err := c.ParseExamples(ctx)
+	//get manifest
+	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	//get all states in the contract
-	states, err := contract.States()
+	//get all states in the manifest
+	states, err := m.States()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -78,7 +78,7 @@ func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	}
 
 	//get the state manager
-	m, err := c.StateManager(ctx)
+	sm, err := c.StateManager(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -87,7 +87,7 @@ func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	for pname, snames := range states {
 		for _, sname := range snames {
 			fmt.Fprintf(c.out, "Building state %s/%s:\n", pname, sname)
-			iname, err := m.Build(pname, sname, c.out)
+			iname, err := sm.Build(pname, sname, c.out)
 			if err != nil {
 				fmt.Fprintf(c.out, "ERROR \n")
 				return nil, nil, err
