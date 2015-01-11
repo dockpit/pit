@@ -17,7 +17,7 @@ func NewContract(data *ContractData) (*Contract, error) {
 		for _, c := range r.Cases {
 
 			//create pair from data
-			p, err := NewPairFromData(c)
+			p, err := NewPairFromData(c, data)
 			if err != nil {
 				return nil, err
 			}

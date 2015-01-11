@@ -27,7 +27,8 @@ func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, `[]`+"\n")
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `[{"id":1}]`+"\n")
 	} else if r.URL.Path == "/users/21" {
 
 		_, err := mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)

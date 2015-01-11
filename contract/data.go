@@ -2,6 +2,8 @@ package contract
 
 import (
 	"net/http"
+
+	"github.com/dockpit/contrast/assert"
 )
 
 type Given struct {
@@ -44,6 +46,7 @@ type CaseData struct {
 //
 //
 type ContractData struct {
-	Name      string          `json:"name"`
-	Resources []*ResourceData `json:"resources"`
+	Name       string              `json:"name"`
+	Resources  []*ResourceData     `json:"resources"`
+	Archetypes []*assert.Archetype `json:"archetypes"`
 }

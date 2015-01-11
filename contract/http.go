@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"net/url"
 	"strings"
@@ -21,14 +22,15 @@ import (
 //
 //
 type Pair struct {
-	Name     string
-	Request  *http.Request
-	Response *http.Response
-	While    []While
-	Given    map[string]Given
+	Name       string
+	Request    *http.Request
+	Response   *http.Response
+	While      []While
+	Given      map[string]Given
+	Archetypes []*assert.Archetype
 }
 
-func NewPairFromData(data *CaseData) (*Pair, error) {
+func NewPairFromData(data *CaseData, cdata *ContractData) (*Pair, error) {
 
 	//create request from data
 	req, err := http.NewRequest(data.When.Method, data.When.Path, strings.NewReader(data.When.Body))
@@ -45,7 +47,7 @@ func NewPairFromData(data *CaseData) (*Pair, error) {
 	resp.Body = ioutil.NopCloser(strings.NewReader(data.Then.Body))
 	resp.Header = data.Then.Headers
 
-	return &Pair{data.Name, req, resp, data.While, data.Given}, nil
+	return &Pair{data.Name, req, resp, data.While, data.Given, cdata.Archetypes}, nil
 }
 
 func (p *Pair) BelongsToAction(a A) bool {
@@ -95,11 +97,17 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 	}
 
 	//determine content mime type by looking at the example body
-	mime := http.DetectContentType(c1)
+	//but if a content-type is set specifically overwrite this
+	mimet := http.DetectContentType(c1)
+	if ct := p.Response.Header.Get("Content-Type"); ct != "" {
+		mimet, _, err = mime.ParseMediaType(ct)
+		if err != nil {
+			return err
+		}
+	}
 
 	//create parser using mimetype
-	ats := []*assert.Archetype{}
-	parser := contrast.Parser(mime, ats)
+	parser := contrast.Parser(mimet, p.Archetypes)
 
 	//assert content
 	err = contrast.Assert(c1, c2, parser)
