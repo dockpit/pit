@@ -112,7 +112,7 @@ func (p *Pair) IsExpectedResponse(resp *http.Response) error {
 	//assert content
 	err = contrast.Assert(c1, c2, parser)
 	if err != nil {
-		return fmt.Errorf("Content Assertion: %s", err)
+		return fmt.Errorf("Content Assertion: %s\n Archetypes: %s", err, p.Archetypes)
 	}
 
 	//check if resp has _at least_ the expected headers
