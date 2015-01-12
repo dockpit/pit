@@ -13,7 +13,7 @@ type DependencyC interface{}
 
 type StateProviderC interface {
 	Name() string
-	PortBindings() map[docker.Port][]docker.PortBinding
+	Ports() []*PortConfig
 	ReadyExp() *regexp.Regexp
 	ReadyTimeout() time.Duration
 	DefaultState() string
@@ -24,6 +24,7 @@ type C interface {
 	DependencyConfigs() []DependencyC
 	ProviderConfigs() []StateProviderC
 	PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding
+	PortsForStateProvider(pname string) []*PortConfig
 	StateProviderConfig(pname string) StateProviderC
 	RunConfig() *RunConfig
 }

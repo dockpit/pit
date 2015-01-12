@@ -1,9 +1,7 @@
 package config
 
-//
 type DependencyConfigData []string
 
-//
 type StateProviderConfigData struct {
 	Ports        []string `json:"ports"`
 	ReadyPattern string   `json:"ready_pattern"`
@@ -12,7 +10,6 @@ type StateProviderConfigData struct {
 	Cmd          []string `json:"command"`
 }
 
-//
 type RunData struct {
 	Command      []string `json:"command"`
 	Dir          string   `json:"dir"`
@@ -20,7 +17,6 @@ type RunData struct {
 	ReadyTimeout string   `json:"ready_timeout"`
 }
 
-//
 type ConfigData struct {
 	Dependencies   map[string]*DependencyConfigData    `json:"deps"`
 	StateProviders map[string]*StateProviderConfigData `json:"states"`

@@ -50,9 +50,9 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, []string{"--nojournal"}, mongoc.Cmd())
 	assert.Equal(t, true, mongoc.ReadyExp().MatchString("is waiting for conn"))
 
-	mongpc := mongoc.PortBindings()
-	assert.Equal(t, 1, len(mongpc["27017/tcp"]))
-	assert.Equal(t, "27017", mongpc["27017/tcp"][0].HostPort)
+	mongpc := c.PortsForStateProvider("mongodb")
+	assert.Equal(t, 1, len(mongpc))
+	assert.Equal(t, "27017", mongpc[0].Host)
 
 	// assert run command with nil (assume config has a run command for us configured)
 	rconf := c.RunConfig()
