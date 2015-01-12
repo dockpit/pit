@@ -22,7 +22,6 @@ A command line tool for (micro)service developers that allows them to define con
 	* enable cross-compilation (../../docker/docker/pkg/system/stat_unsupported.go:7: undefined: syscall.Stat_t)
 	* os.Interrupt signal
 
-- (minor) fix hard coded ip addresses
 - (minor) panics cause test containers to be left open, which cause subsequent tests to not run
 
 

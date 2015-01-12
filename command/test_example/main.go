@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"time"
@@ -10,18 +11,21 @@ import (
 	"labix.org/v2/mgo"
 )
 
+var mongo = flag.String("mongo", "mongodb://localhost:31000", "test should provide state ip")
+var token = flag.String("token", "http://localhost:4321", "test should provide dep ip")
+
 func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/users" {
 
 		//call dependency
-		_, err := http.Get("http://192.168.59.103:4321/health")
+		_, err := http.Get(fmt.Sprintf("%s/health", *token))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		//simulate state access
-		_, err = mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)
+		_, err = mgo.DialWithTimeout(*mongo, time.Millisecond*100)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -31,7 +35,7 @@ func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `[{"id":1}]`+"\n")
 	} else if r.URL.Path == "/users/21" {
 
-		_, err := mgo.DialWithTimeout("mongodb://192.168.59.103:31000", time.Millisecond*100)
+		_, err := mgo.DialWithTimeout(*mongo, time.Millisecond*100)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -44,6 +48,8 @@ func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 
 //a fake server for test_test.go
 func main() {
+	flag.Parse()
+
 	goji.Get("/*", handler)
 	goji.Serve()
 }

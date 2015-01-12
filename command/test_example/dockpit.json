@@ -11,7 +11,7 @@
 		}
 	},
 	"run": {
-		"command": ["/tmp/test"],
+		"command": ["/tmp/test", "--mongo=mongodb://{{.DockerHostname}}:31000", "--token=http://{{.DockerHostname}}:4321"],
 		"ready_timeout": "2s",
 		"ready_pattern": "Starting Goji"
 	}

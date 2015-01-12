@@ -19,6 +19,7 @@ type StateProviderC interface {
 }
 
 type C interface {
+	Data() *ConfigData
 	DependencyConfigs() []DependencyC
 	RunConfig() *RunConfig
 	ProviderConfigs() []StateProviderC

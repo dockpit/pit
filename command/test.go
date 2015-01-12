@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"strings"
 	"text/template"
 
 	"github.com/codegangsta/cli"
@@ -102,6 +103,12 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+
+	//set the special docker_host configuration
+	//@todo this is pretty hackish, but use env to set
+	//docker hostname (ip), possibly move this to command types
+	cdata := conf.Data()
+	cdata.DockerHostname = strings.SplitN(durl.Host, ":", 2)[0]
 
 	//create runner
 	r, err := runner.Create("default", c.out)

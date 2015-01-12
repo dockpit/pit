@@ -1,10 +1,12 @@
 package runner
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"text/template"
 	"time"
 
 	"github.com/dockpit/exec"
@@ -27,6 +29,32 @@ type Default struct {
 }
 
 func (d *Default) Name() string { return "default" }
+
+func (d *Default) TemplatedCommandArgs(conf config.C, args ...string) ([]string, error) {
+
+	res := []string{}
+	for i, arg := range args {
+
+		//parse each arg as a template
+		t := template.New(fmt.Sprintf("arg_%d", i))
+		t, err := t.Parse(arg)
+		if err != nil {
+			return args, err
+		}
+
+		//execute with conf for each arg and write
+		//to a buffer
+		buff := bytes.NewBuffer(nil)
+		err = t.Execute(buff, conf.Data())
+		if err != nil {
+			return args, err
+		}
+
+		res = append(res, buff.String())
+	}
+
+	return res, nil
+}
 
 func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
 	t := p.GenerateTest()
@@ -64,12 +92,18 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 		}
 	}()
 
+	//parse args as template
+	args, err := d.TemplatedCommandArgs(conf, conf.RunConfig().Cmd...)
+	if err != nil {
+		return err
+	}
+
 	//start subject
-	tcmd := exec.Command(conf.RunConfig().Cmd[0], conf.RunConfig().Cmd[1:]...)
+	tcmd := exec.Command(args[0], args[1:]...)
 	tcmd.Stdout = d.out
 	tcmd.Stderr = d.out
 
-	err := tcmd.StartWithTimeout(conf.RunConfig().ReadyTimeout, conf.RunConfig().ReadyExp)
+	err = tcmd.StartWithTimeout(conf.RunConfig().ReadyTimeout, conf.RunConfig().ReadyExp)
 	if err != nil {
 		return err
 	}

@@ -91,6 +91,10 @@ func Parse(cd *ConfigData) (*Config, error) {
 	return &Config{cd, depsconf, spconf, rconf}, nil
 }
 
+func (c *Config) Data() *ConfigData {
+	return c.data
+}
+
 func (c *Config) RunConfig() *RunConfig {
 	return c.runConfig
 }
