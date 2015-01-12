@@ -28,7 +28,6 @@ A command line tool for (micro)service developers that allows them to define con
 
 ## Refactor & Cleanup
 - Switch to testify/assert everywhere
-- switch to a single docker client everywhere (remove dependency on docker repo pkg)
 
 ## Roadmap
 - investigate what to do with services that expose multiple ports for testing
