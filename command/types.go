@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/codegangsta/cli"
-	"github.com/fsouza/go-dockerclient"
 
 	"github.com/dockpit/lang"
 	"github.com/dockpit/lang/manifest"
@@ -123,28 +121,6 @@ func (c *cmd) ParseExampleFlags() []cli.Flag {
 	return []cli.Flag{
 		cli.StringFlag{Name: "examples, e", Value: wd, Usage: fmt.Sprintf(" Specify where to look for examples.")},
 	}
-}
-
-func (c *cmd) DockerClient(ctx *cli.Context) (*docker.Client, error) {
-
-	//fetch required args
-	host, cert, err := c.DockerHostCertArguments(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	//parse docker host addr as url
-	hurl, err := url.Parse(host)
-	if err != nil {
-		return nil, err
-	}
-
-	//change to http connection
-	hurl.Scheme = "https"
-
-	//return client
-	return docker.NewTLSClient(hurl.String(), filepath.Join(cert, "cert.pem"), filepath.Join(cert, "key.pem"), filepath.Join(cert, "ca.pem"))
-
 }
 
 func (c *cmd) DockerHostCertArguments(ctx *cli.Context) (string, string, error) {

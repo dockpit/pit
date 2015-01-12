@@ -4,7 +4,7 @@
 # XC_OS = "linux darwin windows freebsd openbsd"
 
 XC_ARCH = "386 amd64"
-XC_OS = "darwin linux"
+XC_OS = "darwin linux windows"
 BT_API_KEY = $$BINTRAY_API_KEY
 
 #cross-compile binaries
@@ -17,7 +17,7 @@ build:
 	    -arch=$(XC_ARCH) \
 	    -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" \
 	    -output "bin/{{.OS}}_{{.Arch}}/{{.Dir}}" \
-	    ./...
+	    .
 
 #build for local testing
 dev:
