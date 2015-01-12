@@ -29,7 +29,7 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, 2, len(c.ProviderConfigs()))
 
 	//test portconfig fetching
-	deppc := c.PortBindingsForDep("github.com/dockpit/ex-store-customers")
+	deppc := c.PortBindingsForDep("github.com/dockpit/pit-token")
 
 	//assert binding
 	assert.Equal(t, 1, len(deppc["8000/tcp"]))

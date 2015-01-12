@@ -14,7 +14,7 @@ func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/users" {
 
 		//call dependency
-		_, err := http.Get("http://192.168.59.103:4321/customers")
+		_, err := http.Get("http://192.168.59.103:4321/health")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

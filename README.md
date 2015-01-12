@@ -28,7 +28,6 @@ A command line tool for (micro)service developers that allows them to define con
 - switch to a single docker client everywhere (remove dependency on docker repo pkg)
 	- remove portbinding form config package (nothing in there is really docker(client)specific )
 - Remove dependency for integration testing on ex-store-customer (use pit-token package instead)
-- move archetype struct to lang/manifest
 
 ## Documentation
 - add godoc and examples for each sub package

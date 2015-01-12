@@ -1,6 +1,6 @@
 {
 	"deps": {
-		"github.com/dockpit/ex-store-customers": ["8000:4321"]
+		"github.com/dockpit/pit-token": ["8000:4321"]
 	},
 	"states": {
 		"mongo": {
