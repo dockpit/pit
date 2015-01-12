@@ -28,8 +28,6 @@ A command line tool for (micro)service developers that allows them to define con
 - switch to a single docker client everywhere (remove dependency on docker repo pkg)
 	- remove portbinding form config package (nothing in there is really docker(client)specific )
 - Remove dependency for integration testing on ex-store-customer (use pit-token package instead)
-- rename all contract references in lang/manifest to manifest
-- rename 'contrast' package to something more functional
 - move archetype struct to lang/manifest
 
 ## Documentation
