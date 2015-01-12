@@ -24,6 +24,7 @@ dev:
 	gox \
 		-os="`go env GOOS`" \
 		-arch="`go env GOARCH`" \
+		-ldflags "-X main.Version `cat VERSION`-DEV -X main.Build `date -u +%Y%m%d%H%M%S`" \
 		-output "${GOPATH}/bin/pit" \
 		./...
 
