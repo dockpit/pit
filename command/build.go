@@ -3,13 +3,9 @@ package command
 import (
 	"fmt"
 	"io"
-	// "os"
-	// "strings"
 	"text/template"
 
 	"github.com/codegangsta/cli"
-
-	// "github.com/dockpit/state"
 )
 
 var tmpl_build = `State building successful!`

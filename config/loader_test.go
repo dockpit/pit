@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bmizerany/assert"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/dockpit/pit/config"
 )
@@ -25,14 +25,14 @@ func TestLoaderLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, 1, len(c.DependencyConfigs()))
-	assert.Equal(t, 2, len(c.ProviderConfigs()))
+	assert.Len(t, c.DependencyConfigs(), 1)
+	assert.Len(t, c.ProviderConfigs(), 2)
 
 	//test portconfig fetching
 	deppc := c.PortsForDependency("github.com/dockpit/pit-token")
 
 	//assert binding
-	assert.Equal(t, 1, len(deppc))
+	assert.Len(t, deppc, 1)
 	assert.Equal(t, "4321", deppc[0].Host)
 
 	//state provider spec
@@ -48,10 +48,10 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, "no users", mongoc.DefaultState())
 	assert.Equal(t, time.Second*10, mongoc.ReadyTimeout())
 	assert.Equal(t, []string{"--nojournal"}, mongoc.Cmd())
-	assert.Equal(t, true, mongoc.ReadyExp().MatchString("is waiting for conn"))
+	assert.Regexp(t, mongoc.ReadyExp(), "is waiting for conn")
 
 	mongpc := c.PortsForStateProvider("mongodb")
-	assert.Equal(t, 1, len(mongpc))
+	assert.Len(t, mongpc, 1)
 	assert.Equal(t, "27017", mongpc[0].Host)
 
 	// assert run command with nil (assume config has a run command for us configured)
@@ -60,6 +60,5 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, rconf.Cmd, []string{"ls", "-la"})
 	assert.Equal(t, rconf.Dir, "..")
 	assert.Equal(t, rconf.ReadyTimeout, time.Second*2)
-	assert.Equal(t, true, rconf.ReadyExp.MatchString("2015/01/08 12:15:17.019258 Starting Goji on [::]:8000"))
-
+	assert.Regexp(t, rconf.ReadyExp, "2015/01/08 12:15:17.019258 Starting Goji on [::]:8000")
 }

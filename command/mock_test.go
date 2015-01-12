@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	// "github.com/bmizerany/assert"
-
 	"github.com/dockpit/pit/command"
 )
 

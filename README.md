@@ -17,13 +17,10 @@ A command line tool for (micro)service developers that allows them to define con
 	* test result output
 	* inform when there are no examples to test against instead of just saying 'success'
 	* error numbers/categories
-- (major) windows support, in particular:
+	
+- verify windows support, in particular:
 	* dirtar directory seperator
-	* enable cross-compilation (../../docker/docker/pkg/system/stat_unsupported.go:7: undefined: syscall.Stat_t)
 	* os.Interrupt signal
-
-- (minor) panics cause test containers to be left open, which cause subsequent tests to not run
-
 
 ## Refactor & Cleanup
 - Switch to testify/assert everywhere
