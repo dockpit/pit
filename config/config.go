@@ -19,7 +19,6 @@ func Parse(cd *ConfigData) (*Config, error) {
 	//parse deps into port configs
 	depsconf := []*DependencyConfig{}
 	for dep, confs := range cd.Dependencies {
-
 		ports := []*PortConfig{}
 		for _, pdata := range *confs {
 			pconf, err := ParsePort(pdata)
@@ -39,7 +38,6 @@ func Parse(cd *ConfigData) (*Config, error) {
 	//parse state provider config
 	spconf := []*StateProviderConfig{}
 	for pname, conf := range cd.StateProviders {
-
 		ports := []*PortConfig{}
 		for _, pdata := range conf.Ports {
 			pconf, err := ParsePort(pdata)
@@ -81,7 +79,6 @@ func Parse(cd *ConfigData) (*Config, error) {
 		})
 	}
 
-	//parse data about running the tested service, default to empty struct
 	if cd.Run == nil {
 		cd.Run = &RunData{}
 	}
