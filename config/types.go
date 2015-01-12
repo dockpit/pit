@@ -3,8 +3,6 @@ package config
 import (
 	"regexp"
 	"time"
-
-	"github.com/dockpit/go-dockerclient"
 )
 
 var ConfigFile = "dockpit.json"
@@ -22,9 +20,9 @@ type StateProviderC interface {
 
 type C interface {
 	DependencyConfigs() []DependencyC
+	RunConfig() *RunConfig
 	ProviderConfigs() []StateProviderC
-	PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding
+	PortsForDependency(dep string) []*PortConfig
 	PortsForStateProvider(pname string) []*PortConfig
 	StateProviderConfig(pname string) StateProviderC
-	RunConfig() *RunConfig
 }

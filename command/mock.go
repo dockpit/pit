@@ -89,14 +89,10 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		fmt.Fprintf(c.out, "Mocking %s...", dep)
 
 		//get first prot binding from configuration
-		portb := conf.PortBindingsForDep(dep)
-		port := ""
-		for _, b := range portb {
-			port = b[0].HostPort
-		}
+		ports := conf.PortsForDependency(dep)
 
 		// @todo centralize this?
-		mc, err := m.Start(filepath.Join(in, ManifestExamplesPath), port)
+		mc, err := m.Start(filepath.Join(in, ManifestExamplesPath), ports[0].Host)
 		if err != nil {
 			return nil, nil, err
 		}

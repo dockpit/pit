@@ -3,10 +3,7 @@ package config
 import (
 	"fmt"
 	"regexp"
-	"strings"
 	"time"
-
-	"github.com/dockpit/go-dockerclient"
 )
 
 type Config struct {
@@ -22,21 +19,20 @@ func Parse(cd *ConfigData) (*Config, error) {
 	//parse deps into port configs
 	depsconf := []*DependencyConfig{}
 	for dep, confs := range cd.Dependencies {
-		portb := map[docker.Port][]docker.PortBinding{}
 
-		//parse public, private
-		for _, conf := range *confs {
-			parts := strings.SplitN(conf, ":", 2)
-			if len(parts) != 2 {
-				return nil, fmt.Errorf("Invalid port format: '%s'", conf)
+		ports := []*PortConfig{}
+		for _, pdata := range *confs {
+			pconf, err := ParsePort(pdata)
+			if err != nil {
+				return nil, err
 			}
 
-			portb[docker.Port(parts[0]+"/tcp")] = []docker.PortBinding{docker.PortBinding{HostPort: parts[1]}}
+			ports = append(ports, pconf)
 		}
 
 		depsconf = append(depsconf, &DependencyConfig{
-			Name:         dep,
-			PortBindings: portb,
+			Name:  dep,
+			Ports: ports,
 		})
 	}
 
@@ -122,15 +118,14 @@ func (c *Config) PortsForStateProvider(pname string) []*PortConfig {
 	return nil
 }
 
-func (c *Config) PortBindingsForDep(dep string) map[docker.Port][]docker.PortBinding {
-	res := map[docker.Port][]docker.PortBinding{}
+func (c *Config) PortsForDependency(dep string) []*PortConfig {
 	for _, depc := range c.depConfigs {
 		if depc.Name == dep {
-			return depc.PortBindings
+			return depc.Ports
 		}
 	}
 
-	return res
+	return nil
 }
 
 func (c *Config) DependencyConfigs() []DependencyC {
