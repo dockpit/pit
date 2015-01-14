@@ -3,6 +3,7 @@ package command_test
 import (
 	"bytes"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/dockpit/pit/command"
@@ -10,7 +11,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-func AssertCommand(t *testing.T, cmd command.C, args []string, pattern string, out *bytes.Buffer) {
+func AssertCommandNoError(t *testing.T, cmd command.C, args []string, pattern string, out *bytes.Buffer) {
 	app := cli.NewApp()
 	app.Flags = cmd.Flags()
 	app.Action = cmd.Action()
@@ -23,7 +24,15 @@ func AssertCommand(t *testing.T, cmd command.C, args []string, pattern string, o
 		t.Fatal(err)
 	}
 
-	m, err := regexp.MatchString(pattern, out.String())
+	output := out.String()
+
+	//no error @todo inelegant
+	if strings.Contains(output, "error") {
+		t.Fatalf("Command Output contained an unexpected error: %s", out)
+	}
+
+	//match regexp
+	m, err := regexp.MatchString(pattern, output)
 	if err != nil {
 		t.Fatal(err)
 	}

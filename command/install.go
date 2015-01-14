@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"text/template"
 
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/debs"
 )
-
-var tmpl_install = `Installation successful!`
 
 type Install struct {
 	*cmd
@@ -43,49 +40,49 @@ func (c *Install) Flags() []cli.Flag {
 }
 
 func (c *Install) Action() func(ctx *cli.Context) {
-	return c.templated(c.Run)
+	return c.toAction(c.Run)
 }
 
-func (c *Install) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
+func (c *Install) Run(ctx *cli.Context) error {
 
 	//get pit path
 	pp := os.Getenv("PIT_PATH")
 	if pp == "" {
-		return nil, nil, fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
+		return fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
 	}
 
 	//get manifest
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//retrieve all dependencies
 	deps, err := m.Dependencies()
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//use the manager to install all dependencies into pit path
 	dm := debs.NewManager(pp)
-	installation := map[string]string{}
+	installs := map[string]string{}
 	for dep, _ := range deps {
 		fmt.Fprintf(c.out, "Installing %s:\n", dep)
 
 		err := dm.Install(dep)
 		if err != nil {
 			fmt.Fprintf(c.out, "ERROR \n")
-			return nil, nil, err
+			return err
 		}
 
 		//add location installation
-		installation[dep], err = dm.Locate(dep)
+		installs[dep], err = dm.Locate(dep)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
 		fmt.Fprintf(c.out, "done!\n\n")
 	}
 
-	return template.Must(template.New("install.success").Parse(tmpl_install)), installation, nil
+	return nil
 }

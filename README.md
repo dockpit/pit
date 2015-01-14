@@ -22,9 +22,6 @@ A command line tool for (micro)service developers that allows them to define con
 	* dirtar directory seperator
 	* os.Interrupt signal
 
-## Refactor & Cleanup
-- Switch to testify/assert everywhere
-
 ## Roadmap
 - investigate what to do with services that expose multiple ports for testing
 - (optional) also prevent double case names in contract package

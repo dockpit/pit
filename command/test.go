@@ -5,15 +5,11 @@ import (
 	"io"
 	"net/url"
 	"strings"
-	"text/template"
 
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/pit/runner"
 )
-
-var tmpl_test_success = `Tested successful!
-`
 
 type Test struct {
 	*cmd
@@ -48,43 +44,43 @@ func (c *Test) Flags() []cli.Flag {
 }
 
 func (c *Test) Action() func(ctx *cli.Context) {
-	return c.templated(c.Run)
+	return c.toAction(c.Run)
 }
 
-func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
+func (c *Test) Run(ctx *cli.Context) error {
 
 	//get and parse subject url
 	host := ctx.Args().First()
 	if host == "" {
-		return nil, nil, fmt.Errorf("Please provide the address (e.g http://localhost:8000) to test as a first argument")
+		return fmt.Errorf("Please provide the address (e.g http://localhost:8000) to test as a first argument")
 	}
 
 	hurl, err := url.Parse(host)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//get manifest
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//get the state manager
 	sm, err := c.StateManager(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//fetch docker host
 	dhost, _, err := c.DockerHostCertArguments(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	durl, err := url.Parse(dhost)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//see if we want to run a subset
@@ -95,13 +91,13 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 
 	sel, err := runner.Parse(selin)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//load configuration
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//set the special docker_host configuration
@@ -113,14 +109,14 @@ func (c *Test) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//create runner
 	r, err := runner.Create("default", c.out)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//run tests
 	err = r.Run(conf, m, sel, sm, hurl, durl)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	return template.Must(template.New("test.success").Parse(tmpl_test_success)), nil, nil
+	return nil
 }

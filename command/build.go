@@ -3,7 +3,6 @@ package command
 import (
 	"fmt"
 	"io"
-	"text/template"
 
 	"github.com/codegangsta/cli"
 )
@@ -43,30 +42,30 @@ func (c *Build) Flags() []cli.Flag {
 }
 
 func (c *Build) Action() func(ctx *cli.Context) {
-	return c.templated(c.Run)
+	return c.toAction(c.Run)
 }
 
-func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
+func (c *Build) Run(ctx *cli.Context) error {
 
 	//get manifest
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//get all states in the manifest
 	states, err := m.States()
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//load configuration
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	//add default states
+	//add default states for each provider
 	for _, pc := range conf.ProviderConfigs() {
 		if sts, ok := states[pc.Name()]; ok {
 			states[pc.Name()] = append(sts, pc.DefaultState())
@@ -76,7 +75,7 @@ func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 	//get the state manager
 	sm, err := c.StateManager(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//loop over states and build them
@@ -86,12 +85,12 @@ func (c *Build) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 			iname, err := sm.Build(pname, sname, c.out)
 			if err != nil {
 				fmt.Fprintf(c.out, "ERROR \n")
-				return nil, nil, err
+				return err
 			}
 
 			fmt.Fprintf(c.out, "done! (%s)\n\n", iname)
 		}
 	}
 
-	return template.Must(template.New("build.success").Parse(tmpl_build)), nil, nil
+	return nil
 }

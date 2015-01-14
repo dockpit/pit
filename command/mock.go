@@ -3,15 +3,14 @@ package command
 import (
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
-	"text/template"
 
 	"github.com/codegangsta/cli"
 
+	"github.com/dockpit/debs"
 	"github.com/dockpit/mock/manager"
 )
-
-var tmpl_mock = `Mocked successful!`
 
 type Mock struct {
 	*cmd
@@ -48,43 +47,60 @@ func (c *Mock) Flags() []cli.Flag {
 }
 
 func (c *Mock) Action() func(ctx *cli.Context) {
-	return c.templated(c.Run)
+	return c.toAction(c.Run)
 }
 
-func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
+func (c *Mock) Run(ctx *cli.Context) error {
 
 	//run install command
 	//@todo make optional?
-	_, res, err := c.install.Run(ctx)
+	err := c.install.Run(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	//assert installation to map
-	installation, ok := res.(map[string]string)
-	if !ok {
-		return nil, nil, fmt.Errorf("Unexpected response from install command: %s", res)
+	//get pit path
+	pp := os.Getenv("PIT_PATH")
+	if pp == "" {
+		return fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
+	}
+
+	//get manifest
+	m, err := c.ParseExamples(ctx)
+	if err != nil {
+		return err
+	}
+
+	//retrieve all dependencies
+	deps, err := m.Dependencies()
+	if err != nil {
+		return err
 	}
 
 	//create mock manager
 	host, cert, err := c.DockerHostCertArguments(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//load configuration
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	m, err := manager.NewManager(host, cert)
+	mm, err := manager.NewManager(host, cert)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//start the mock of each installation
-	for dep, in := range installation {
+	dm := debs.NewManager(pp)
+	for dep, _ := range deps {
+		in, err := dm.Locate(dep)
+		if err != nil {
+			return err
+		}
 
 		fmt.Fprintf(c.out, "Mocking %s...", dep)
 
@@ -92,14 +108,14 @@ func (c *Mock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
 		ports := conf.PortsForDependency(dep)
 
 		// @todo centralize this?
-		mc, err := m.Start(filepath.Join(in, ManifestExamplesPath), ports[0].Host)
+		mc, err := mm.Start(filepath.Join(in, ManifestExamplesPath), ports[0].Host)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
 		fmt.Fprintf(c.out, " done! (%s)\n", mc.Endpoint)
 
 	}
 
-	return template.Must(template.New("mock.success").Parse(tmpl_mock)), nil, nil
+	return nil
 }

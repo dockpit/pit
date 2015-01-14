@@ -19,9 +19,9 @@ func TestBuildingOfStates(t *testing.T) {
 	out := bytes.NewBuffer(nil)
 	cmd := command.NewBuild(out)
 
-	AssertCommand(t, cmd, []string{
+	AssertCommandNoError(t, cmd, []string{
 		"-config", filepath.Join(wd, "test_example"),
 		"-examples", filepath.Join(wd, "test_example", command.ManifestExamplesPath),
 		"-states", filepath.Join(wd, "test_example", command.ManifestStatesPath),
-	}, `(?s)pitstate_mongo_52f3cc.*pitstate_mongo_1815bee1bdd121d.*successful`, out)
+	}, `(?s)pitstate_mongo_52f3cc.*pitstate_mongo_1815bee1bdd121d.*`, out)
 }

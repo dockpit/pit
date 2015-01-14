@@ -14,13 +14,13 @@ import (
 func mock(t *testing.T, expath, confpath string) {
 	out := bytes.NewBuffer(nil)
 	cmd := command.NewMock(out, command.NewInstall(out))
-	AssertCommand(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocking.*done!.*http`, out)
+	AssertCommandNoError(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocking.*done!.*http`, out)
 }
 
 func unmock(t *testing.T, expath string) {
 	out := bytes.NewBuffer(nil)
 	cmd2 := command.NewUnmock(out)
-	AssertCommand(t, cmd2, []string{"-examples", expath}, `(?s)Unmocked`, out)
+	AssertCommandNoError(t, cmd2, []string{"-examples", expath}, `(?s).*`, out)
 }
 
 func compileSubject(t *testing.T) {
@@ -60,7 +60,7 @@ func TestTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommand(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000"}, `(?s)Tested.*successful`, out)
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000"}, `(?s).*`, out)
 
 }
 
@@ -91,5 +91,5 @@ func TestSingleRunTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommand(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipping.*Tested.*successful`, out)
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipping.*`, out)
 }

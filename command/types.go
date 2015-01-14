@@ -14,6 +14,7 @@ import (
 	"github.com/dockpit/lang"
 	"github.com/dockpit/lang/manifest"
 	"github.com/dockpit/pit/config"
+	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/state"
 )
 
@@ -25,13 +26,14 @@ type C interface {
 	Name() string
 	Description() string
 	Usage() string
-	Run(c *cli.Context) (*template.Template, interface{}, error)
+	Run(c *cli.Context) error
 	Action() func(ctx *cli.Context)
 	Flags() []cli.Flag
 }
 
 type cmd struct {
 	out io.Writer
+	reporter.R
 }
 
 func newCmd(out io.Writer) *cmd {
@@ -44,7 +46,9 @@ func newCmd(out io.Writer) *cmd {
 	//redirect default log ouput
 	log.SetOutput(out)
 
-	return &cmd{out}
+	//@todo make the command reporter configurable
+	r := reporter.NewTerminal(out)
+	return &cmd{out, r}
 }
 
 func (c *cmd) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
@@ -198,12 +202,12 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.M, error) {
 	return m, nil
 }
 
-func (c *cmd) templated(fn func(c *cli.Context) (*template.Template, interface{}, error)) func(ctx *cli.Context) {
+func (c *cmd) toAction(fn func(c *cli.Context) error) func(ctx *cli.Context) {
 	return func(ctx *cli.Context) {
 		//@todo, remove with duplication in constructor
 		log.SetOutput(c.out)
 
-		t, data, err := fn(ctx)
+		err := fn(ctx)
 		if err != nil {
 
 			log.Printf("%s - Command: %s %s", err, ctx.Command.Name, ctx.Args())
@@ -212,9 +216,5 @@ func (c *cmd) templated(fn func(c *cli.Context) (*template.Template, interface{}
 			return
 		}
 
-		err = t.Execute(c.out, data)
-		if err != nil {
-			log.Fatal("Template Error: ", err)
-		}
 	}
 }

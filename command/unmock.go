@@ -5,15 +5,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"text/template"
 
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/debs"
 	"github.com/dockpit/mock/manager"
 )
-
-var tmpl_unmock = `Unmocked successful!`
 
 type Unmock struct {
 	*cmd
@@ -46,56 +43,54 @@ func (c *Unmock) Flags() []cli.Flag {
 }
 
 func (c *Unmock) Action() func(ctx *cli.Context) {
-	return c.templated(c.Run)
+	return c.toAction(c.Run)
 }
 
-func (c *Unmock) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
+func (c *Unmock) Run(ctx *cli.Context) error {
 
 	//get pit path
 	pp := os.Getenv("PIT_PATH")
 	if pp == "" {
-		return nil, nil, fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
+		return fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
 	}
 
 	//create Unmock manager
 	host, cert, err := c.DockerHostCertArguments(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//get manifest
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//retrieve all dependencies
 	deps, err := m.Dependencies()
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	mm, err := manager.NewManager(host, cert)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
 	//use the manager to locate dependencies
 	dm := debs.NewManager(pp)
 	for dep, _ := range deps {
-
 		in, err := dm.Locate(dep)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
 		//@todo centralize subpath .dockpit/examples
 		err = mm.Stop(filepath.Join(in, ManifestExamplesPath))
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
-
 	}
 
-	return template.Must(template.New("unmock.success").Parse(tmpl_unmock)), nil, nil
+	return nil
 }

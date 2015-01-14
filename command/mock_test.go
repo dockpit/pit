@@ -28,7 +28,7 @@ func TestMock(t *testing.T) {
 
 	os.Setenv("PIT_PATH", tdir)
 
-	AssertCommand(t, cmd, []string{
+	AssertCommandNoError(t, cmd, []string{
 		"-config", filepath.Join(wd, "test_example"),
 		"-examples", expath,
 	}, `(?s)Mocking.*done!.*http`, out)
@@ -42,5 +42,5 @@ func TestMock(t *testing.T) {
 	//unmock afterwards
 	cmd2 := command.NewUnmock(out)
 
-	AssertCommand(t, cmd2, []string{"-examples", expath}, `(?s)Unmocked`, out)
+	AssertCommandNoError(t, cmd2, []string{"-examples", expath}, `(?s).*`, out)
 }
