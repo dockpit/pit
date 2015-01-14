@@ -47,6 +47,11 @@ func (c *Unmock) Action() func(ctx *cli.Context) {
 }
 
 func (c *Unmock) Run(ctx *cli.Context) error {
+	c.Enter(MockPart, MockPart.StoppingMocks)
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
 
 	//get pit path
 	pp := os.Getenv("PIT_PATH")
@@ -60,7 +65,13 @@ func (c *Unmock) Run(ctx *cli.Context) error {
 		return err
 	}
 
+	mrel, err := filepath.Rel(wd, ctx.String("examples"))
+	if err != nil {
+		return err
+	}
+
 	//get manifest
+	c.Report(ManifestPart.ParsingExamples, mrel)
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return err
@@ -77,20 +88,26 @@ func (c *Unmock) Run(ctx *cli.Context) error {
 		return err
 	}
 
-	//use the manager to locate dependencies
+	//start the mock of each installation
+	c.Report(MockPart.MockingFrom, pp)
 	dm := debs.NewManager(pp)
 	for dep, _ := range deps {
+		c.Enter(DepPart, DepPart.UnmockingDep, dep)
+
 		in, err := dm.Locate(dep)
 		if err != nil {
 			return err
 		}
 
-		//@todo centralize subpath .dockpit/examples
 		err = mm.Stop(filepath.Join(in, ManifestExamplesPath))
 		if err != nil {
 			return err
 		}
+
+		c.Success(DepPart.UnmockedDep)
+		c.Exit()
 	}
 
+	c.Exit()
 	return nil
 }

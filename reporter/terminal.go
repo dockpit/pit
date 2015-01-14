@@ -60,7 +60,7 @@ func (t *Terminal) Report(stepFn StepFunc, args ...interface{}) {
 func (t *Terminal) Enter(p P, stepFn StepFunc, args ...interface{}) {
 	if stepFn != nil {
 		_, str := stepFn(args...)
-		t.Print(str)
+		t.Print(cli.Underline(str))
 	}
 
 	t.path = append(t.path, p)

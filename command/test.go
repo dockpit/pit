@@ -3,6 +3,8 @@ package command
 import (
 	"fmt"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/codegangsta/cli"
@@ -48,8 +50,14 @@ func (c *Test) Action() func(ctx *cli.Context) {
 }
 
 func (c *Test) Run(ctx *cli.Context) error {
+	c.Enter(TestPart, TestPart.StartingTests)
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
 
 	//get and parse subject url
+	//@todo make this configurable
 	host := ctx.Args().First()
 	if host == "" {
 		return fmt.Errorf("Please provide the address (e.g http://localhost:8000) to test as a first argument")
@@ -60,7 +68,13 @@ func (c *Test) Run(ctx *cli.Context) error {
 		return err
 	}
 
+	mrel, err := filepath.Rel(wd, ctx.String("examples"))
+	if err != nil {
+		return err
+	}
+
 	//get manifest
+	c.Report(ManifestPart.ParsingExamples, mrel)
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return err
@@ -89,12 +103,19 @@ func (c *Test) Run(ctx *cli.Context) error {
 		selin = "*"
 	}
 
+	c.Report(ConfigPart.ParsingSelector, selin)
 	sel, err := runner.Parse(selin)
 	if err != nil {
 		return err
 	}
 
+	confrel, err := filepath.Rel(wd, ctx.String("config"))
+	if err != nil {
+		return err
+	}
+
 	//load configuration
+	c.Report(ConfigPart.LoadingConfig, confrel)
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
 		return err
@@ -103,8 +124,10 @@ func (c *Test) Run(ctx *cli.Context) error {
 	//set the special docker_host configuration
 	//@todo this is pretty hackish, but use env to set
 	//docker hostname (ip), possibly move this to command types
+	dhostname := strings.SplitN(durl.Host, ":", 2)[0]
+	c.Report(ConfigPart.SettingDockerHostname, dhostname)
 	cdata := conf.Data()
-	cdata.DockerHostname = strings.SplitN(durl.Host, ":", 2)[0]
+	cdata.DockerHostname = dhostname
 
 	//create runner
 	r, err := runner.Create("default", c.Pipe())
@@ -118,5 +141,7 @@ func (c *Test) Run(ctx *cli.Context) error {
 		return err
 	}
 
+	c.Success(TestPart.AllTestsPassed)
+	c.Exit()
 	return nil
 }
