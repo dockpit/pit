@@ -14,8 +14,7 @@ import (
 
 type Mock struct {
 	*cmd
-
-	install *Install //the install command
+	install *Install
 }
 
 func NewMock(r reporter.R, install *Install) *Mock {
@@ -51,10 +50,8 @@ func (c *Mock) Action() func(ctx *cli.Context) {
 }
 
 func (c *Mock) Run(ctx *cli.Context) error {
-
-	//run install command
-	//@todo make optional?
-	err := c.install.Run(ctx)
+	c.Enter(MockPart, MockPart.StartingMocks)
+	wd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
@@ -65,7 +62,20 @@ func (c *Mock) Run(ctx *cli.Context) error {
 		return fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
 	}
 
+	//run install command
+	//@todo make optional?
+	err = c.install.Run(ctx)
+	if err != nil {
+		return err
+	}
+
+	mrel, err := filepath.Rel(wd, ctx.String("examples"))
+	if err != nil {
+		return err
+	}
+
 	//get manifest
+	c.Report(ManifestPart.ParsingExamples, mrel)
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return err
@@ -83,7 +93,13 @@ func (c *Mock) Run(ctx *cli.Context) error {
 		return err
 	}
 
+	confrel, err := filepath.Rel(wd, ctx.String("config"))
+	if err != nil {
+		return err
+	}
+
 	//load configuration
+	c.Report(ConfigPart.LoadingConfig, confrel)
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
 		return err
@@ -95,26 +111,27 @@ func (c *Mock) Run(ctx *cli.Context) error {
 	}
 
 	//start the mock of each installation
+	c.Report(MockPart.MockingFrom, pp)
 	dm := debs.NewManager(pp)
 	for dep, _ := range deps {
+		c.Enter(DepPart, DepPart.MockingDep, dep)
+
 		in, err := dm.Locate(dep)
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprintf(c.Pipe(), "Mocking %s...\n", dep)
-
 		//get first prot binding from configuration
 		ports := conf.PortsForDependency(dep)
 
-		// @todo centralize this?
+		//start dependency
 		mc, err := mm.Start(filepath.Join(in, ManifestExamplesPath), ports[0].Host)
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprintf(c.Pipe(), " done! (%s)\n", mc.Endpoint)
-
+		c.Success(DepPart.MockedDep, mc.Endpoint)
+		c.Exit()
 	}
 
 	return nil

@@ -30,7 +30,7 @@ func TestMock(t *testing.T) {
 	AssertCommandNoError(t, cmd, []string{
 		"-config", filepath.Join(wd, "test_example"),
 		"-examples", expath,
-	}, `(?s)Installing.*Mocking.*done!.*http`, r)
+	}, `(?s)Installed.*Mocked.*success.*http`, r)
 
 	//should have called install
 	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "pit-token", "main.go"))

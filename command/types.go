@@ -23,6 +23,7 @@ var ConfigPart = &reporter.Config{}
 var StatePart = &reporter.State{}
 var InstallPart = &reporter.Install{}
 var DepPart = &reporter.Dep{}
+var MockPart = &reporter.Mock{}
 
 var ManifestStatesPath = filepath.Join(".manifest", "states")
 var ManifestExamplesPath = filepath.Join(".manifest", "examples")

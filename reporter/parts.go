@@ -17,7 +17,19 @@ func (i Install) InstallingInto(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Installing dependencies into '%s'", args[0])
 }
 
-//Build reporting
+//Mock reporting
+type Mock struct{}
+
+func (m Mock) ID() string { return "mock" }
+func (m Mock) StartingMocks(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Starting mocks")
+}
+
+func (m Mock) MockingFrom(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Mocking dependencies from '%s'", args[0])
+}
+
+//Building reporting
 type Build struct{}
 
 func (b Build) ID() string { return "build" }
@@ -34,7 +46,7 @@ func (m Manifest) ParsingExamples(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Parsing examples from './%s'", args[0])
 }
 
-//Reporting
+//Reporting about a dependency
 type Dep struct{}
 
 func (d Dep) ID() string { return "dep" }
@@ -47,7 +59,15 @@ func (d Dep) InstalledDep(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Installed successfully")
 }
 
-//
+func (d Dep) MockingDep(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Mocking dependency: '%s'", args[0])
+}
+
+func (d Dep) MockedDep(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Mocked successfully, running at: '%s'", args[0])
+}
+
+//Reporting about a configuration
 type Config struct{}
 
 func (c Config) LoadingConfig(args ...interface{}) (int, string) {
@@ -56,7 +76,7 @@ func (c Config) LoadingConfig(args ...interface{}) (int, string) {
 
 func (c Config) ID() string { return "config" }
 
-//
+//reporting about a state
 type State struct{}
 
 func (s State) ID() string { return "state" }

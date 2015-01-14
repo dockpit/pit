@@ -14,7 +14,7 @@ import (
 func mock(t *testing.T, expath, confpath string) {
 	r := reporter.NewTerminal(os.Stdout)
 	cmd := command.NewMock(r, command.NewInstall(r))
-	AssertCommandNoError(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocking.*done!.*http`, r)
+	AssertCommandNoError(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocked.*success.*http`, r)
 }
 
 func unmock(t *testing.T, expath string) {
