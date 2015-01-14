@@ -4,6 +4,12 @@ import (
 	"io"
 )
 
+type Result struct {
+	Succeeded int
+	Failed    int
+	Skipped   int
+}
+
 type StepFunc func(...interface{}) (int, string)
 
 type P interface {
@@ -22,4 +28,5 @@ type R interface {
 	Report(StepFunc, ...interface{})
 	Success(StepFunc, ...interface{})
 	Warning(StepFunc, ...interface{})
+	Error(StepFunc, ...interface{})
 }

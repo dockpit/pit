@@ -136,12 +136,23 @@ func (c *Test) Run(ctx *cli.Context) error {
 	}
 
 	//run tests
-	err = r.Run(conf, m, sel, sm, hurl, durl)
+	res, err := r.Run(conf, m, sel, sm, hurl, durl)
 	if err != nil {
 		return err
 	}
 
-	c.Success(TestPart.AllTestsPassed)
+	//report results
+	if res.Failed > 0 {
+		c.Error(TestPart.SomeTestsFailed, res)
+	} else {
+		if res.Skipped > 0 {
+			c.Warning(TestPart.SomeTestsSkipped, res)
+			c.Success(TestPart.SomeTestsPassed, res)
+		} else {
+			c.Success(TestPart.AllTestsPassed, res)
+		}
+	}
+
 	c.Exit()
 	return nil
 }

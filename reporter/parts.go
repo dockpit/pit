@@ -59,6 +59,10 @@ func (d Test) TestingCase(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("%s %s '%s'", args...)
 }
 
+func (d Test) FailedCase(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Failed - %s", args...)
+}
+
 func (d Test) SkippedCase(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("%s %s '%s' (skipped)", args...)
 }
@@ -73,6 +77,21 @@ func (d Test) TestingResource(args ...interface{}) (int, string) {
 
 func (d Test) StartingTests(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("\nStarting tests...")
+}
+
+func (d Test) SomeTestsSkipped(args ...interface{}) (int, string) {
+	res := args[0].(*Result)
+	return 1, fmt.Sprintf("%d tests skipped", res.Skipped)
+}
+
+func (d Test) SomeTestsFailed(args ...interface{}) (int, string) {
+	res := args[0].(*Result)
+	return 1, fmt.Sprintf("%d tests failed", res.Failed)
+}
+
+func (d Test) SomeTestsPassed(args ...interface{}) (int, string) {
+	res := args[0].(*Result)
+	return 1, fmt.Sprintf("%d tests passed", res.Succeeded)
 }
 
 func (d Test) AllTestsPassed(args ...interface{}) (int, string) {

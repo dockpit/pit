@@ -122,19 +122,20 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 	return nil
 }
 
-func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) error {
+func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) (*reporter.Result, error) {
 	res, err := m.Resources()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	//loop over each resource in the manifest
+	stats := &reporter.Result{}
 	for _, r := range res {
 		d.r.Enter(TestPart, TestPart.TestingResource, r.Pattern())
 
 		acs, err := r.Actions()
 		if err != nil {
-			return err
+			return stats, err
 		}
 
 		//loop over each action and case
@@ -145,12 +146,21 @@ func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manag
 					d.r.Enter(TestPart, TestPart.TestingCase, a.Method(), r.Pattern(), p.Name)
 					err = d.RunOne(conf, p, sm, subject, docker)
 					if err != nil {
-						return err
+						if aerr, ok := err.(manifest.AssertError); ok {
+							d.r.Error(TestPart.FailedCase, aerr)
+							d.r.Exit()
+							stats.Failed++
+							continue
+						}
+
+						return stats, err
 					}
 
+					stats.Succeeded++
 					d.r.Success(TestPart.TestedCase)
 					d.r.Exit()
 				} else {
+					stats.Skipped++
 					d.r.Warning(TestPart.SkippedCase, a.Method(), r.Pattern(), p.Name)
 				}
 			}
@@ -159,5 +169,5 @@ func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manag
 		d.r.Exit()
 	}
 
-	return nil
+	return stats, nil
 }

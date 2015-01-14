@@ -12,12 +12,7 @@ A command line tool for (micro)service developers that allows them to define con
 	// - http://stackoverflow.com/questions/24982845/process-kill-on-child-processes
 	// - https://groups.google.com/forum/#!searchin/golang-nuts/interrupt$20signal/golang-nuts/nayHpf8dVxI/_QO30bLWtrcJ
 
-## Backlog
-- (major) overhaul cli output
-	* test result output
-	* inform when there are no examples to test against instead of just saying 'success'
-	* error numbers/categories
-	
+## Backlog	
 - verify windows support, in particular:
 	* dirtar directory seperator
 	* os.Interrupt signal

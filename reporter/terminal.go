@@ -57,6 +57,11 @@ func (t *Terminal) Warning(stepFn StepFunc, args ...interface{}) {
 	t.Print(cli.Color(str, cli.Yellow))
 }
 
+func (t *Terminal) Error(stepFn StepFunc, args ...interface{}) {
+	_, str := stepFn(args...)
+	t.Print(cli.Color(str, cli.Red))
+}
+
 func (t *Terminal) Report(stepFn StepFunc, args ...interface{}) {
 	_, str := stepFn(args...)
 	t.Print(str)
