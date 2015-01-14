@@ -1,15 +1,17 @@
 package reporter
 
 import (
+	"bufio"
 	"bytes"
 	"io"
 	"log"
-	"strings"
+
+	"github.com/simonwaldherr/golibs/cli"
 )
 
 type Terminal struct {
-	part P
-	path []string
+	path []P
+	mw   io.Writer
 	*bytes.Buffer
 	*log.Logger
 }
@@ -19,6 +21,7 @@ func NewTerminal(w io.Writer) *Terminal {
 	mw := io.MultiWriter(w, buff)
 
 	return &Terminal{
+		mw:     mw,
 		Buffer: buff,
 		Logger: log.New(mw, "", 0),
 	}
@@ -27,14 +30,40 @@ func NewTerminal(w io.Writer) *Terminal {
 func (t *Terminal) prefix() string {
 	fix := ""
 	for _, _ = range t.path {
-		fix += "\t"
+		fix += "   "
 	}
 	return fix
 }
 
-func (t *Terminal) Enter(p P) {
-	t.part = p
-	t.path = append(t.path, t.part.ID())
+func (t *Terminal) Pipe() io.Writer {
+	r, w := io.Pipe()
+	s := bufio.NewScanner(r)
+	go func() {
+		for s.Scan() {
+			t.Print(s.Text())
+		}
+	}()
+
+	return w
+}
+
+func (t *Terminal) Success(stepFn StepFunc, args ...interface{}) {
+	_, str := stepFn(args...)
+	t.Print(cli.Color(str, cli.Green))
+}
+
+func (t *Terminal) Report(stepFn StepFunc, args ...interface{}) {
+	_, str := stepFn(args...)
+	t.Print(str)
+}
+
+func (t *Terminal) Enter(p P, stepFn StepFunc, args ...interface{}) {
+	if stepFn != nil {
+		_, str := stepFn(args...)
+		t.Print(str)
+	}
+
+	t.path = append(t.path, p)
 	t.Logger.SetPrefix(t.prefix())
 }
 
@@ -44,5 +73,9 @@ func (t *Terminal) Exit() {
 }
 
 func (t *Terminal) Path() string {
-	return strings.Join(t.path, ".")
+	path := ""
+	for _, p := range t.path {
+		path += "." + p.ID()
+	}
+	return path
 }

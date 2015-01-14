@@ -2,6 +2,7 @@ package command_test
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -17,7 +18,8 @@ func TestBuildingOfStates(t *testing.T) {
 	}
 
 	out := bytes.NewBuffer(nil)
-	cmd := command.NewBuild(out)
+	mw := io.MultiWriter(os.Stdout, out)
+	cmd := command.NewBuild(mw)
 
 	AssertCommandNoError(t, cmd, []string{
 		"-config", filepath.Join(wd, "test_example"),
