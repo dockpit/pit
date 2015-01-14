@@ -2,7 +2,8 @@ package command
 
 import (
 	"fmt"
-	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/dockpit/pit/reporter"
 
@@ -18,9 +19,9 @@ type Build struct {
 	*cmd
 }
 
-func NewBuild(out io.Writer) *Build {
+func NewBuild(r reporter.R) *Build {
 	return &Build{
-		cmd: newCmd(out),
+		cmd: newCmd(r),
 	}
 }
 
@@ -52,23 +53,36 @@ func (c *Build) Action() func(ctx *cli.Context) {
 
 func (c *Build) Run(ctx *cli.Context) error {
 	c.Enter(BuildPart, BuildPart.StartingBuild)
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	mrel, err := filepath.Rel(wd, ctx.String("examples"))
+	if err != nil {
+		return err
+	}
 
 	//get manifest
-	c.Report(ManifestPart.ParsingExamples)
+	c.Report(ManifestPart.ParsingExamples, mrel)
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return err
 	}
 
 	//get all states in the manifest
-	c.Report(ManifestPart.RetrievingStates)
 	states, err := m.States()
 	if err != nil {
 		return err
 	}
 
+	confrel, err := filepath.Rel(wd, ctx.String("config"))
+	if err != nil {
+		return err
+	}
+
 	//load configuration
-	c.Report(ConfigPart.LoadingConfig)
+	c.Report(ConfigPart.LoadingConfig, confrel)
 	conf, err := c.LoadConfig(ctx)
 	if err != nil {
 		return err
@@ -81,8 +95,13 @@ func (c *Build) Run(ctx *cli.Context) error {
 		}
 	}
 
+	staterel, err := filepath.Rel(wd, ctx.String("states"))
+	if err != nil {
+		return err
+	}
+
 	//get the state manager
-	c.Report(StatePart.CreatingManager)
+	c.Report(StatePart.CreatingManager, staterel)
 	sm, err := c.StateManager(ctx)
 	if err != nil {
 		return err

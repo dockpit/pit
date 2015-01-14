@@ -1,13 +1,12 @@
 package command_test
 
 import (
-	"bytes"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/dockpit/pit/command"
+	"github.com/dockpit/pit/reporter"
 )
 
 func TestBuildingOfStates(t *testing.T) {
@@ -17,13 +16,12 @@ func TestBuildingOfStates(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	out := bytes.NewBuffer(nil)
-	mw := io.MultiWriter(os.Stdout, out)
-	cmd := command.NewBuild(mw)
+	r := reporter.NewTerminal(os.Stdout)
+	cmd := command.NewBuild(r)
 
 	AssertCommandNoError(t, cmd, []string{
 		"-config", filepath.Join(wd, "test_example"),
 		"-examples", filepath.Join(wd, "test_example", command.ManifestExamplesPath),
 		"-states", filepath.Join(wd, "test_example", command.ManifestStatesPath),
-	}, `(?s)pitstate_mongo_52f3cc.*pitstate_mongo_1815bee1bdd121d.*`, out)
+	}, `(?s)pitstate_mongo_52f3cc.*pitstate_mongo_1815bee1bdd121d.*`, r)
 }

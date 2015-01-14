@@ -2,12 +2,12 @@ package command
 
 import (
 	"fmt"
-	"io"
 	"net/url"
 	"strings"
 
 	"github.com/codegangsta/cli"
 
+	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/pit/runner"
 )
 
@@ -15,9 +15,9 @@ type Test struct {
 	*cmd
 }
 
-func NewTest(out io.Writer) *Test {
+func NewTest(r reporter.R) *Test {
 	return &Test{
-		cmd: newCmd(out),
+		cmd: newCmd(r),
 	}
 }
 
@@ -107,7 +107,7 @@ func (c *Test) Run(ctx *cli.Context) error {
 	cdata.DockerHostname = strings.SplitN(durl.Host, ":", 2)[0]
 
 	//create runner
-	r, err := runner.Create("default", c.out)
+	r, err := runner.Create("default", c.Pipe())
 	if err != nil {
 		return err
 	}

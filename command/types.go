@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,23 +31,11 @@ type C interface {
 }
 
 type cmd struct {
-	out io.Writer
 	reporter.R
 }
 
-func newCmd(out io.Writer) *cmd {
-
-	//if no specific output, use stdout
-	if out == nil {
-		out = os.Stdout
-	}
-
-	//redirect default log ouput
-	log.SetOutput(out)
-
-	//@todo make the command reporter configurable
-	r := reporter.NewTerminal(out)
-	return &cmd{out, r}
+func newCmd(r reporter.R) *cmd {
+	return &cmd{r}
 }
 
 func (c *cmd) Run(ctx *cli.Context) (*template.Template, interface{}, error) {
@@ -205,7 +192,7 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.M, error) {
 func (c *cmd) toAction(fn func(c *cli.Context) error) func(ctx *cli.Context) {
 	return func(ctx *cli.Context) {
 		//@todo, remove with duplication in constructor
-		log.SetOutput(c.out)
+		// log.SetOutput(c.out)
 
 		err := fn(ctx)
 		if err != nil {

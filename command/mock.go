@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -10,6 +9,7 @@ import (
 
 	"github.com/dockpit/debs"
 	"github.com/dockpit/mock/manager"
+	"github.com/dockpit/pit/reporter"
 )
 
 type Mock struct {
@@ -18,9 +18,9 @@ type Mock struct {
 	install *Install //the install command
 }
 
-func NewMock(out io.Writer, install *Install) *Mock {
+func NewMock(r reporter.R, install *Install) *Mock {
 	return &Mock{
-		cmd:     newCmd(out),
+		cmd:     newCmd(r),
 		install: install,
 	}
 }
@@ -102,7 +102,7 @@ func (c *Mock) Run(ctx *cli.Context) error {
 			return err
 		}
 
-		fmt.Fprintf(c.out, "Mocking %s...", dep)
+		fmt.Fprintf(c.Pipe(), "Mocking %s...\n", dep)
 
 		//get first prot binding from configuration
 		ports := conf.PortsForDependency(dep)
@@ -113,7 +113,7 @@ func (c *Mock) Run(ctx *cli.Context) error {
 			return err
 		}
 
-		fmt.Fprintf(c.out, " done! (%s)\n", mc.Endpoint)
+		fmt.Fprintf(c.Pipe(), " done! (%s)\n", mc.Endpoint)
 
 	}
 

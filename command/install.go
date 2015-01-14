@@ -2,21 +2,21 @@ package command
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/debs"
+	"github.com/dockpit/pit/reporter"
 )
 
 type Install struct {
 	*cmd
 }
 
-func NewInstall(out io.Writer) *Install {
+func NewInstall(r reporter.R) *Install {
 	return &Install{
-		cmd: newCmd(out),
+		cmd: newCmd(r),
 	}
 }
 
@@ -67,11 +67,11 @@ func (c *Install) Run(ctx *cli.Context) error {
 	dm := debs.NewManager(pp)
 	installs := map[string]string{}
 	for dep, _ := range deps {
-		fmt.Fprintf(c.out, "Installing %s:\n", dep)
+		fmt.Fprintf(c.Pipe(), "Installing %s:\n", dep)
 
 		err := dm.Install(dep)
 		if err != nil {
-			fmt.Fprintf(c.out, "ERROR \n")
+			fmt.Fprintf(c.Pipe(), "ERROR \n")
 			return err
 		}
 
@@ -81,7 +81,7 @@ func (c *Install) Run(ctx *cli.Context) error {
 			return err
 		}
 
-		fmt.Fprintf(c.out, "done!\n\n")
+		fmt.Fprintf(c.Pipe(), "done!\n\n")
 	}
 
 	return nil

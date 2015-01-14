@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -10,15 +9,16 @@ import (
 
 	"github.com/dockpit/debs"
 	"github.com/dockpit/mock/manager"
+	"github.com/dockpit/pit/reporter"
 )
 
 type Unmock struct {
 	*cmd
 }
 
-func NewUnmock(out io.Writer) *Unmock {
+func NewUnmock(r reporter.R) *Unmock {
 	return &Unmock{
-		cmd: newCmd(out),
+		cmd: newCmd(r),
 	}
 }
 

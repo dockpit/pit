@@ -1,16 +1,16 @@
 package command_test
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/dockpit/pit/command"
 
 	"github.com/codegangsta/cli"
+	"github.com/dockpit/pit/reporter"
 	"github.com/stretchr/testify/assert"
 )
 
-func AssertCommandNoError(t *testing.T, cmd command.C, args []string, pattern string, out *bytes.Buffer) {
+func AssertCommandNoError(t *testing.T, cmd command.C, args []string, pattern string, r reporter.R) {
 	app := cli.NewApp()
 	app.Flags = cmd.Flags()
 	app.Action = cmd.Action()
@@ -23,8 +23,6 @@ func AssertCommandNoError(t *testing.T, cmd command.C, args []string, pattern st
 		t.Fatal(err)
 	}
 
-	output := out.String()
-
-	assert.NotContains(t, output, "error", "Error", "ERROR")
-	assert.Regexp(t, pattern, output)
+	assert.NotContains(t, r.String(), "error", "Error", "ERROR")
+	assert.Regexp(t, pattern, r.String())
 }

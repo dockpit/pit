@@ -1,13 +1,13 @@
 package command_test
 
 import (
-	"bytes"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/dockpit/pit/command"
+	"github.com/dockpit/pit/reporter"
 )
 
 func TestInstallIntoTmp(t *testing.T) {
@@ -17,8 +17,8 @@ func TestInstallIntoTmp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	out := bytes.NewBuffer(nil)
-	cmd := command.NewInstall(out)
+	r := reporter.NewTerminal(os.Stdout)
+	cmd := command.NewInstall(r)
 
 	tdir, err := ioutil.TempDir("", "dp_tinstallinfotmp")
 	if err != nil {
@@ -29,7 +29,7 @@ func TestInstallIntoTmp(t *testing.T) {
 
 	AssertCommandNoError(t, cmd, []string{
 		"-examples", filepath.Join(wd, "test_example", command.ManifestExamplesPath),
-	}, `(?s)Installing github\.com.*done\!.*`, out)
+	}, `(?s)Installing github\.com.*done\!.*`, r)
 
 	//should be able to read file from installation
 	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "pit-token", "main.go"))

@@ -7,6 +7,7 @@ import (
 	"github.com/codegangsta/cli"
 
 	"github.com/dockpit/pit/command"
+	"github.com/dockpit/pit/reporter"
 )
 
 var Version = "0.0.0-DEV"
@@ -18,19 +19,19 @@ func main() {
 	app.Usage = "docker based microservice development environment"
 	app.Version = fmt.Sprintf("%s (%s)", Version, Build)
 
-	//specify output
-	out := os.Stdout
+	//create the reporter
+	r := reporter.NewTerminal(os.Stdout)
 
 	//create reused commands
-	icmd := command.NewInstall(out)
+	icmd := command.NewInstall(r)
 
 	//init micros commands
 	cmds := []command.C{
-		command.NewBuild(out),
+		command.NewBuild(r),
 		icmd,
-		command.NewMock(out, icmd),
-		command.NewUnmock(out),
-		command.NewTest(out),
+		command.NewMock(r, icmd),
+		command.NewUnmock(r),
+		command.NewTest(r),
 	}
 
 	//append to app

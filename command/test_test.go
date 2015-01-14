@@ -1,7 +1,6 @@
 package command_test
 
 import (
-	"bytes"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -9,18 +8,19 @@ import (
 	"testing"
 
 	"github.com/dockpit/pit/command"
+	"github.com/dockpit/pit/reporter"
 )
 
 func mock(t *testing.T, expath, confpath string) {
-	out := bytes.NewBuffer(nil)
-	cmd := command.NewMock(out, command.NewInstall(out))
-	AssertCommandNoError(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocking.*done!.*http`, out)
+	r := reporter.NewTerminal(os.Stdout)
+	cmd := command.NewMock(r, command.NewInstall(r))
+	AssertCommandNoError(t, cmd, []string{"-examples", expath, "-config", confpath}, `(?s)Mocking.*done!.*http`, r)
 }
 
 func unmock(t *testing.T, expath string) {
-	out := bytes.NewBuffer(nil)
-	cmd2 := command.NewUnmock(out)
-	AssertCommandNoError(t, cmd2, []string{"-examples", expath}, `(?s).*`, out)
+	r := reporter.NewTerminal(os.Stdout)
+	cmd2 := command.NewUnmock(r)
+	AssertCommandNoError(t, cmd2, []string{"-examples", expath}, `(?s).*`, r)
 }
 
 func compileSubject(t *testing.T) {
@@ -41,12 +41,12 @@ func TestTest(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	r := reporter.NewTerminal(os.Stdout)
 	confpath := filepath.Join(wd, "test_example")
 	expath := filepath.Join(confpath, command.ManifestExamplesPath)
 	stpath := filepath.Join(confpath, command.ManifestStatesPath)
 
-	out := bytes.NewBuffer(nil)
-	test := command.NewTest(out)
+	test := command.NewTest(r)
 
 	tdir, err := ioutil.TempDir("", "dp_tinstallinfotmp")
 	if err != nil {
@@ -60,7 +60,7 @@ func TestTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000"}, `(?s).*`, out)
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000"}, `(?s).*`, r)
 
 }
 
@@ -72,12 +72,12 @@ func TestSingleRunTest(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	r := reporter.NewTerminal(os.Stdout)
 	confpath := filepath.Join(wd, "test_example")
 	expath := filepath.Join(confpath, command.ManifestExamplesPath)
 	stpath := filepath.Join(confpath, command.ManifestStatesPath)
 
-	out := bytes.NewBuffer(nil)
-	test := command.NewTest(out)
+	test := command.NewTest(r)
 
 	tdir, err := ioutil.TempDir("", "dp_tinstallinfotmp")
 	if err != nil {
@@ -91,5 +91,5 @@ func TestSingleRunTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipping.*`, out)
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipping.*`, r)
 }

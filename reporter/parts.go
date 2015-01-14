@@ -18,19 +18,14 @@ type Manifest struct{}
 
 func (m Manifest) ID() string { return "manifest" }
 func (m Manifest) ParsingExamples(args ...interface{}) (int, string) {
-	return 1, fmt.Sprintf("Parsing examples")
-}
-
-//
-func (m Manifest) RetrievingStates(args ...interface{}) (int, string) {
-	return 1, fmt.Sprintf("Retrieving states")
+	return 1, fmt.Sprintf("Parsing examples in './%s'", args[0])
 }
 
 //
 type Config struct{}
 
 func (c Config) LoadingConfig(args ...interface{}) (int, string) {
-	return 1, fmt.Sprintf("Loading configuration")
+	return 1, fmt.Sprintf("Loading configuration from './%s'", args[0])
 }
 
 func (c Config) ID() string { return "config" }
@@ -53,5 +48,5 @@ func (s State) BuiltState(args ...interface{}) (int, string) {
 }
 
 func (s State) CreatingManager(args ...interface{}) (int, string) {
-	return 1, fmt.Sprintf("Creating state manager")
+	return 1, fmt.Sprintf("Creating manager for states in './%s'", args[0])
 }
