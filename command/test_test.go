@@ -91,5 +91,5 @@ func TestSingleRunTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipping.*`, r)
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipped.*`, r)
 }

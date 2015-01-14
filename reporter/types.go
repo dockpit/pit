@@ -21,4 +21,5 @@ type R interface {
 
 	Report(StepFunc, ...interface{})
 	Success(StepFunc, ...interface{})
+	Warning(StepFunc, ...interface{})
 }

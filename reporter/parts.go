@@ -55,6 +55,22 @@ type Test struct{}
 
 func (d Test) ID() string { return "test" }
 
+func (d Test) TestingCase(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("%s %s '%s'", args...)
+}
+
+func (d Test) SkippedCase(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("%s %s '%s' (skipped)", args...)
+}
+
+func (d Test) TestedCase(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Pass")
+}
+
+func (d Test) TestingResource(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("%s", args[0])
+}
+
 func (d Test) StartingTests(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("\nStarting tests...")
 }

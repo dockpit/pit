@@ -8,11 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/dockpit/pit/config"
+	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/pit/runner"
 )
 
 func TestCreation(t *testing.T) {
-	r, err := runner.Create("default", os.Stdout)
+	reporter := reporter.NewTerminal(os.Stdout)
+	r, err := runner.Create("default", reporter)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,8 +27,8 @@ func TestCommandArgsTemplating(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	r := runner.NewDefault(os.Stdout)
+	reporter := reporter.NewTerminal(os.Stdout)
+	r := runner.NewDefault(reporter)
 	l := config.NewLoader(filepath.Join(wd, "..", "command", "test_example"))
 	conf, err := l.Load()
 	if err != nil {

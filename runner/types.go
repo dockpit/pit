@@ -2,11 +2,11 @@ package runner
 
 import (
 	"fmt"
-	"io"
 	"net/url"
 
 	"github.com/dockpit/lang/manifest"
 	"github.com/dockpit/pit/config"
+	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/state"
 )
 
@@ -19,10 +19,10 @@ type Runner interface {
 	Run(config.C, manifest.M, Selector, *state.Manager, *url.URL, *url.URL) error
 }
 
-func Create(name string, w io.Writer) (Runner, error) {
+func Create(name string, r reporter.R) (Runner, error) {
 	switch name {
 	case "default":
-		return NewDefault(w), nil
+		return NewDefault(r), nil
 	default:
 		return nil, fmt.Errorf("No runner named '%s'", name)
 	}

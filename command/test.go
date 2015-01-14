@@ -130,7 +130,7 @@ func (c *Test) Run(ctx *cli.Context) error {
 	cdata.DockerHostname = dhostname
 
 	//create runner
-	r, err := runner.Create("default", c.Pipe())
+	r, err := runner.Create("default", c)
 	if err != nil {
 		return err
 	}

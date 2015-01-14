@@ -3,7 +3,6 @@ package runner
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"text/template"
@@ -12,12 +11,11 @@ import (
 	"github.com/dockpit/exec"
 	"github.com/dockpit/lang/manifest"
 	"github.com/dockpit/pit/config"
+	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/state"
 )
 
-func NewDefault(out io.Writer) *Default {
-	return &Default{out}
-}
+var TestPart = &reporter.Test{}
 
 // Default runner starts and shutsdown the test subject
 // for every new test case, this is slow but guarantees
@@ -25,7 +23,11 @@ func NewDefault(out io.Writer) *Default {
 // the developer to implement logic for handling dropping
 // state connections
 type Default struct {
-	out io.Writer
+	r reporter.R
+}
+
+func NewDefault(r reporter.R) *Default {
+	return &Default{r}
 }
 
 func (d *Default) Name() string { return "default" }
@@ -100,8 +102,8 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 
 	//start subject
 	tcmd := exec.Command(args[0], args[1:]...)
-	tcmd.Stdout = d.out
-	tcmd.Stderr = d.out
+	tcmd.Stdout = d.r.Pipe()
+	tcmd.Stderr = d.r.Pipe()
 
 	err = tcmd.StartWithTimeout(conf.RunConfig().ReadyTimeout, conf.RunConfig().ReadyExp)
 	if err != nil {
@@ -128,29 +130,33 @@ func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manag
 
 	//loop over each resource in the manifest
 	for _, r := range res {
-		fmt.Fprintf(d.out, "%s\n", r.Pattern())
+		d.r.Enter(TestPart, TestPart.TestingResource, r.Pattern())
 
 		acs, err := r.Actions()
 		if err != nil {
 			return err
 		}
 
-		//loop over each action
+		//loop over each action and case
 		for _, a := range acs {
-			fmt.Fprintf(d.out, "%s %s\n", a.Method(), r.Pattern())
-
-			//for each test
 			for _, p := range a.Pairs() {
+
 				if sel.ShouldRun(p) {
+					d.r.Enter(TestPart, TestPart.TestingCase, a.Method(), r.Pattern(), p.Name)
 					err = d.RunOne(conf, p, sm, subject, docker)
 					if err != nil {
 						return err
 					}
+
+					d.r.Success(TestPart.TestedCase)
+					d.r.Exit()
 				} else {
-					fmt.Fprintf(d.out, "skipping\n")
+					d.r.Warning(TestPart.SkippedCase, a.Method(), r.Pattern(), p.Name)
 				}
 			}
 		}
+
+		d.r.Exit()
 	}
 
 	return nil
