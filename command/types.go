@@ -17,6 +17,13 @@ import (
 	"github.com/dockpit/state"
 )
 
+var BuildPart = &reporter.Build{}
+var ManifestPart = &reporter.Manifest{}
+var ConfigPart = &reporter.Config{}
+var StatePart = &reporter.State{}
+var InstallPart = &reporter.Install{}
+var DepPart = &reporter.Dep{}
+
 var ManifestStatesPath = filepath.Join(".manifest", "states")
 var ManifestExamplesPath = filepath.Join(".manifest", "examples")
 

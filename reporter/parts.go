@@ -4,7 +4,20 @@ import (
 	"fmt"
 )
 
-//
+//Installation reporting
+type Install struct{}
+
+func (i Install) ID() string { return "install" }
+
+func (i Install) StartingInstall(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Starting installation")
+}
+
+func (i Install) InstallingInto(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Installing dependencies into '%s'", args[0])
+}
+
+//Build reporting
 type Build struct{}
 
 func (b Build) ID() string { return "build" }
@@ -13,12 +26,25 @@ func (b Build) StartingBuild(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Starting build")
 }
 
-//
+//Manifest Reporting
 type Manifest struct{}
 
 func (m Manifest) ID() string { return "manifest" }
 func (m Manifest) ParsingExamples(args ...interface{}) (int, string) {
-	return 1, fmt.Sprintf("Parsing examples in './%s'", args[0])
+	return 1, fmt.Sprintf("Parsing examples from './%s'", args[0])
+}
+
+//Reporting
+type Dep struct{}
+
+func (d Dep) ID() string { return "dep" }
+
+func (d Dep) InstallingDep(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Installing dependency: '%s'", args[0])
+}
+
+func (d Dep) InstalledDep(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Installed successfully")
 }
 
 //

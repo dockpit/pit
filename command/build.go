@@ -10,11 +10,6 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var BuildPart = &reporter.Build{}
-var ManifestPart = &reporter.Manifest{}
-var ConfigPart = &reporter.Config{}
-var StatePart = &reporter.State{}
-
 type Build struct {
 	*cmd
 }

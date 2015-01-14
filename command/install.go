@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/codegangsta/cli"
 
@@ -44,6 +45,16 @@ func (c *Install) Action() func(ctx *cli.Context) {
 }
 
 func (c *Install) Run(ctx *cli.Context) error {
+	c.Enter(InstallPart, InstallPart.StartingInstall)
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	mrel, err := filepath.Rel(wd, ctx.String("examples"))
+	if err != nil {
+		return err
+	}
 
 	//get pit path
 	pp := os.Getenv("PIT_PATH")
@@ -52,6 +63,7 @@ func (c *Install) Run(ctx *cli.Context) error {
 	}
 
 	//get manifest
+	c.Report(ManifestPart.ParsingExamples, mrel)
 	m, err := c.ParseExamples(ctx)
 	if err != nil {
 		return err
@@ -64,25 +76,20 @@ func (c *Install) Run(ctx *cli.Context) error {
 	}
 
 	//use the manager to install all dependencies into pit path
+	c.Report(InstallPart.InstallingInto, pp)
 	dm := debs.NewManager(pp)
-	installs := map[string]string{}
 	for dep, _ := range deps {
-		fmt.Fprintf(c.Pipe(), "Installing %s:\n", dep)
+		c.Enter(DepPart, DepPart.InstallingDep, dep)
 
-		err := dm.Install(dep)
-		if err != nil {
-			fmt.Fprintf(c.Pipe(), "ERROR \n")
-			return err
-		}
-
-		//add location installation
-		installs[dep], err = dm.Locate(dep)
+		err := dm.Install(dep, c.Pipe())
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprintf(c.Pipe(), "done!\n\n")
+		c.Success(DepPart.InstalledDep)
+		c.Exit()
 	}
 
+	c.Exit()
 	return nil
 }
