@@ -60,8 +60,7 @@ func TestTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000"}, `(?s).*`, r)
-
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath}, `(?s).*`, r)
 }
 
 func TestSingleRunTest(t *testing.T) {
@@ -91,5 +90,7 @@ func TestSingleRunTest(t *testing.T) {
 	defer unmock(t, expath)
 
 	//run test
-	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "http://localhost:8000", "'list a single user'"}, `(?s).*skipped.*`, r)
+	AssertCommandNoError(t, test, []string{"-examples", expath, "-states", stpath, "-config", confpath, "'list a single user'"}, `(?s).*skipped.*`, r)
 }
+
+// @todo write test to test failing test

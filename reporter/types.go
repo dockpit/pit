@@ -25,6 +25,9 @@ type R interface {
 	Printf(string, ...interface{})
 	Pipe() io.Writer
 
+	SetStatusCode(int)
+	StatusCode() int
+
 	Report(StepFunc, ...interface{})
 	Success(StepFunc, ...interface{})
 	Warning(StepFunc, ...interface{})

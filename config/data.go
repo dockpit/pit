@@ -20,6 +20,7 @@ type RunData struct {
 type ConfigData struct {
 	Dependencies   map[string]*DependencyConfigData    `json:"deps"`
 	StateProviders map[string]*StateProviderConfigData `json:"states"`
-	DockerHostname string                              `json:"docker_hostname"`
 	Run            *RunData                            `json:"run"`
+	DockerHostname string                              `json:"docker_hostname"`
+	Subject        string                              `json:"subject"`
 }

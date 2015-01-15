@@ -12,6 +12,7 @@ type Config struct {
 	depConfigs []*DependencyConfig
 	spConfigs  []*StateProviderConfig
 	runConfig  *RunConfig
+	subject    string
 }
 
 func Parse(cd *ConfigData) (*Config, error) {
@@ -88,7 +89,15 @@ func Parse(cd *ConfigData) (*Config, error) {
 		return nil, err
 	}
 
-	return &Config{cd, depsconf, spconf, rconf}, nil
+	if cd.Subject == "" {
+		return nil, fmt.Errorf("No test subject specified in configuration file")
+	}
+
+	return &Config{cd, depsconf, spconf, rconf, cd.Subject}, nil
+}
+
+func (c *Config) Subject() string {
+	return c.subject
 }
 
 func (c *Config) Data() *ConfigData {

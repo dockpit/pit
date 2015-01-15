@@ -23,6 +23,6 @@ func AssertCommandNoError(t *testing.T, cmd command.C, args []string, pattern st
 		t.Fatal(err)
 	}
 
-	assert.NotContains(t, r.String(), "error", "Error", "ERROR")
+	assert.Equal(t, 0, r.StatusCode(), "Expected status code 0")
 	assert.Regexp(t, pattern, r.String())
 }

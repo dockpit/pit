@@ -25,6 +25,7 @@ func TestLoaderLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	assert.Equal(t, "http://localhost:8000", c.Subject())
 	assert.Len(t, c.DependencyConfigs(), 1)
 	assert.Len(t, c.ProviderConfigs(), 2)
 

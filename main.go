@@ -45,5 +45,10 @@ func main() {
 		})
 	}
 
+	app.Flags[0].Apply()
+
 	app.Run(os.Args)
+	if r.StatusCode() > 0 {
+		os.Exit(r.StatusCode())
+	}
 }

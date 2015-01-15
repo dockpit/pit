@@ -56,18 +56,6 @@ func (c *Test) Run(ctx *cli.Context) error {
 		return err
 	}
 
-	//get and parse subject url
-	//@todo make this configurable
-	host := ctx.Args().First()
-	if host == "" {
-		return fmt.Errorf("Please provide the address (e.g http://localhost:8000) to test as a first argument")
-	}
-
-	hurl, err := url.Parse(host)
-	if err != nil {
-		return err
-	}
-
 	mrel, err := filepath.Rel(wd, ctx.String("examples"))
 	if err != nil {
 		return err
@@ -98,7 +86,7 @@ func (c *Test) Run(ctx *cli.Context) error {
 	}
 
 	//see if we want to run a subset
-	selin := ctx.Args().Get(1)
+	selin := ctx.Args().First()
 	if selin == "" {
 		selin = "*"
 	}
@@ -117,6 +105,11 @@ func (c *Test) Run(ctx *cli.Context) error {
 	//load configuration
 	c.Report(ConfigPart.LoadingConfig, confrel)
 	conf, err := c.LoadConfig(ctx)
+	if err != nil {
+		return err
+	}
+
+	hurl, err := url.Parse(conf.Subject())
 	if err != nil {
 		return err
 	}
@@ -144,6 +137,7 @@ func (c *Test) Run(ctx *cli.Context) error {
 	//report results
 	if res.Failed > 0 {
 		c.Error(TestPart.SomeTestsFailed, res)
+		c.SetStatusCode(2)
 	} else {
 		if res.Skipped > 0 {
 			c.Warning(TestPart.SomeTestsSkipped, res)

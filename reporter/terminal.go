@@ -10,8 +10,9 @@ import (
 )
 
 type Terminal struct {
-	path []P
-	mw   io.Writer
+	statusCode int
+	path       []P
+	mw         io.Writer
 	*bytes.Buffer
 	*log.Logger
 }
@@ -45,6 +46,14 @@ func (t *Terminal) Pipe() io.Writer {
 	}()
 
 	return w
+}
+
+func (t *Terminal) StatusCode() int {
+	return t.statusCode
+}
+
+func (t *Terminal) SetStatusCode(code int) {
+	t.statusCode = code
 }
 
 func (t *Terminal) Success(stepFn StepFunc, args ...interface{}) {

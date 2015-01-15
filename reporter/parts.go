@@ -164,3 +164,12 @@ func (s State) BuiltState(args ...interface{}) (int, string) {
 func (s State) CreatingManager(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Creating manager for states in './%s'", args[0])
 }
+
+//reporting rerrors
+type Error struct{}
+
+func (err Error) ID() string { return "error" }
+
+func (err Error) ThrowError(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Error: %s", args...)
+}

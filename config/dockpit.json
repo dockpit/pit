@@ -20,5 +20,6 @@
 		"dir": "..",
 		"ready_timeout": "2s",
 		"ready_pattern": "Starting Goji"
-	}
+	},
+	"subject": "http://localhost:8000"
 }

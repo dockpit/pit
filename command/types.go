@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,6 +24,7 @@ var InstallPart = &reporter.Install{}
 var DepPart = &reporter.Dep{}
 var MockPart = &reporter.Mock{}
 var TestPart = &reporter.Test{}
+var ErrorPart = &reporter.Error{}
 
 var ManifestStatesPath = filepath.Join(".manifest", "states")
 var ManifestExamplesPath = filepath.Join(".manifest", "examples")
@@ -205,10 +205,9 @@ func (c *cmd) toAction(fn func(c *cli.Context) error) func(ctx *cli.Context) {
 
 		err := fn(ctx)
 		if err != nil {
+			c.Error(ErrorPart.ThrowError, err)
 
-			log.Printf("%s - Command: %s %s", err, ctx.Command.Name, ctx.Args())
-
-			//@todo set exit code to non-zero?
+			c.SetStatusCode(1)
 			return
 		}
 
