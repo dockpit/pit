@@ -7,7 +7,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
-	"github.com/dockpit/debs"
+	"github.com/dockpit/deps"
 	"github.com/dockpit/pit/reporter"
 )
 
@@ -70,15 +70,15 @@ func (c *Install) Run(ctx *cli.Context) error {
 	}
 
 	//retrieve all dependencies
-	deps, err := m.Dependencies()
+	depl, err := m.Dependencies()
 	if err != nil {
 		return err
 	}
 
 	//use the manager to install all dependencies into pit path
 	c.Report(InstallPart.InstallingInto, pp)
-	dm := debs.NewManager(pp)
-	for dep, _ := range deps {
+	dm := deps.NewManager(pp)
+	for dep, _ := range depl {
 		c.Enter(DepPart, DepPart.InstallingDep, dep)
 
 		err := dm.Install(dep, c.Pipe())

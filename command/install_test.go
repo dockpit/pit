@@ -32,7 +32,7 @@ func TestInstallIntoTmp(t *testing.T) {
 	}, `(?s)Installing.*github\.com.*success`, r)
 
 	//should be able to read file from installation
-	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "pit-token", "main.go"))
+	_, err = ioutil.ReadFile(filepath.Join(tdir, "github.com", "dockpit", "pit-token", "main.go"))
 	if err != nil {
 		t.Fatal(err)
 	}

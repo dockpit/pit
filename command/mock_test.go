@@ -33,7 +33,7 @@ func TestMock(t *testing.T) {
 	}, `(?s)Installed.*Mocked.*success.*http`, r)
 
 	//should have called install
-	_, err = ioutil.ReadFile(filepath.Join(tdir, "deps", "github.com", "dockpit", "pit-token", "main.go"))
+	_, err = ioutil.ReadFile(filepath.Join(tdir, "github.com", "dockpit", "pit-token", "main.go"))
 	if err != nil {
 		t.Fatal(err)
 	}

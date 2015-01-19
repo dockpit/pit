@@ -7,7 +7,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
-	"github.com/dockpit/debs"
+	"github.com/dockpit/deps"
 	"github.com/dockpit/mock/manager"
 	"github.com/dockpit/pit/reporter"
 )
@@ -78,7 +78,7 @@ func (c *Unmock) Run(ctx *cli.Context) error {
 	}
 
 	//retrieve all dependencies
-	deps, err := m.Dependencies()
+	depl, err := m.Dependencies()
 	if err != nil {
 		return err
 	}
@@ -90,8 +90,8 @@ func (c *Unmock) Run(ctx *cli.Context) error {
 
 	//start the mock of each installation
 	c.Report(MockPart.MockingFrom, pp)
-	dm := debs.NewManager(pp)
-	for dep, _ := range deps {
+	dm := deps.NewManager(pp)
+	for dep, _ := range depl {
 		c.Enter(DepPart, DepPart.UnmockingDep, dep)
 
 		in, err := dm.Locate(dep)
