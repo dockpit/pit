@@ -6,7 +6,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/simonwaldherr/golibs/cli"
+	"github.com/simonwaldherr/golibs/ansi"
 )
 
 type Terminal struct {
@@ -58,17 +58,17 @@ func (t *Terminal) SetStatusCode(code int) {
 
 func (t *Terminal) Success(stepFn StepFunc, args ...interface{}) {
 	_, str := stepFn(args...)
-	t.Print(cli.Color(str, cli.Green))
+	t.Print(ansi.Color(str, ansi.Green))
 }
 
 func (t *Terminal) Warning(stepFn StepFunc, args ...interface{}) {
 	_, str := stepFn(args...)
-	t.Print(cli.Color(str, cli.Yellow))
+	t.Print(ansi.Color(str, ansi.Yellow))
 }
 
 func (t *Terminal) Error(stepFn StepFunc, args ...interface{}) {
 	_, str := stepFn(args...)
-	t.Print(cli.Color(str, cli.Red))
+	t.Print(ansi.Color(str, ansi.Red))
 }
 
 func (t *Terminal) Report(stepFn StepFunc, args ...interface{}) {
@@ -79,7 +79,7 @@ func (t *Terminal) Report(stepFn StepFunc, args ...interface{}) {
 func (t *Terminal) Enter(p P, stepFn StepFunc, args ...interface{}) {
 	if stepFn != nil {
 		_, str := stepFn(args...)
-		t.Print(cli.Underline(str))
+		t.Print(ansi.Underline(str))
 	}
 
 	t.path = append(t.path, p)
