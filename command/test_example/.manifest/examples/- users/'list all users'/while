@@ -1,1 +1,1 @@
-github.com/dockpit/pit-token GET /health
+github.com/dockpit/pit-token 'healthy'

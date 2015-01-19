@@ -124,15 +124,21 @@ func (c *Mock) Run(ctx *cli.Context) error {
 		//get first prot binding from configuration
 		ports := conf.PortsForDependency(dep)
 
-		//start dependency
-		mc, err := mm.Start(filepath.Join(in, ManifestExamplesPath), ports[0].Host)
-		if err != nil {
-			return err
+		if len(ports) < 1 {
+			c.Warning(DepPart.NoPortsForDep, dep)
+		} else {
+			//start dependency
+			mc, err := mm.Start(filepath.Join(in, ManifestExamplesPath), ports[0].Host)
+			if err != nil {
+				return err
+			}
+
+			c.Success(DepPart.MockedDep, mc.Endpoint)
 		}
 
-		c.Success(DepPart.MockedDep, mc.Endpoint)
 		c.Exit()
 	}
 
+	c.Exit()
 	return nil
 }

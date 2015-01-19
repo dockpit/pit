@@ -9,6 +9,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
+	"github.com/dockpit/mock/manager"
 	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/pit/runner"
 )
@@ -75,7 +76,13 @@ func (c *Test) Run(ctx *cli.Context) error {
 	}
 
 	//fetch docker host
-	dhost, _, err := c.DockerHostCertArguments(ctx)
+	dhost, dcert, err := c.DockerHostCertArguments(ctx)
+	if err != nil {
+		return err
+	}
+
+	//create mock manager
+	mm, err := manager.NewManager(dhost, dcert)
 	if err != nil {
 		return err
 	}
@@ -129,7 +136,7 @@ func (c *Test) Run(ctx *cli.Context) error {
 	}
 
 	//run tests
-	res, err := r.Run(conf, m, sel, sm, hurl, durl)
+	res, err := r.Run(conf, m, sel, sm, mm, hurl, durl)
 	if err != nil {
 		return err
 	}

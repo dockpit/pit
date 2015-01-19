@@ -33,6 +33,10 @@ func (m Mock) MockingFrom(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Mocking dependencies from '%s'", args[0])
 }
 
+func (m Mock) UnmockingFrom(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Unmocking dependencies from '%s'", args[0])
+}
+
 //Building reporting
 type Build struct{}
 
@@ -121,6 +125,10 @@ func (d Dep) MockedDep(args ...interface{}) (int, string) {
 
 func (d Dep) UnmockingDep(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Stopping mock: '%s'", args[0])
+}
+
+func (d Dep) NoPortsForDep(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("No ports configured for dependency '%s'", args...)
 }
 
 func (d Dep) UnmockedDep(args ...interface{}) (int, string) {

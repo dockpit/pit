@@ -89,7 +89,7 @@ func (c *Unmock) Run(ctx *cli.Context) error {
 	}
 
 	//start the mock of each installation
-	c.Report(MockPart.MockingFrom, pp)
+	c.Report(MockPart.UnmockingFrom, pp)
 	dm := deps.NewManager(pp)
 	for dep, _ := range depl {
 		c.Enter(DepPart, DepPart.UnmockingDep, dep)

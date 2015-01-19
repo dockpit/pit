@@ -10,6 +10,7 @@ import (
 
 	"github.com/dockpit/exec"
 	"github.com/dockpit/lang/manifest"
+	"github.com/dockpit/mock/manager"
 	"github.com/dockpit/pit/config"
 	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/state"
@@ -58,7 +59,7 @@ func (d *Default) TemplatedCommandArgs(conf config.C, args ...string) ([]string,
 	return res, nil
 }
 
-func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, subject *url.URL, docker *url.URL) (reerr error) {
+func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, mm *manager.Manager, subject *url.URL, docker *url.URL) (reerr error) {
 	t := p.GenerateTest()
 
 	//map states in manifest
@@ -74,6 +75,8 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 			states[pc.Name()] = pc.DefaultState()
 		}
 	}
+
+	//@todo switch mocks to the correct case
 
 	//actually start the states
 	for pname, sname := range states {
@@ -113,6 +116,16 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 	//stop subject, @todo this to be configurable
 	defer tcmd.StopWithTimeout(time.Second * 2)
 
+	//instruct all mocks for the case to expect a request for this case
+	//@todo should this be done in the test?
+	for _, w := range p.While {
+		ports := conf.PortsForDependency(w.ID)
+		err = mm.Expect(w.Case, ports[0].Host)
+		if err != nil {
+			return err
+		}
+	}
+
 	//execute the actual test
 	err = t(subject.String(), docker.String(), http.DefaultClient, conf)
 	if err != nil {
@@ -122,7 +135,7 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, sub
 	return nil
 }
 
-func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manager, subject *url.URL, docker *url.URL) (*reporter.Result, error) {
+func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manager, mm *manager.Manager, subject *url.URL, docker *url.URL) (*reporter.Result, error) {
 	res, err := m.Resources()
 	if err != nil {
 		return nil, err
@@ -144,7 +157,7 @@ func (d *Default) Run(conf config.C, m manifest.M, sel Selector, sm *state.Manag
 
 				if sel.ShouldRun(p) {
 					d.r.Enter(TestPart, TestPart.TestingCase, a.Method(), r.Pattern(), p.Name)
-					err = d.RunOne(conf, p, sm, subject, docker)
+					err = d.RunOne(conf, p, sm, mm, subject, docker)
 					if err != nil {
 						if aerr, ok := err.(manifest.AssertError); ok {
 							d.r.Error(TestPart.FailedCase, aerr)

@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/dockpit/lang/manifest"
+	"github.com/dockpit/mock/manager"
 	"github.com/dockpit/pit/config"
 	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/state"
@@ -16,7 +17,7 @@ type Selector interface {
 
 type Runner interface {
 	Name() string
-	Run(config.C, manifest.M, Selector, *state.Manager, *url.URL, *url.URL) (*reporter.Result, error)
+	Run(config.C, manifest.M, Selector, *state.Manager, *manager.Manager, *url.URL, *url.URL) (*reporter.Result, error)
 }
 
 func Create(name string, r reporter.R) (Runner, error) {
