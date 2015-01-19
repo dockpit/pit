@@ -83,11 +83,16 @@ func (c *Build) Run(ctx *cli.Context) error {
 		return err
 	}
 
-	//add default states for each provider
+	//add default states for each provider, laziy create if it doesnt exist
 	for _, pc := range conf.ProviderConfigs() {
-		if sts, ok := states[pc.Name()]; ok {
-			states[pc.Name()] = append(sts, pc.DefaultState())
+		var sts []string
+		var ok bool
+		if sts, ok = states[pc.Name()]; !ok {
+			sts = []string{}
+			states[pc.Name()] = sts
 		}
+
+		states[pc.Name()] = append(sts, pc.DefaultState())
 	}
 
 	staterel, err := filepath.Rel(wd, ctx.String("states"))
@@ -102,20 +107,24 @@ func (c *Build) Run(ctx *cli.Context) error {
 		return err
 	}
 
-	//loop over states and build them
-	for pname, snames := range states {
-		c.Enter(StatePart, StatePart.BuildingProvider, pname)
-		for _, sname := range snames {
-			c.Enter(StatePart, StatePart.BuildingState, sname)
-			iname, err := sm.Build(pname, sname, c.Pipe())
-			if err != nil {
-				return err
-			}
+	if len(states) == 0 {
+		c.Warning(StatePart.NoStates)
+	} else {
+		//loop over states and build them
+		for pname, snames := range states {
+			c.Enter(StatePart, StatePart.BuildingProvider, pname)
+			for _, sname := range snames {
+				c.Enter(StatePart, StatePart.BuildingState, sname)
+				iname, err := sm.Build(pname, sname, c.Pipe())
+				if err != nil {
+					return err
+				}
 
-			c.Success(StatePart.BuiltState, iname)
+				c.Success(StatePart.BuiltState, iname)
+				c.Exit()
+			}
 			c.Exit()
 		}
-		c.Exit()
 	}
 
 	c.Exit()

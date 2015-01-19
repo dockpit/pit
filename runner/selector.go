@@ -1,9 +1,6 @@
 package runner
 
 import (
-	"fmt"
-
-	"github.com/dockpit/lang"
 	"github.com/dockpit/lang/manifest"
 )
 
@@ -26,10 +23,5 @@ func Parse(sel string) (Selector, error) {
 		return &AllSelector{}, nil
 	}
 
-	m := lang.CaseEX.FindStringSubmatch(sel)
-	if m == nil {
-		return nil, fmt.Errorf("Selectur must be a casename enclused in quotes (e.g 'my case'), got: %s", sel)
-	}
-
-	return &CaseSelector{m[1]}, nil
+	return &CaseSelector{sel}, nil
 }

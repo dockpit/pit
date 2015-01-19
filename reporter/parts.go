@@ -149,6 +149,10 @@ type State struct{}
 
 func (s State) ID() string { return "state" }
 
+func (s State) NoStates(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Found no states to build, did you configure at least a default state for each provider?")
+}
+
 func (s State) BuildingProvider(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Building states for provider: '%s'", args[0])
 }
