@@ -38,3 +38,27 @@ func TestInstallIntoTmp(t *testing.T) {
 	}
 
 }
+
+func TestInstallSpecificPackage(t *testing.T) {
+
+	r := reporter.NewTerminal(os.Stdout)
+	cmd := command.NewInstall(r)
+
+	tdir, err := ioutil.TempDir("", "dp_tinstallinfotmp")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	os.Setenv("PIT_PATH", tdir)
+
+	AssertCommandNoError(t, cmd, []string{
+		"github.com/dockpit/pit-token",
+	}, `(?s)Installing.*github\.com.*success`, r)
+
+	//should be able to read file from installation
+	_, err = ioutil.ReadFile(filepath.Join(tdir, "github.com", "dockpit", "pit-token", "main.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+}

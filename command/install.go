@@ -59,26 +59,40 @@ func (c *Install) Run(ctx *cli.Context) error {
 	//get pit path
 	pp := os.Getenv("PIT_PATH")
 	if pp == "" {
-		return fmt.Errorf("Couldn't read 'PIT_PATH' environment variable, is it set?")
+		return fmt.Errorf("Couldn't read 'PIT_PATH' environment variabl	e, is it set?")
 	}
 
-	//get manifest
-	c.Report(ManifestPart.ParsingExamples, mrel)
-	m, err := c.ParseExamples(ctx)
-	if err != nil {
-		return err
-	}
+	c.Report(InstallPart.InstallingInto, pp)
+	dm := deps.NewManager(pp)
 
-	//retrieve all dependencies
-	depl, err := m.Dependencies()
-	if err != nil {
-		return err
+	//holds list of dependencies
+	depl := make(map[string][]string)
+
+	//do we want to install a specific package
+	dep := ctx.Args().First()
+	if dep != "" {
+
+		//install specific dep
+		depl[dep] = []string{}
+	} else {
+
+		//get manifest
+		c.Report(ManifestPart.ParsingExamples, mrel)
+		m, err := c.ParseExamples(ctx)
+		if err != nil {
+			return err
+		}
+
+		//retrieve all dependencies
+		depl, err = m.Dependencies()
+		if err != nil {
+			return err
+		}
 	}
 
 	//use the manager to install all dependencies into pit path
-	c.Report(InstallPart.InstallingInto, pp)
-	dm := deps.NewManager(pp)
 	for dep, _ := range depl {
+
 		c.Enter(DepPart, DepPart.InstallingDep, dep)
 
 		err := dm.Install(dep, c.Pipe())
