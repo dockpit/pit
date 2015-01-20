@@ -25,6 +25,7 @@ var DepPart = &reporter.Dep{}
 var MockPart = &reporter.Mock{}
 var TestPart = &reporter.Test{}
 var ErrorPart = &reporter.Error{}
+var InitPart = &reporter.Init{}
 
 var ManifestStatesPath = filepath.Join(".manifest", "states")
 var ManifestExamplesPath = filepath.Join(".manifest", "examples")

@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"bytes"
 	"os"
 	"testing"
 	"time"
@@ -62,4 +63,21 @@ func TestLoaderLoad(t *testing.T) {
 	assert.Equal(t, rconf.Dir, "..")
 	assert.Equal(t, rconf.ReadyTimeout, time.Second*2)
 	assert.Regexp(t, rconf.ReadyExp, "2015/01/08 12:15:17.019258 Starting Goji on [::]:8000")
+}
+
+func TestInitDataLoading(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	l := config.NewLoader(wd)
+
+	data, err := l.InitData()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = l.LoadData(bytes.NewBuffer(data))
+	assert.NoError(t, err)
 }

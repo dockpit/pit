@@ -32,6 +32,7 @@ func main() {
 		command.NewMock(r, icmd),
 		command.NewUnmock(r),
 		command.NewTest(r),
+		command.NewInit(r),
 	}
 
 	//append to app

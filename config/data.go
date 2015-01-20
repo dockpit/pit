@@ -24,3 +24,10 @@ type ConfigData struct {
 	DockerHostname string                              `json:"docker_hostname"`
 	Subject        string                              `json:"subject"`
 }
+
+var InitConfigData = `{
+	"subject": "http://localhost",
+	"run": {
+		"command": ["start", "your", "server"]
+	}
+}`

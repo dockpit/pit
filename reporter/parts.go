@@ -17,6 +17,30 @@ func (i Install) InstallingInto(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("Installing dependencies into '%s'", args[0])
 }
 
+//Init reporting
+type Init struct{}
+
+func (m Init) ID() string { return "init" }
+func (m Init) StartingInit(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("\nInitializing...")
+}
+
+func (m Init) ConfigFileAlreadyExists(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Dockpit configuration file already exists at '%s'...", args...)
+}
+
+func (m Init) InitializedConfigFile(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Initialized configuration file '%s'", args...)
+}
+
+func (m Init) InitializedManifestDir(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Initialized '%s'", args...)
+}
+
+func (m Init) InitittingInto(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Directory '%s'", args...)
+}
+
 //Mock reporting
 type Mock struct{}
 
