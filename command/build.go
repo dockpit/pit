@@ -25,11 +25,11 @@ func (c *Build) Name() string {
 }
 
 func (c *Build) Description() string {
-	return fmt.Sprintf("...")
+	return fmt.Sprintf("Uses the Dockerfiles in the .manifest/states directory hierachy to build a docker image for each state.")
 }
 
 func (c *Build) Usage() string {
-	return "Build the states using Docker"
+	return "Create states of your (micro)service"
 }
 
 func (c *Build) Flags() []cli.Flag {

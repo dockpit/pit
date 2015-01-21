@@ -29,11 +29,11 @@ func (c *Mock) Name() string {
 }
 
 func (c *Mock) Description() string {
-	return fmt.Sprintf("...")
+	return fmt.Sprintf("Reads the .manifest of your current Dockpit project and starts mock processes for each dependency.")
 }
 
 func (c *Mock) Usage() string {
-	return "Mock all dependencies of a given set of examples"
+	return "Mock dependencies of a (micro)service"
 }
 
 func (c *Mock) Flags() []cli.Flag {

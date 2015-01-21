@@ -27,11 +27,11 @@ func (c *Unmock) Name() string {
 }
 
 func (c *Unmock) Description() string {
-	return fmt.Sprintf("...")
+	return fmt.Sprintf("Stops every mock currently setup for a Dockpit project.")
 }
 
 func (c *Unmock) Usage() string {
-	return "remove mocks of a given set of examples"
+	return "Stop mocking dependencies"
 }
 
 func (c *Unmock) Flags() []cli.Flag {

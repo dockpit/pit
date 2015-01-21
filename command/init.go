@@ -27,11 +27,11 @@ func (c *Init) Name() string {
 }
 
 func (c *Init) Description() string {
-	return fmt.Sprintf("...")
+	return fmt.Sprintf("Creates a minimal set of files and directories to jumpstart a new Dockpit project in the currend directory.")
 }
 
 func (c *Init) Usage() string {
-	return "Init a directory as a dockpit project"
+	return "Bootstrap a new Dockpit project"
 }
 
 func (c *Init) Flags() []cli.Flag {

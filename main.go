@@ -15,6 +15,7 @@ var Build = "unbuild"
 
 func main() {
 	app := cli.NewApp()
+	app.Author = "Ad van der Veer <ad@dockpit.io>"
 	app.Name = "dockpit"
 	app.Usage = "docker based microservice development environment"
 	app.Version = fmt.Sprintf("%s (%s)", Version, Build)

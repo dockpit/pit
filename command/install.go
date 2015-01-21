@@ -26,11 +26,11 @@ func (c *Install) Name() string {
 }
 
 func (c *Install) Description() string {
-	return fmt.Sprintf("Parse examples into a manifest and extract all dependencies. Install each dependency into the Dockpit workspace which is expected to be specified as the PIT_PATH environment variable")
+	return fmt.Sprintf("Installs all other (micro)servicea your current .manfest depends on into your workspace, if the first argument is specified it will install only the specified (micro)service")
 }
 
 func (c *Install) Usage() string {
-	return "Install dependencies"
+	return "Install (micro)services into your workspace"
 }
 
 func (c *Install) Flags() []cli.Flag {

@@ -29,11 +29,11 @@ func (c *Test) Name() string {
 }
 
 func (c *Test) Description() string {
-	return fmt.Sprintf("...")
+	return fmt.Sprintf("Parses all examples from the .manifest of the current Dockpit project and test the implementation. The first arguments allows for running only the specified case.")
 }
 
 func (c *Test) Usage() string {
-	return "the the implementation against current examples"
+	return "Test a (micro)service"
 }
 
 func (c *Test) Flags() []cli.Flag {
