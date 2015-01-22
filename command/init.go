@@ -23,7 +23,7 @@ func NewInit(r reporter.R) *Init {
 }
 
 func (c *Init) Name() string {
-	return "Init"
+	return "init"
 }
 
 func (c *Init) Description() string {
