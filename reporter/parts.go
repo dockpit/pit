@@ -107,6 +107,10 @@ func (d Test) StartingTests(args ...interface{}) (int, string) {
 	return 1, fmt.Sprintf("\nStarting tests...")
 }
 
+func (d Test) NoTestsToRun(args ...interface{}) (int, string) {
+	return 1, fmt.Sprintf("Couldn't find any tests to run")
+}
+
 func (d Test) SomeTestsSkipped(args ...interface{}) (int, string) {
 	res := args[0].(*Result)
 	return 1, fmt.Sprintf("%d tests skipped", res.Skipped)

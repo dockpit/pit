@@ -141,16 +141,21 @@ func (c *Test) Run(ctx *cli.Context) error {
 		return err
 	}
 
-	//report results
-	if res.Failed > 0 {
-		c.Error(TestPart.SomeTestsFailed, res)
-		c.SetStatusCode(2)
+	//nothing happend at all?
+	if res.Succeeded == 0 && res.Failed == 0 && res.Skipped == 0 {
+		c.Warning(TestPart.NoTestsToRun)
 	} else {
-		if res.Skipped > 0 {
-			c.Warning(TestPart.SomeTestsSkipped, res)
-			c.Success(TestPart.SomeTestsPassed, res)
+		//report results
+		if res.Failed > 0 {
+			c.Error(TestPart.SomeTestsFailed, res)
+			c.SetStatusCode(2)
 		} else {
-			c.Success(TestPart.AllTestsPassed, res)
+			if res.Skipped > 0 {
+				c.Warning(TestPart.SomeTestsSkipped, res)
+				c.Success(TestPart.SomeTestsPassed, res)
+			} else {
+				c.Success(TestPart.AllTestsPassed, res)
+			}
 		}
 	}
 

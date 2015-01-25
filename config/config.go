@@ -57,7 +57,7 @@ func Parse(cd *ConfigData) (*Config, error) {
 
 		//get timeout by parsing duration
 		if conf.ReadyTimeout == "" {
-			return nil, fmt.Errorf("No 'ready_timeout' for provider: %s", pname)
+			conf.ReadyTimeout = "2s"
 		}
 
 		d, err := time.ParseDuration(conf.ReadyTimeout)

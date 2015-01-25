@@ -21,7 +21,7 @@ func ParseRunConfig(data *RunData) (*RunConfig, error) {
 	}
 
 	if data.ReadyTimeout == "" {
-		data.ReadyTimeout = "100ms"
+		data.ReadyTimeout = "2s"
 	}
 
 	conf.ReadyTimeout, err = time.ParseDuration(data.ReadyTimeout)
