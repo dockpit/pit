@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/dockpit/lang"
 	"github.com/dockpit/lang/manifest"
+	"github.com/dockpit/lang/parser"
 	"github.com/dockpit/pit/config"
 	"github.com/dockpit/pit/reporter"
 	"github.com/dockpit/state"
@@ -179,14 +181,35 @@ func (c *cmd) ParseExamples(ctx *cli.Context) (manifest.M, error) {
 	//retrieve path
 	path := c.ExamplesPath(ctx)
 
-	//parse the spec
-	p := lang.NewParser(path)
-	md, err := p.Parse()
+	//get files in dir
+	fis, err := ioutil.ReadDir(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, fmt.Errorf("Failed to open examples in '%s', is this a Dockpit project?", path)
 		}
 
+		return nil, err
+	}
+
+	//any markdown files in path
+	isMarkdown := false
+	for _, fi := range fis {
+		if filepath.Ext(fi.Name()) == ".md" {
+			isMarkdown = true
+		}
+	}
+
+	//if so use markdown parser
+	var p parser.Parser
+	if isMarkdown {
+		p = lang.MarkdownParser(path)
+	} else {
+		p = lang.FileParser(path)
+	}
+
+	//parse manifest
+	md, err := p.Parse()
+	if err != nil {
 		return nil, fmt.Errorf("Parsing error: %s", err)
 	}
 
