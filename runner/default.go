@@ -120,6 +120,10 @@ func (d *Default) RunOne(conf config.C, p *manifest.Pair, sm *state.Manager, mm 
 	//@todo should this be done in the test?
 	for _, w := range p.While {
 		ports := conf.PortsForDependency(w.ID)
+		if len(ports) < 1 {
+			return fmt.Errorf("Expected at least one port configured for '%s'", w.ID)
+		}
+
 		err = mm.Expect(w.Case, ports[0].Host)
 		if err != nil {
 			return err
