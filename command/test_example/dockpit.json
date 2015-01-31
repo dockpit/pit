@@ -5,7 +5,7 @@
 	"states": {
 		"mongo": {
 			"ports": ["27017:31000"],
-			"ready_timeout": "2s",
+			"ready_timeout": "5s",
 			"ready_pattern": ".*waiting for connections.*",
 			"command": ["--nojournal"]
 		}
