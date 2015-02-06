@@ -141,9 +141,6 @@ func (c *cmd) DockerHostCertArguments(ctx *cli.Context) (string, string, error) 
 	cert := strings.TrimSpace(ctx.String("docker-cert"))
 	if cert == "" {
 		cert = os.Getenv("DOCKER_CERT_PATH")
-		if cert == "" {
-			return "", "", fmt.Errorf("Could not retrieve DOCKER_CERT_PATH, not provided as option and not in env")
-		}
 	}
 
 	return host, cert, nil
