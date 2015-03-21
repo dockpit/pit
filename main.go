@@ -18,8 +18,8 @@ type Command interface {
 	Flags() []cli.Flag
 }
 
-var Version = "0.0.0-DEV"
-var Build = "unbuild"
+var Version = "0.0.0"
+var Build = "gobuild"
 
 func main() {
 	app := cli.NewApp()
