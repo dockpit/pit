@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/dockpit/ppit/model"
-	"github.com/dockpit/ppit/server/ui/bin"
+	"github.com/dockpit/pit/model"
+	"github.com/dockpit/pit/server/ui/bin"
 )
 
 var TemplateDir = filepath.Join("server", "ui")

@@ -9,14 +9,14 @@ release:
 publish-release:
 	github-release release \
     --user dockpit \
-    --repo ppit \
+    --repo pit \
     --tag v$(shell cat VERSION) \
     --pre-release
 
 publish-upload:
 	github-release upload \
     --user dockpit \
-    --repo ppit \
+    --repo pit \
     --tag v$(shell cat VERSION) \
     --name "pit-v$(shell cat VERSION)-osx-amd64" \
     --file $(GOPATH)/bin/pit

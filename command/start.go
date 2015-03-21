@@ -7,10 +7,10 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/hashicorp/errwrap"
 
-	"github.com/dockpit/ppit/client"
-	"github.com/dockpit/ppit/command/ui"
-	"github.com/dockpit/ppit/model"
-	"github.com/dockpit/ppit/server"
+	"github.com/dockpit/pit/client"
+	"github.com/dockpit/pit/command/ui"
+	"github.com/dockpit/pit/model"
+	"github.com/dockpit/pit/server"
 )
 
 type Start struct {

@@ -17,7 +17,7 @@ import (
 	"github.com/hashicorp/errwrap"
 	"github.com/samalba/dockerclient"
 
-	"github.com/dockpit/ppit/model"
+	"github.com/dockpit/pit/model"
 )
 
 type Docker struct {

@@ -8,9 +8,9 @@ import (
 	"github.com/hashicorp/errwrap"
 	"github.com/nsf/termbox-go"
 
-	"github.com/dockpit/ppit/client"
-	"github.com/dockpit/ppit/model"
-	"github.com/dockpit/ppit/server"
+	"github.com/dockpit/pit/client"
+	"github.com/dockpit/pit/model"
+	"github.com/dockpit/pit/server"
 )
 
 type Box struct {

@@ -10,8 +10,8 @@ import (
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/web"
 
-	"github.com/dockpit/ppit/client"
-	"github.com/dockpit/ppit/model"
+	"github.com/dockpit/pit/client"
+	"github.com/dockpit/pit/model"
 )
 
 type Server struct {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
-	"github.com/dockpit/ppit/command"
+	"github.com/dockpit/pit/command"
 )
 
 type Command interface {

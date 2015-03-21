@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"github.com/dockpit/ppit/model"
+	"github.com/dockpit/pit/model"
 )
 
 var DefaultCost = &Cost{

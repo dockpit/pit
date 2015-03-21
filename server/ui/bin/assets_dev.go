@@ -27,7 +27,7 @@ type asset struct {
 
 // server_ui_add_dep_html reads file data from disk. It returns an error on failure.
 func server_ui_add_dep_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/ppit/server/ui/add_dep.html"
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/add_dep.html"
 	name := "server/ui/add_dep.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -45,7 +45,7 @@ func server_ui_add_dep_html() (*asset, error) {
 
 // server_ui_add_state_html reads file data from disk. It returns an error on failure.
 func server_ui_add_state_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/ppit/server/ui/add_state.html"
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/add_state.html"
 	name := "server/ui/add_state.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -63,7 +63,7 @@ func server_ui_add_state_html() (*asset, error) {
 
 // server_ui_edit_state_html reads file data from disk. It returns an error on failure.
 func server_ui_edit_state_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/ppit/server/ui/edit_state.html"
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/edit_state.html"
 	name := "server/ui/edit_state.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -81,7 +81,7 @@ func server_ui_edit_state_html() (*asset, error) {
 
 // server_ui_foot_html reads file data from disk. It returns an error on failure.
 func server_ui_foot_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/ppit/server/ui/foot.html"
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/foot.html"
 	name := "server/ui/foot.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -99,7 +99,7 @@ func server_ui_foot_html() (*asset, error) {
 
 // server_ui_head_html reads file data from disk. It returns an error on failure.
 func server_ui_head_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/ppit/server/ui/head.html"
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/head.html"
 	name := "server/ui/head.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -117,7 +117,7 @@ func server_ui_head_html() (*asset, error) {
 
 // server_ui_list_isolations_html reads file data from disk. It returns an error on failure.
 func server_ui_list_isolations_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/ppit/server/ui/list_isolations.html"
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/list_isolations.html"
 	name := "server/ui/list_isolations.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
