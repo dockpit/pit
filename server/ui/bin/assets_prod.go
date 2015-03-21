@@ -1,0 +1,349 @@
+// +build !debug
+
+package uibin
+
+import (
+	"bytes"
+	"compress/gzip"
+	"fmt"
+	"io"
+	"strings"
+	"os"
+	"time"
+	"io/ioutil"
+	"path"
+	"path/filepath"
+)
+
+func bindata_read(data []byte, name string) ([]byte, error) {
+	gz, err := gzip.NewReader(bytes.NewBuffer(data))
+	if err != nil {
+		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, gz)
+	gz.Close()
+
+	if err != nil {
+		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+
+	return buf.Bytes(), nil
+}
+
+type asset struct {
+	bytes []byte
+	info  os.FileInfo
+}
+
+type bindata_file_info struct {
+	name string
+	size int64
+	mode os.FileMode
+	modTime time.Time
+}
+
+func (fi bindata_file_info) Name() string {
+	return fi.name
+}
+func (fi bindata_file_info) Size() int64 {
+	return fi.size
+}
+func (fi bindata_file_info) Mode() os.FileMode {
+	return fi.mode
+}
+func (fi bindata_file_info) ModTime() time.Time {
+	return fi.modTime
+}
+func (fi bindata_file_info) IsDir() bool {
+	return false
+}
+func (fi bindata_file_info) Sys() interface{} {
+	return nil
+}
+
+var _server_ui_add_dep_html = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x54\x51\xc1\x6a\xeb\x30\x10\x3c\xdb\x5f\xb1\x88\x40\x4e\xb1\xe1\x1d\x83\x6c\x78\xd0\x43\x7b\xe9\xa5\x5f\x20\x47\x9b\xc4\x20\x5b\xc2\x5a\x37\x0d\x46\xff\xde\x5d\x0b\xbb\xed\x45\x87\x9d\xd1\xcc\xec\xec\xb2\x00\xe1\x10\x9c\x21\x04\x75\x47\x63\x15\xa4\x54\xea\xfb\xbf\xf6\xbf\xb5\xf0\x82\x01\x47\x8b\xe3\xe5\x09\xe4\xe1\xc8\xe4\xea\x2d\x7a\x26\xf7\x7e\xac\xde\xcd\x80\x4c\x3e\xea\x9a\xd9\xa5\xbe\xfa\x69\x00\xa6\xd2\x33\x60\xa3\x4c\x08\xae\xbf\xac\xc4\xfa\xeb\xf4\x78\x3c\x4e\x82\x9f\xe6\xc9\x31\xc5\x5b\x64\x9f\x01\xe9\xee\x6d\xa3\x82\x8f\xa4\xda\xb2\xd0\x11\x1d\x5e\x08\x46\xd6\x6d\x94\xc5\x20\x43\x00\x36\x9d\xcc\x78\x43\xa8\x38\x4d\x94\x74\x32\x2d\x78\x7c\x60\x0e\x9c\x1b\xa8\xf6\x21\x68\x1f\xe8\x36\xf9\x39\x80\x33\x1d\xba\x46\x2d\xcb\x9a\x33\xa5\x73\x56\x2b\x7e\xe4\x3e\x88\x97\x5e\x05\x65\x5e\x16\xfc\xca\x77\x4e\x0c\x9f\xc6\xcd\x28\x9f\xc5\x62\x13\x38\xef\x5a\x4a\x42\xf5\x57\x38\xfc\x6a\xe3\xd5\x44\xce\x97\x33\xa5\x64\xfb\x68\x3a\x87\x76\x59\xb8\xbf\x94\x5a\x8e\xb6\x1a\x14\xbb\x46\xf6\xab\xb3\x61\xbb\xef\xc4\xf4\x2d\xd1\x0a\xae\xcb\x6c\x3d\x6c\xa0\xae\x73\x55\x52\x5a\x37\x13\x71\xe2\xdc\x7a\x9c\xbb\xa1\xe7\x32\x33\xac\xeb\x0c\xf2\x71\x6a\x69\x9f\x5d\xfe\x9c\xfb\xea\x3d\xc9\xb9\xbf\x03\x00\x00\xff\xff\x45\x08\x81\x97\x04\x02\x00\x00")
+
+func server_ui_add_dep_html_bytes() ([]byte, error) {
+	return bindata_read(
+		_server_ui_add_dep_html,
+		"server/ui/add_dep.html",
+	)
+}
+
+func server_ui_add_dep_html() (*asset, error) {
+	bytes, err := server_ui_add_dep_html_bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindata_file_info{name: "server/ui/add_dep.html", size: 516, mode: os.FileMode(420), modTime: time.Unix(1426867866, 0)}
+	a := &asset{bytes: bytes, info:  info}
+	return a, nil
+}
+
+var _server_ui_add_state_html = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x54\x90\xc1\x6a\xc3\x30\x0c\x86\xcf\xf5\x53\x18\x5f\x7a\x4a\x0d\x3b\x3b\x81\xb1\x9d\x77\xd9\x03\x0c\x37\x56\x89\x21\xb6\x44\x22\x93\x8e\xd2\x77\x9f\xb4\xe4\xd2\x8b\x91\xa5\xef\xd7\x2f\xe9\xf1\xb0\x0c\x85\xe6\xc8\x60\xdd\x04\x31\x39\xfb\x7c\x9a\x30\xbd\x0d\xef\x29\xd9\x6f\xd6\x3c\xa3\x3d\x0b\x77\xf9\x04\xba\x7c\xc5\x02\x42\x9c\x83\x17\xc4\x84\x1b\x2e\xc5\x42\x1d\xf9\x97\xa0\x77\x91\x68\xce\x63\xe4\x8c\xd5\xdf\xbb\x6d\xdb\x3a\xad\x77\x6d\x99\x05\xc1\x04\xd2\xbc\x00\x4f\x98\x7a\x47\xb8\xb2\x1b\xcc\x29\xe4\x4a\x8d\xed\xae\x67\xb8\xb3\xb3\x59\xca\x09\xe8\xa7\x8a\x95\xb3\xfa\xf6\xee\x3f\xf6\xca\xaf\x30\xc3\xc8\x47\x5a\x65\xda\xe5\x14\x90\xd4\x75\xf8\x68\x2b\x63\x09\xfe\xf8\x0a\xef\x77\x81\x86\xd7\xc6\x8c\xf5\xf0\x5a\xdb\xb5\x64\x19\x61\x5c\x40\x76\x0c\x7e\x2f\xca\x4a\x5e\x67\x1e\x8c\x79\xb9\xcc\x0d\x91\xf5\x32\x7f\x01\x00\x00\xff\xff\xce\x3a\xfb\x93\x2f\x01\x00\x00")
+
+func server_ui_add_state_html_bytes() ([]byte, error) {
+	return bindata_read(
+		_server_ui_add_state_html,
+		"server/ui/add_state.html",
+	)
+}
+
+func server_ui_add_state_html() (*asset, error) {
+	bytes, err := server_ui_add_state_html_bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindata_file_info{name: "server/ui/add_state.html", size: 303, mode: os.FileMode(420), modTime: time.Unix(1426864274, 0)}
+	a := &asset{bytes: bytes, info:  info}
+	return a, nil
+}
+
+var _server_ui_edit_state_html = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x54\x91\x41\x6e\xf3\x20\x10\x85\xd7\xe1\x14\x08\xfd\x52\x56\x09\xd2\xbf\x8c\x30\x8b\x2a\x5d\x74\xd3\x2e\x72\x80\x8a\x86\x49\x8d\x8a\x01\x39\x43\x9c\xc8\xe2\xee\x1d\x5c\xdb\x55\x37\x96\xf9\xde\xbc\xe1\x0d\x33\x8e\x1c\xa1\x4b\xde\x20\x70\xd1\x82\xb1\x82\x97\xc2\x54\xfb\x5f\x3f\x5b\x87\xfc\x84\x55\xd8\x52\xd5\xfe\x08\x69\xff\x6a\x3a\x20\x7d\x7b\x38\x4c\x68\x52\x57\xa8\x24\xb9\x98\xba\xc4\xbe\xe3\x10\xce\xf8\x48\xd0\x08\x93\x92\x77\x67\x83\x2e\x06\x79\xdf\x0d\xc3\xb0\xab\xfa\x2e\xf7\x9e\x4a\xa2\x05\xba\xaf\x03\x6c\xa3\x6d\x44\x8a\x57\x14\x9a\x6d\x94\x0b\x29\x23\xff\xf1\x23\xdc\x51\xf0\x40\x57\x34\xc2\x75\xe6\x13\xde\xeb\xbf\xe0\x37\xe3\x33\xa1\x71\x9c\x43\xbc\x54\xad\x26\x29\x45\xf0\x9e\xe6\x88\xc1\x3f\x1a\x31\xf5\xab\x3d\x0c\xb1\xb9\x8d\x8d\xe7\x2f\xe8\x2f\xce\x83\xd0\xab\xff\xb8\xc2\x52\x94\x5c\x1c\x7a\xc3\xc8\xff\x91\x11\x63\xd0\x4f\xd9\x79\xab\xe4\x7c\x5a\xf9\x12\xe5\x01\xd7\x25\xe8\xd5\xdc\xa8\xf7\x89\xbe\xbf\xe5\x4a\xd6\xc1\x35\x63\xf4\x70\x83\xc3\x96\xef\xdf\x32\xd6\x39\xeb\x73\xa7\x1e\x34\x09\xff\x66\x56\x91\x9c\x19\x04\x4b\x47\xf6\x67\x4f\x97\x18\xb1\xee\xe9\x3b\x00\x00\xff\xff\xe6\x27\xa1\x45\xbd\x01\x00\x00")
+
+func server_ui_edit_state_html_bytes() ([]byte, error) {
+	return bindata_read(
+		_server_ui_edit_state_html,
+		"server/ui/edit_state.html",
+	)
+}
+
+func server_ui_edit_state_html() (*asset, error) {
+	bytes, err := server_ui_edit_state_html_bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindata_file_info{name: "server/ui/edit_state.html", size: 445, mode: os.FileMode(420), modTime: time.Unix(1426880434, 0)}
+	a := &asset{bytes: bytes, info:  info}
+	return a, nil
+}
+
+var _server_ui_foot_html = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xb2\xd1\x4f\xca\x4f\xa9\xb4\xe3\xb2\xd1\xcf\x28\xc9\xcd\xb1\x03\x04\x00\x00\xff\xff\x01\x05\x7a\xf0\x0f\x00\x00\x00")
+
+func server_ui_foot_html_bytes() ([]byte, error) {
+	return bindata_read(
+		_server_ui_foot_html,
+		"server/ui/foot.html",
+	)
+}
+
+func server_ui_foot_html() (*asset, error) {
+	bytes, err := server_ui_foot_html_bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindata_file_info{name: "server/ui/foot.html", size: 15, mode: os.FileMode(420), modTime: time.Unix(1426784063, 0)}
+	a := &asset{bytes: bytes, info:  info}
+	return a, nil
+}
+
+var _server_ui_head_html = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x4c\x8f\x3d\x4f\xc4\x30\x0c\x86\xf7\xfc\x8a\x90\xf9\xc2\xb1\xc1\x90\x44\x42\x77\x37\x30\xc1\x00\x12\x8c\x6e\x62\x88\x45\xbe\x68\xdd\x56\xfc\x7b\xaa\x56\xe8\x3a\x59\x8f\xec\xc7\xaf\x5e\x73\x73\x7e\x3e\xbd\x7e\xbc\x5c\x64\xe4\x9c\x9c\x30\xff\x03\x21\x38\x21\xa5\xc9\xc8\x20\x7d\x84\x7e\x40\xb6\x6a\xe4\x4f\xfd\xa0\xae\x8b\xc8\xdc\x34\xfe\x8c\x34\x59\xf5\xae\xdf\x1e\xf5\xa9\xe6\x06\x4c\x5d\x42\x25\x7d\x2d\x8c\x65\xb1\x9e\x2e\x16\xc3\x17\xee\xbc\x02\x19\xad\x9a\x08\xe7\x56\x7b\xde\x9d\xce\x14\x38\xda\x80\x13\x79\xd4\x2b\x1c\x24\x15\x62\x82\xa4\x07\x0f\x09\xed\xdd\xed\xfd\x41\x8e\x03\xf6\x2b\xc3\x92\x64\x4b\xdd\x5e\x33\x71\x42\x77\xae\xfe\xbb\x11\x9b\xe3\x86\x42\x98\xe3\xd6\xc6\x74\x35\xfc\xba\xbf\x00\x00\x00\xff\xff\xd6\x06\x83\xba\xf2\x00\x00\x00")
+
+func server_ui_head_html_bytes() ([]byte, error) {
+	return bindata_read(
+		_server_ui_head_html,
+		"server/ui/head.html",
+	)
+}
+
+func server_ui_head_html() (*asset, error) {
+	bytes, err := server_ui_head_html_bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindata_file_info{name: "server/ui/head.html", size: 242, mode: os.FileMode(420), modTime: time.Unix(1426784037, 0)}
+	a := &asset{bytes: bytes, info:  info}
+	return a, nil
+}
+
+var _server_ui_list_isolations_html = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xb4\x54\x41\xaf\xd3\x30\x0c\x3e\xb7\xbf\xc2\x8a\x9e\x78\x07\xd8\x22\xae\x23\xad\x84\x84\x84\xb8\x70\xe1\x07\xa0\x6c\xf1\x58\xa4\xb6\x89\xda\xf4\xed\xa1\xa9\xff\x1d\x3b\x5d\x9b\x0d\xc6\xd3\x8a\x78\x3b\x74\x4e\x6a\x7f\xf6\x67\x7f\xee\xe9\x04\x01\x6b\x5f\xe9\x80\x20\x0e\xa8\x8d\x80\x61\xc8\x73\x75\x78\x5f\x7e\xe9\x1c\x5d\x5b\xd7\x74\x4a\xd2\x91\xee\x5a\x49\xcf\xbe\x2a\xf3\x8c\xc2\x5a\xdd\xfc\x40\x58\x27\x2f\x0e\xcc\x80\x7e\xaa\xb2\xe5\x68\x65\x6a\xef\xda\x1a\x6a\x0c\x07\x67\x0a\xe1\x5d\x17\x04\xe8\x1d\xbb\x17\x42\xda\x39\x54\x9e\x4e\xeb\xaf\xba\xc6\x61\x90\x06\x2b\x0c\x28\x26\x80\xec\xb3\x7d\xc2\x06\x1e\x29\x61\xf4\xa0\x24\x8f\x9b\x37\xcd\xb6\xf3\x1f\xd4\xb6\x0f\xc1\x35\x10\x7e\x7a\x2c\x44\xd7\x6f\x6b\x1b\x44\xd9\x62\xed\x9e\x50\xc9\xf1\xe5\x5c\x87\xe4\x42\xe6\x53\xe4\x30\xe2\xcf\x4c\x1e\x0c\xfa\x77\xf0\xd0\x05\x6e\xc5\xa6\x80\xf5\x37\xb6\x12\xab\x2c\xcb\x98\x18\xf9\xb3\x27\x5d\x6f\x80\xed\xd1\x7f\x18\x94\x4c\xac\x19\x14\x1b\x93\x42\x95\x4c\x19\x95\x86\x43\x8b\xfb\xbf\xf1\xd7\xc6\xac\x08\x5f\x94\x6f\xe1\xa3\x31\x40\xa6\x92\xfa\x1c\x7b\xce\x91\xd0\x47\xdc\x7c\xec\xf2\x8d\xbe\x0a\x72\xdc\x8d\xfd\xd1\xde\x57\x76\x17\xaf\xe5\xf3\xea\x78\x3c\xae\x38\x68\xd5\xb7\x15\xb9\x38\x83\x34\xf8\xab\x31\x51\x1e\x65\x1b\xdf\x87\x73\x7f\x03\x3e\xd3\xec\x2c\xbd\x9e\xe1\xbf\x37\x54\xb2\x00\x7e\x16\x22\xda\x92\xa3\x6e\x8e\x65\xd7\x22\xf7\x69\x8e\x4d\x03\x9a\x46\x13\x35\xf7\x09\x3d\x51\xa3\x8a\x2c\xbe\xa8\x3a\xf2\x5b\xae\x37\xea\xe5\x4b\x4a\xbb\x90\xd8\xff\x56\x58\x54\x0c\x6b\xea\x42\x4d\x89\xcc\x6d\xa1\xe5\xf4\x7f\x3f\x29\xce\x30\x11\x8b\x92\xbc\xcd\x74\x82\xbc\x50\xe1\x1d\x00\xa2\xbc\xec\x0d\xeb\x71\x51\x7f\x66\x1e\x57\x2d\xa2\x1a\x96\xaf\xcc\x6f\x23\xe4\x65\x89\xc5\x4e\xeb\x12\x0f\x8b\x17\x86\x51\x5f\x65\x55\x08\xf8\x1f\x96\x24\xee\xfc\x1f\xeb\x71\xf5\xa5\xde\x3b\x17\xf8\x4b\xfd\x2b\x00\x00\xff\xff\x49\x12\xc7\xa9\xbf\x05\x00\x00")
+
+func server_ui_list_isolations_html_bytes() ([]byte, error) {
+	return bindata_read(
+		_server_ui_list_isolations_html,
+		"server/ui/list_isolations.html",
+	)
+}
+
+func server_ui_list_isolations_html() (*asset, error) {
+	bytes, err := server_ui_list_isolations_html_bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindata_file_info{name: "server/ui/list_isolations.html", size: 1471, mode: os.FileMode(420), modTime: time.Unix(1426883938, 0)}
+	a := &asset{bytes: bytes, info:  info}
+	return a, nil
+}
+
+// Asset loads and returns the asset for the given name.
+// It returns an error if the asset could not be found or
+// could not be loaded.
+func Asset(name string) ([]byte, error) {
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	if f, ok := _bindata[cannonicalName]; ok {
+		a, err := f()
+		if err != nil {
+			return nil, fmt.Errorf("Asset %s can't read by error: %v", name, err)
+		}
+		return a.bytes, nil
+	}
+	return nil, fmt.Errorf("Asset %s not found", name)
+}
+
+// MustAsset is like Asset but panics when Asset would return an error.
+// It simplifies safe initialization of global variables.
+func MustAsset(name string) []byte {
+	a, err := Asset(name)
+	if (err != nil) {
+		panic("asset: Asset(" + name + "): " + err.Error())
+	}
+
+	return a
+}
+
+// AssetInfo loads and returns the asset info for the given name.
+// It returns an error if the asset could not be found or
+// could not be loaded.
+func AssetInfo(name string) (os.FileInfo, error) {
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	if f, ok := _bindata[cannonicalName]; ok {
+		a, err := f()
+		if err != nil {
+			return nil, fmt.Errorf("AssetInfo %s can't read by error: %v", name, err)
+		}
+		return a.info, nil
+	}
+	return nil, fmt.Errorf("AssetInfo %s not found", name)
+}
+
+// AssetNames returns the names of the assets.
+func AssetNames() []string {
+	names := make([]string, 0, len(_bindata))
+	for name := range _bindata {
+		names = append(names, name)
+	}
+	return names
+}
+
+// _bindata is a table, holding each asset generator, mapped to its name.
+var _bindata = map[string]func() (*asset, error){
+	"server/ui/add_dep.html": server_ui_add_dep_html,
+	"server/ui/add_state.html": server_ui_add_state_html,
+	"server/ui/edit_state.html": server_ui_edit_state_html,
+	"server/ui/foot.html": server_ui_foot_html,
+	"server/ui/head.html": server_ui_head_html,
+	"server/ui/list_isolations.html": server_ui_list_isolations_html,
+}
+
+// AssetDir returns the file names below a certain
+// directory embedded in the file by go-bindata.
+// For example if you run go-bindata on data/... and data contains the
+// following hierarchy:
+//     data/
+//       foo.txt
+//       img/
+//         a.png
+//         b.png
+// then AssetDir("data") would return []string{"foo.txt", "img"}
+// AssetDir("data/img") would return []string{"a.png", "b.png"}
+// AssetDir("foo.txt") and AssetDir("notexist") would return an error
+// AssetDir("") will return []string{"data"}.
+func AssetDir(name string) ([]string, error) {
+	node := _bintree
+	if len(name) != 0 {
+		cannonicalName := strings.Replace(name, "\\", "/", -1)
+		pathList := strings.Split(cannonicalName, "/")
+		for _, p := range pathList {
+			node = node.Children[p]
+			if node == nil {
+				return nil, fmt.Errorf("Asset %s not found", name)
+			}
+		}
+	}
+	if node.Func != nil {
+		return nil, fmt.Errorf("Asset %s not found", name)
+	}
+	rv := make([]string, 0, len(node.Children))
+	for name := range node.Children {
+		rv = append(rv, name)
+	}
+	return rv, nil
+}
+
+type _bintree_t struct {
+	Func func() (*asset, error)
+	Children map[string]*_bintree_t
+}
+var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
+	"server": &_bintree_t{nil, map[string]*_bintree_t{
+		"ui": &_bintree_t{nil, map[string]*_bintree_t{
+			"add_dep.html": &_bintree_t{server_ui_add_dep_html, map[string]*_bintree_t{
+			}},
+			"add_state.html": &_bintree_t{server_ui_add_state_html, map[string]*_bintree_t{
+			}},
+			"edit_state.html": &_bintree_t{server_ui_edit_state_html, map[string]*_bintree_t{
+			}},
+			"foot.html": &_bintree_t{server_ui_foot_html, map[string]*_bintree_t{
+			}},
+			"head.html": &_bintree_t{server_ui_head_html, map[string]*_bintree_t{
+			}},
+			"list_isolations.html": &_bintree_t{server_ui_list_isolations_html, map[string]*_bintree_t{
+			}},
+		}},
+	}},
+}}
+
+// Restore an asset under the given directory
+func RestoreAsset(dir, name string) error {
+        data, err := Asset(name)
+        if err != nil {
+                return err
+        }
+        info, err := AssetInfo(name)
+        if err != nil {
+                return err
+        }
+        err = os.MkdirAll(_filePath(dir, path.Dir(name)), os.FileMode(0755))
+        if err != nil {
+                return err
+        }
+        err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+        if err != nil {
+                return err
+        }
+        err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+        if err != nil {
+                return err
+        }
+        return nil
+}
+
+// Restore assets under the given directory recursively
+func RestoreAssets(dir, name string) error {
+        children, err := AssetDir(name)
+        if err != nil { // File
+                return RestoreAsset(dir, name)
+        } else { // Dir
+                for _, child := range children {
+                        err = RestoreAssets(dir, path.Join(name, child))
+                        if err != nil {
+                                return err
+                        }
+                }
+        }
+        return nil
+}
+
+func _filePath(dir, name string) string {
+        cannonicalName := strings.Replace(name, "\\", "/", -1)
+        return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+}
+

@@ -1,0 +1,54 @@
+{{ template "head" }}
+
+<h1>Isolations</h1>
+<hr/>
+<ul>
+	{{ range .Isolations }}
+	    <li>
+	    	<form method="post" action="/isolations/{{.Name}}/delete">
+	    		Given '{{ .Name }}':&nbsp;<button type="submit">remove</button>
+	    	</form>
+	    	<ul>
+	    		{{ range $dep, $state := .States }}
+	    			<li>{{ $dep }}: {{ $state }}</li>
+	    		{{ end }}
+	    	</ul>
+	    	<a href="/isolations/{{.Name}}/add-dep">+ Add dep</a>
+	    </li>
+	{{ end }}
+</ul>
+
+<form action="/isolations" enctype="application/x-www-form-urlencoded" method="post">
+	<input type="text" id="isolation_name" name="name"/>
+	<button type="submit">create isolation</button>
+</form>
+
+<h1>Dependencies</h1>
+<hr/>
+<ul>
+	{{ range .Deps }}
+	    <li>
+	    	<form method="post" action="/deps/{{.Name}}/delete">
+	    		{{ .Name }}:&nbsp;<button type="submit">remove</button>
+	    	</form>
+	    	<ul>
+	    		{{ $dep := . }}
+	    		{{ range .States }}
+	    			<li>
+				    	<form method="post" action="/deps/{{$dep.Name}}/states/{{.Name}}/delete">
+				    		<a href="/deps/{{$dep.Name}}/states/{{.Name}}">{{ .Name }}:</a>&nbsp;<button type="submit">remove</button>
+				    	</form>
+	    			</li>
+	    		{{ end }}
+	    	</ul>
+	    	<a href="/deps/{{.Name}}/add-state">+ Add state</a>
+	    </li>
+	{{ end }}
+</ul>
+
+<form action="/deps" enctype="application/x-www-form-urlencoded" method="post">
+	<input type="text" id="dep_name" name="name"/>
+	<button type="submit">create dep</button>
+</form>
+
+{{ template "foot" }}
