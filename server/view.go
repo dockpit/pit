@@ -12,10 +12,14 @@ import (
 
 var TemplateDir = filepath.Join("server", "ui")
 
-type View struct{}
+type View struct {
+	dbMeta *model.Meta
+}
 
-func NewView() *View {
-	return &View{}
+func NewView(dbmeta *model.Meta) *View {
+	return &View{
+		dbMeta: dbmeta,
+	}
 }
 
 func (v *View) addSystemTemplates(t *template.Template) error {
@@ -23,6 +27,12 @@ func (v *View) addSystemTemplates(t *template.Template) error {
 	if err != nil {
 		return err
 	}
+
+	t.Funcs(template.FuncMap{
+		"DATABASE_ID": func() string {
+			return v.dbMeta.ID
+		},
+	})
 
 	foot, err := uibin.Asset(filepath.Join(TemplateDir, "foot.html"))
 	if err != nil {
@@ -42,7 +52,7 @@ func (v *View) addSystemTemplates(t *template.Template) error {
 	return nil
 }
 
-func (v *View) Render(w http.ResponseWriter, name string, data interface{}) {
+func (v *View) Render(w http.ResponseWriter, name string, data map[string]interface{}) {
 	b, err := uibin.Asset(name)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed load template '%s': %s", name, err), http.StatusInternalServerError)

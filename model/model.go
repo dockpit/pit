@@ -22,7 +22,66 @@ func NewModel(dbpath string) (*Model, error) {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to open Dockpit db at '%s': {{err}}, is Dockpit already running?", dbpath), err)
 	}
 
-	return &Model{db: db, Events: make(chan Event)}, nil
+	m := &Model{db: db, Events: make(chan Event)}
+	err = m.UpsertMetaData()
+	if err != nil {
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize metadata for '%s': {{err}}", dbpath), err)
+	}
+
+	return m, nil
+}
+
+func (m *Model) GetDBMetaData() (*Meta, error) {
+	var meta *Meta
+
+	return meta, m.db.View(func(tx *bolt.Tx) error {
+		var err error
+		b := tx.Bucket([]byte(MetaBucketName))
+		if b == nil {
+			return fmt.Errorf("Failed to open meta bucket")
+		}
+
+		data := b.Get([]byte(DatabaseMetaKey))
+		if data != nil {
+			meta, err = NewMetaFromSerialized(data)
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to deserialize meta from db: {{err}}, data: '%s'", string(data)), err)
+			}
+		}
+
+		return nil
+	})
+}
+
+func (m *Model) UpsertMetaData() error {
+	return m.db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(MetaBucketName))
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to create meta bucket: {{err}}"), err)
+		}
+
+		data := b.Get([]byte(DatabaseMetaKey))
+		var dbmeta *Meta
+		if data == nil {
+			dbmeta, err = NewMeta()
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to create new db meta: {{err}}"), err)
+			}
+		} else {
+			dbmeta, err = NewMetaFromSerialized(data)
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to deserialize db meta data '%s': {{err}}", string(data)), err)
+			}
+		}
+
+		data, err = dbmeta.Serialize()
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize db meta '%s': {{err}}", dbmeta.ID), err)
+		}
+
+		b.Put([]byte(DatabaseMetaKey), data)
+		return nil
+	})
 }
 
 func (m *Model) GetAllIsolations() ([]*Isolation, error) {

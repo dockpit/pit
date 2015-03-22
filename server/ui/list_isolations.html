@@ -1,6 +1,7 @@
 {{ template "head" }}
+<h1>Database {{.Meta.ID}}</h1>
 
-<h1>Isolations</h1>
+<h2>Isolations</h2>
 <hr/>
 <ul>
 	{{ range .Isolations }}
@@ -23,7 +24,7 @@
 	<button type="submit">create isolation</button>
 </form>
 
-<h1>Dependencies</h1>
+<h2>Dependencies</h2>
 <hr/>
 <ul>
 	{{ range .Deps }}
@@ -51,4 +52,4 @@
 	<button type="submit">create dep</button>
 </form>
 
-{{ template "foot" }}
+{{ template "foot" $ }}

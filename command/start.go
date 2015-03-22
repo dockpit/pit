@@ -58,7 +58,11 @@ func (c *Start) Run(ctx *cli.Context) error {
 		return errwrap.Wrapf("Failed to connect to Docker host: {{err}}", err)
 	}
 
-	svr := server.New(ctx.String("bind"), m, docker)
+	svr, err := server.New(ctx.String("bind"), m, docker)
+	if err != nil {
+		return errwrap.Wrapf("Failed to init server: {{err}}", err)
+	}
+
 	box := ui.NewBox(m, svr, docker)
 
 	err = box.Init()

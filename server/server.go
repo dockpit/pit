@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/hashicorp/errwrap"
 	"github.com/zenazn/goji/bind"
 	"github.com/zenazn/goji/web"
 
@@ -25,10 +26,15 @@ type Server struct {
 	*http.Server
 }
 
-func New(baddr string, m *model.Model, client *client.Docker) *Server {
+func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	mux := web.New()
+	dbmeta, err := m.GetDBMetaData()
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed to get DB Meta data: {{err}}", err)
+	}
+
 	s := &Server{
-		view:     NewView(),
+		view:     NewView(dbmeta),
 		client:   client,
 		model:    m,
 		bind:     baddr,
@@ -362,7 +368,7 @@ func New(baddr string, m *model.Model, client *client.Docker) *Server {
 		}
 	})
 
-	return s
+	return s, nil
 }
 
 func (s *Server) Start() error {
