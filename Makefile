@@ -1,6 +1,6 @@
 debug:
 	go-bindata -o=server/ui/bin/assets_dev.go -tags=debug -pkg=uibin -ignore=server/ui/bin -debug=true server/ui/...
-	go run -tags=debug main.go start -bind=:9000 
+	go run -tags=debug main.go start 
 
 release:
 	go-bindata -o=server/ui/bin/assets_prod.go -tags=!debug -pkg=uibin -ignore=server/ui/bin server/ui/...

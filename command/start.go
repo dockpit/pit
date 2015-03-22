@@ -36,7 +36,7 @@ func (c *Start) Usage() string {
 func (c *Start) Flags() []cli.Flag {
 
 	return []cli.Flag{
-		cli.StringFlag{Name: "bind", Value: ":0", Usage: "<usage>"},
+		cli.StringFlag{Name: "bind", Value: ":3838", Usage: "<usage>"},
 		cli.StringFlag{Name: "db", Value: "dockpit.db", Usage: "<usage>"},
 		cli.StringFlag{Name: "docker-host", Value: os.Getenv("DOCKER_HOST"), Usage: "<usage>"},
 		cli.StringFlag{Name: "docker-cert-path", Value: os.Getenv("DOCKER_CERT_PATH"), Usage: "<usage>"},
