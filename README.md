@@ -1,5 +1,5 @@
 # Dockpit
-Painless isolation for your (micro)service development process. Comes with a minimal web UI to set up dependencies in predictive states and a CLI to quickly switch between them. It sses Docker to make each isolation predictable and portable for other team members.
+Painless isolation for your (micro)service development process. Comes with a minimal web UI to set up dependencies in predictive states and a CLI to quickly switch between them. It uses Docker to make each isolation predictable and portable.
 
 ## Getting Started
 NOTE: You'll need to have [Docker](https://docker.com) installed and running, the official guides for setting up Docker can be found [here](https://docs.docker.com/installation/#installation). 
