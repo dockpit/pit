@@ -1,0 +1,31 @@
+{
+  "name": "pit_webui",
+  "version": "0.0.1",
+  "description": "Dockpit Web UI",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ad van der Veer <advanderveer@gmail.com>",
+  "license": "MPL2",
+  "devDependencies": {
+    "browserify": "^9.0.3",
+    "gulp": "^3.8.11",
+    "gulp-util": "^3.0.4",
+    "reactify": "^1.1.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^2.6.0"
+  },
+  "dependencies": {
+    "react": "^0.13.1"
+  },
+  "paths": {
+    "js": "./src/**/*.js",
+    "jsx": "./src/**/*.jsx",
+    "app": "./src/app.js"
+  },
+  "dest": {
+    "app": "app.js",
+    "dist": "dist"
+  }
+}

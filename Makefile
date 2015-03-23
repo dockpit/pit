@@ -2,7 +2,7 @@ XC_ARCH = "amd64"
 XC_OS = "darwin linux windows"
 
 debug:
-	go-bindata -o=server/ui/bin/assets_dev.go -tags=debug -pkg=uibin -ignore=server/ui/bin -debug=true server/ui/...
+	go-bindata -o=server/ui/bin/assets_dev.go -tags=debug -pkg=uibin -ignore=server/ui/bin -ignore=server/ui/node_modules -debug=true server/ui/...
 	go run -tags=debug main.go start 
 
 release:

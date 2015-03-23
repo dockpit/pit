@@ -25,6 +25,42 @@ type asset struct {
 	info  os.FileInfo
 }
 
+// server_ui_gitignore reads file data from disk. It returns an error on failure.
+func server_ui_gitignore() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/.gitignore"
+	name := "server/ui/.gitignore"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_jshintrc reads file data from disk. It returns an error on failure.
+func server_ui_jshintrc() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/.jshintrc"
+	name := "server/ui/.jshintrc"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_add_dep_html reads file data from disk. It returns an error on failure.
 func server_ui_add_dep_html() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/add_dep.html"
@@ -47,6 +83,24 @@ func server_ui_add_dep_html() (*asset, error) {
 func server_ui_add_state_html() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/add_state.html"
 	name := "server/ui/add_state.html"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_dist_app_js reads file data from disk. It returns an error on failure.
+func server_ui_dist_app_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/dist/app.js"
+	name := "server/ui/dist/app.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -97,6 +151,24 @@ func server_ui_foot_html() (*asset, error) {
 	return a, err
 }
 
+// server_ui_gulpfile_js reads file data from disk. It returns an error on failure.
+func server_ui_gulpfile_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/gulpfile.js"
+	name := "server/ui/gulpfile.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_head_html reads file data from disk. It returns an error on failure.
 func server_ui_head_html() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/head.html"
@@ -119,6 +191,60 @@ func server_ui_head_html() (*asset, error) {
 func server_ui_list_isolations_html() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/list_isolations.html"
 	name := "server/ui/list_isolations.html"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_package_json reads file data from disk. It returns an error on failure.
+func server_ui_package_json() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/package.json"
+	name := "server/ui/package.json"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_app_js reads file data from disk. It returns an error on failure.
+func server_ui_src_app_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/app.js"
+	name := "server/ui/src/app.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_jsx_hello_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_jsx_hello_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/jsx/Hello.jsx"
+	name := "server/ui/src/jsx/Hello.jsx"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -185,12 +311,19 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
+	"server/ui/.gitignore": server_ui_gitignore,
+	"server/ui/.jshintrc": server_ui_jshintrc,
 	"server/ui/add_dep.html": server_ui_add_dep_html,
 	"server/ui/add_state.html": server_ui_add_state_html,
+	"server/ui/dist/app.js": server_ui_dist_app_js,
 	"server/ui/edit_state.html": server_ui_edit_state_html,
 	"server/ui/foot.html": server_ui_foot_html,
+	"server/ui/gulpfile.js": server_ui_gulpfile_js,
 	"server/ui/head.html": server_ui_head_html,
 	"server/ui/list_isolations.html": server_ui_list_isolations_html,
+	"server/ui/package.json": server_ui_package_json,
+	"server/ui/src/app.js": server_ui_src_app_js,
+	"server/ui/src/jsx/Hello.jsx": server_ui_src_jsx_hello_jsx,
 }
 
 // AssetDir returns the file names below a certain
@@ -235,17 +368,37 @@ type _bintree_t struct {
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 	"server": &_bintree_t{nil, map[string]*_bintree_t{
 		"ui": &_bintree_t{nil, map[string]*_bintree_t{
+			".gitignore": &_bintree_t{server_ui_gitignore, map[string]*_bintree_t{
+			}},
+			".jshintrc": &_bintree_t{server_ui_jshintrc, map[string]*_bintree_t{
+			}},
 			"add_dep.html": &_bintree_t{server_ui_add_dep_html, map[string]*_bintree_t{
 			}},
 			"add_state.html": &_bintree_t{server_ui_add_state_html, map[string]*_bintree_t{
+			}},
+			"dist": &_bintree_t{nil, map[string]*_bintree_t{
+				"app.js": &_bintree_t{server_ui_dist_app_js, map[string]*_bintree_t{
+				}},
 			}},
 			"edit_state.html": &_bintree_t{server_ui_edit_state_html, map[string]*_bintree_t{
 			}},
 			"foot.html": &_bintree_t{server_ui_foot_html, map[string]*_bintree_t{
 			}},
+			"gulpfile.js": &_bintree_t{server_ui_gulpfile_js, map[string]*_bintree_t{
+			}},
 			"head.html": &_bintree_t{server_ui_head_html, map[string]*_bintree_t{
 			}},
 			"list_isolations.html": &_bintree_t{server_ui_list_isolations_html, map[string]*_bintree_t{
+			}},
+			"package.json": &_bintree_t{server_ui_package_json, map[string]*_bintree_t{
+			}},
+			"src": &_bintree_t{nil, map[string]*_bintree_t{
+				"app.js": &_bintree_t{server_ui_src_app_js, map[string]*_bintree_t{
+				}},
+				"jsx": &_bintree_t{nil, map[string]*_bintree_t{
+					"Hello.jsx": &_bintree_t{server_ui_src_jsx_hello_jsx, map[string]*_bintree_t{
+					}},
+				}},
 			}},
 		}},
 	}},

@@ -3,8 +3,10 @@ package server
 import (
 	"bytes"
 	"fmt"
+	"mime"
 	"net"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/hashicorp/errwrap"
@@ -13,6 +15,7 @@ import (
 
 	"github.com/dockpit/pit/client"
 	"github.com/dockpit/pit/model"
+	"github.com/dockpit/pit/server/ui/bin"
 )
 
 type Server struct {
@@ -43,6 +46,23 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 
 		Server: &http.Server{Handler: mux},
 	}
+
+	//serve static files
+	mux.Get("/static/*", func(c web.C, w http.ResponseWriter, r *http.Request) {
+		path := filepath.Clean(r.URL.Path)
+		path, _ = filepath.Rel("/static", path)
+		path = filepath.Join(TemplateDir, path)
+
+		data, err := uibin.Asset(path)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		ct := mime.TypeByExtension(filepath.Ext(path))
+		w.Header().Set("Content-Type", ct)
+		w.Write(data)
+	})
 
 	//list isolations
 	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
