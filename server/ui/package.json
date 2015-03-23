@@ -17,12 +17,15 @@
     "watchify": "^2.6.0"
   },
   "dependencies": {
+    "events": "^1.0.2",
+    "flux": "^2.0.1",
+    "object-assign": "^2.0.0",
     "react": "^0.13.1"
   },
   "paths": {
     "js": "./src/**/*.js",
     "jsx": "./src/**/*.jsx",
-    "app": "./src/app.js"
+    "app": "./src/js/app.js"
   },
   "dest": {
     "app": "app.js",

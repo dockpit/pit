@@ -223,10 +223,10 @@ func server_ui_package_json() (*asset, error) {
 	return a, err
 }
 
-// server_ui_src_app_js reads file data from disk. It returns an error on failure.
-func server_ui_src_app_js() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/app.js"
-	name := "server/ui/src/app.js"
+// server_ui_src_js_app_js reads file data from disk. It returns an error on failure.
+func server_ui_src_js_app_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/app.js"
+	name := "server/ui/src/js/app.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -241,10 +241,10 @@ func server_ui_src_app_js() (*asset, error) {
 	return a, err
 }
 
-// server_ui_src_jsx_hello_jsx reads file data from disk. It returns an error on failure.
-func server_ui_src_jsx_hello_jsx() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/jsx/Hello.jsx"
-	name := "server/ui/src/jsx/Hello.jsx"
+// server_ui_src_js_components_hello_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_hello_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/Hello.jsx"
+	name := "server/ui/src/js/components/Hello.jsx"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -322,8 +322,8 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/head.html": server_ui_head_html,
 	"server/ui/list_isolations.html": server_ui_list_isolations_html,
 	"server/ui/package.json": server_ui_package_json,
-	"server/ui/src/app.js": server_ui_src_app_js,
-	"server/ui/src/jsx/Hello.jsx": server_ui_src_jsx_hello_jsx,
+	"server/ui/src/js/app.js": server_ui_src_js_app_js,
+	"server/ui/src/js/components/Hello.jsx": server_ui_src_js_components_hello_jsx,
 }
 
 // AssetDir returns the file names below a certain
@@ -393,10 +393,12 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"package.json": &_bintree_t{server_ui_package_json, map[string]*_bintree_t{
 			}},
 			"src": &_bintree_t{nil, map[string]*_bintree_t{
-				"app.js": &_bintree_t{server_ui_src_app_js, map[string]*_bintree_t{
-				}},
-				"jsx": &_bintree_t{nil, map[string]*_bintree_t{
-					"Hello.jsx": &_bintree_t{server_ui_src_jsx_hello_jsx, map[string]*_bintree_t{
+				"js": &_bintree_t{nil, map[string]*_bintree_t{
+					"app.js": &_bintree_t{server_ui_src_js_app_js, map[string]*_bintree_t{
+					}},
+					"components": &_bintree_t{nil, map[string]*_bintree_t{
+						"Hello.jsx": &_bintree_t{server_ui_src_js_components_hello_jsx, map[string]*_bintree_t{
+						}},
 					}},
 				}},
 			}},
