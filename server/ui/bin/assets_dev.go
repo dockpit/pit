@@ -223,6 +223,24 @@ func server_ui_package_json() (*asset, error) {
 	return a, err
 }
 
+// server_ui_src_js_actions_isolationactions_js reads file data from disk. It returns an error on failure.
+func server_ui_src_js_actions_isolationactions_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/actions/IsolationActions.js"
+	name := "server/ui/src/js/actions/IsolationActions.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_src_js_app_js reads file data from disk. It returns an error on failure.
 func server_ui_src_js_app_js() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/app.js"
@@ -241,10 +259,64 @@ func server_ui_src_js_app_js() (*asset, error) {
 	return a, err
 }
 
-// server_ui_src_js_components_hello_jsx reads file data from disk. It returns an error on failure.
-func server_ui_src_js_components_hello_jsx() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/Hello.jsx"
-	name := "server/ui/src/js/components/Hello.jsx"
+// server_ui_src_js_components_isolationlist_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_isolationlist_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/IsolationList.jsx"
+	name := "server/ui/src/js/components/IsolationList.jsx"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_components_isolationpanel_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_isolationpanel_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/IsolationPanel.jsx"
+	name := "server/ui/src/js/components/IsolationPanel.jsx"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_dispatcher_appdispatcher_js reads file data from disk. It returns an error on failure.
+func server_ui_src_js_dispatcher_appdispatcher_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/dispatcher/AppDispatcher.js"
+	name := "server/ui/src/js/dispatcher/AppDispatcher.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_stores_isolationstore_js reads file data from disk. It returns an error on failure.
+func server_ui_src_js_stores_isolationstore_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/stores/IsolationStore.js"
+	name := "server/ui/src/js/stores/IsolationStore.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -322,8 +394,12 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/head.html": server_ui_head_html,
 	"server/ui/list_isolations.html": server_ui_list_isolations_html,
 	"server/ui/package.json": server_ui_package_json,
+	"server/ui/src/js/actions/IsolationActions.js": server_ui_src_js_actions_isolationactions_js,
 	"server/ui/src/js/app.js": server_ui_src_js_app_js,
-	"server/ui/src/js/components/Hello.jsx": server_ui_src_js_components_hello_jsx,
+	"server/ui/src/js/components/IsolationList.jsx": server_ui_src_js_components_isolationlist_jsx,
+	"server/ui/src/js/components/IsolationPanel.jsx": server_ui_src_js_components_isolationpanel_jsx,
+	"server/ui/src/js/dispatcher/AppDispatcher.js": server_ui_src_js_dispatcher_appdispatcher_js,
+	"server/ui/src/js/stores/IsolationStore.js": server_ui_src_js_stores_isolationstore_js,
 }
 
 // AssetDir returns the file names below a certain
@@ -394,10 +470,24 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			}},
 			"src": &_bintree_t{nil, map[string]*_bintree_t{
 				"js": &_bintree_t{nil, map[string]*_bintree_t{
+					"actions": &_bintree_t{nil, map[string]*_bintree_t{
+						"IsolationActions.js": &_bintree_t{server_ui_src_js_actions_isolationactions_js, map[string]*_bintree_t{
+						}},
+					}},
 					"app.js": &_bintree_t{server_ui_src_js_app_js, map[string]*_bintree_t{
 					}},
 					"components": &_bintree_t{nil, map[string]*_bintree_t{
-						"Hello.jsx": &_bintree_t{server_ui_src_js_components_hello_jsx, map[string]*_bintree_t{
+						"IsolationList.jsx": &_bintree_t{server_ui_src_js_components_isolationlist_jsx, map[string]*_bintree_t{
+						}},
+						"IsolationPanel.jsx": &_bintree_t{server_ui_src_js_components_isolationpanel_jsx, map[string]*_bintree_t{
+						}},
+					}},
+					"dispatcher": &_bintree_t{nil, map[string]*_bintree_t{
+						"AppDispatcher.js": &_bintree_t{server_ui_src_js_dispatcher_appdispatcher_js, map[string]*_bintree_t{
+						}},
+					}},
+					"stores": &_bintree_t{nil, map[string]*_bintree_t{
+						"IsolationStore.js": &_bintree_t{server_ui_src_js_stores_isolationstore_js, map[string]*_bintree_t{
 						}},
 					}},
 				}},

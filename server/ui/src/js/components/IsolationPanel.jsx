@@ -26,7 +26,7 @@ module.exports = React.createClass({
   render: function() {
     return <div>
       <h2>Isolations {this.state.data.get('nrOfIsolations')}</h2>
-      <IsolationList/>
+      <IsolationList isolations={this.state.data.get('isolations')}/>
     </div>;
   }
 });

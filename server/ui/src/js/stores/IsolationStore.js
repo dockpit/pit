@@ -33,7 +33,9 @@ IsolationStore.dispatchToken = Dispatcher.register(function(a){
             return console.error(err)
           }
 
-          state = state.set('nrOfIsolations', 2)
+          data = JSON.parse(res.text)
+          state = state.set('nrOfIsolations', data.length)
+          state = state.set('isolations', data)
           IsolationStore.emit(IsolationStore.CHANGED)
         });
 
