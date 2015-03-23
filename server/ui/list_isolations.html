@@ -3,29 +3,6 @@
 
 <div id="isolation-section"></div>
 
-<h2>Isolations</h2>
-<hr/>
-<ul>
-	{{ range .Isolations }}
-	    <li>
-	    	<form method="post" action="/isolations/{{.Name}}/delete">
-	    		Given '{{ .Name }}':&nbsp;<button type="submit">remove</button>
-	    	</form>
-	    	<ul>
-	    		{{ range $dep, $state := .States }}
-	    			<li>{{ $dep }}: {{ $state }}</li>
-	    		{{ end }}
-	    	</ul>
-	    	<a href="/isolations/{{.Name}}/add-dep">+ Add dep</a>
-	    </li>
-	{{ end }}
-</ul>
-
-<form action="/isolations" enctype="application/x-www-form-urlencoded" method="post">
-	<input type="text" id="isolation_name" name="name"/>
-	<button type="submit">create isolation</button>
-</form>
-
 <h2>Dependencies</h2>
 <hr/>
 <ul>
