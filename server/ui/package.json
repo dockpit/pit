@@ -19,8 +19,10 @@
   "dependencies": {
     "events": "^1.0.2",
     "flux": "^2.0.1",
+    "immutable": "^3.6.4",
     "object-assign": "^2.0.0",
-    "react": "^0.13.1"
+    "react": "^0.13.1",
+    "superagent": "^1.1.0"
   },
   "paths": {
     "js": "./src/**/*.js",

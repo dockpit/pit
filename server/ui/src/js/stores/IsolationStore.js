@@ -1,7 +1,15 @@
-var assign = require('object-assign');
+var assign = require('object-assign')
 var EventEmitter = require('events').EventEmitter
 var Dispatcher = require('../dispatcher/AppDispatcher')
 var IsolationActions = require('../actions/IsolationActions')
+var Immutable = require('immutable')
+var request = require('superagent')
+
+// private in-memory isolation state
+var state = Immutable.Map({
+  nrOfIsolations: 0,
+  isolations: Immutable.Set(),
+})
 
 // maintains and in-memory representation of the isolations
 // and accompanying states
@@ -10,21 +18,25 @@ var IsolationStore = assign({}, EventEmitter.prototype, {
 
   //return the most up-to-date isolation state
   state: function() {
-
-    //@todo return in memory state
-    return {}
+    return state
   }
 })
 
 //register with all actions in the dispatcher
-Dispatcher.register(function(a){
+IsolationStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
     case IsolationActions.REFRESH:
-   
-      //@todo fetch isolations and update state 
-      console.log("Action", a)
+      request
+        .get('/api/isolations')
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
 
-      IsolationStore.emit(IsolationStore.CHANGED)
+          state = state.set('nrOfIsolations', 2)
+          IsolationStore.emit(IsolationStore.CHANGED)
+        });
+
       break
     default: 
       return

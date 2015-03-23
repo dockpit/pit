@@ -7,7 +7,7 @@ var IsolationList = require("./IsolationList.jsx")
 module.exports = React.createClass({
 
   getInitialState: function() {
-    return IsolationStore.state()
+    return {data: IsolationStore.state()}
   },
 
   componentDidMount: function() {
@@ -20,12 +20,12 @@ module.exports = React.createClass({
   },
 
   onChange: function() {
-  	this.setState(IsolationStore.state())
+  	this.setState({data: IsolationStore.state()})
   },
 
   render: function() {
     return <div>
-      <h2>Isolations</h2>
+      <h2>Isolations {this.state.data.get('nrOfIsolations')}</h2>
       <IsolationList/>
     </div>;
   }

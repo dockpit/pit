@@ -9,5 +9,3 @@ var is = document.getElementById("isolation-section")
 if (is) {
   React.render(<IsolationPanel/>, is)
 }
-
-
