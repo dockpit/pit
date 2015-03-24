@@ -7,8 +7,8 @@ var request = require('superagent')
 
 // private in-memory isolation state
 var state = Immutable.Map({
-  nrOfIsolations: 0,
-  isolations: Immutable.Set(),
+  isolations: Immutable.List(),
+  selection: null,
 })
 
 // maintains and in-memory representation of the isolations
@@ -25,6 +25,31 @@ var IsolationStore = assign({}, EventEmitter.prototype, {
 //register with all actions in the dispatcher
 IsolationStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
+    case IsolationActions.REMOVE:
+      var name = a.args[0].get('name')
+      if(!name) {
+        return console.error("Name is empty")
+      }
+
+      request
+        .del('/api/isolations/'+name)
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          state = state.set('isolations', state.get('isolations').filterNot(function(iso){
+            return iso.get('name') == name
+          }))
+
+          IsolationStore.emit(IsolationStore.CHANGED)
+        });
+        
+      break
+    case IsolationActions.SELECT:
+      state = state.set('selection', a.args[0])
+      IsolationStore.emit(IsolationStore.CHANGED)
+      break
     case IsolationActions.REFRESH:
       request
         .get('/api/isolations')
@@ -33,9 +58,7 @@ IsolationStore.dispatchToken = Dispatcher.register(function(a){
             return console.error(err)
           }
 
-          data = JSON.parse(res.text)
-          state = state.set('nrOfIsolations', data.length)
-          state = state.set('isolations', data)
+          state = state.set('isolations', Immutable.fromJS(JSON.parse(res.text)))
           IsolationStore.emit(IsolationStore.CHANGED)
         });
 

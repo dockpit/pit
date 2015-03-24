@@ -3,32 +3,6 @@
 
 <div id="isolation-section"></div>
 
-<h2>Dependencies</h2>
-<hr/>
-<ul>
-	{{ range .Deps }}
-	    <li>
-	    	<form method="post" action="/deps/{{.Name}}/delete">
-	    		{{ .Name }}:&nbsp;<button type="submit">remove</button>
-	    	</form>
-	    	<ul>
-	    		{{ $dep := . }}
-	    		{{ range .States }}
-	    			<li>
-				    	<form method="post" action="/deps/{{$dep.Name}}/states/{{.Name}}/delete">
-				    		<a href="/deps/{{$dep.Name}}/states/{{.Name}}">{{ .Name }}:</a>&nbsp;<button type="submit">remove</button>
-				    	</form>
-	    			</li>
-	    		{{ end }}
-	    	</ul>
-	    	<a href="/deps/{{.Name}}/add-state">+ Add state</a>
-	    </li>
-	{{ end }}
-</ul>
+<div id="dep-section"></div>
 
-<form action="/deps" enctype="application/x-www-form-urlencoded" method="post">
-	<input type="text" id="dep_name" name="name"/>
-	<button type="submit">create dep</button>
-</form>
-
-{{ template "foot" $ }}
+{{ template "foot" }}

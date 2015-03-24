@@ -38,8 +38,8 @@ module.exports = React.createClass({
 
   render: function() {
     return <div>
-      <h2>Isolations {this.state.data.get('nrOfIsolations')}</h2>
-      <IsolationList isolations={this.state.data.get('isolations')}/>
+      <h2>Isolations {this.state.data.get('isolations').size}</h2>
+      <IsolationList selection={this.state.data.get('selection')} isolations={this.state.data.get('isolations')}/>
 
       { this.state.showForm ? <IsolationForm closeFormFn={this.closeIsolationForm} isolation={this.state.data.get('selection')}/> : null }
       <button onClick={this.openIsolationForm}>New Isolation</button>

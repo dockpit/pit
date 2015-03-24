@@ -48,6 +48,9 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	}
 
 	mux.Get("/api/isolations", s.ListIsolations)
+	mux.Delete("/api/isolations/:name", s.RemoveIsolation)
+
+	mux.Get("/api/deps", s.ListDeps)
 
 	//serve static files
 	mux.Get("/static/*", func(c web.C, w http.ResponseWriter, r *http.Request) {

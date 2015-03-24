@@ -223,6 +223,24 @@ func server_ui_package_json() (*asset, error) {
 	return a, err
 }
 
+// server_ui_src_js_actions_depactions_js reads file data from disk. It returns an error on failure.
+func server_ui_src_js_actions_depactions_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/actions/DepActions.js"
+	name := "server/ui/src/js/actions/DepActions.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_src_js_actions_isolationactions_js reads file data from disk. It returns an error on failure.
 func server_ui_src_js_actions_isolationactions_js() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/actions/IsolationActions.js"
@@ -245,6 +263,78 @@ func server_ui_src_js_actions_isolationactions_js() (*asset, error) {
 func server_ui_src_js_app_js() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/app.js"
 	name := "server/ui/src/js/app.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_components_depform_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_depform_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/DepForm.jsx"
+	name := "server/ui/src/js/components/DepForm.jsx"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_components_depitem_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_depitem_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/DepItem.jsx"
+	name := "server/ui/src/js/components/DepItem.jsx"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_components_deplist_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_deplist_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/DepList.jsx"
+	name := "server/ui/src/js/components/DepList.jsx"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_js_components_deppanel_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_deppanel_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/DepPanel.jsx"
+	name := "server/ui/src/js/components/DepPanel.jsx"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -349,6 +439,24 @@ func server_ui_src_js_dispatcher_appdispatcher_js() (*asset, error) {
 	return a, err
 }
 
+// server_ui_src_js_stores_depstore_js reads file data from disk. It returns an error on failure.
+func server_ui_src_js_stores_depstore_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/stores/DepStore.js"
+	name := "server/ui/src/js/stores/DepStore.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_src_js_stores_isolationstore_js reads file data from disk. It returns an error on failure.
 func server_ui_src_js_stores_isolationstore_js() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/stores/IsolationStore.js"
@@ -430,13 +538,19 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/head.html": server_ui_head_html,
 	"server/ui/list_isolations.html": server_ui_list_isolations_html,
 	"server/ui/package.json": server_ui_package_json,
+	"server/ui/src/js/actions/DepActions.js": server_ui_src_js_actions_depactions_js,
 	"server/ui/src/js/actions/IsolationActions.js": server_ui_src_js_actions_isolationactions_js,
 	"server/ui/src/js/app.js": server_ui_src_js_app_js,
+	"server/ui/src/js/components/DepForm.jsx": server_ui_src_js_components_depform_jsx,
+	"server/ui/src/js/components/DepItem.jsx": server_ui_src_js_components_depitem_jsx,
+	"server/ui/src/js/components/DepList.jsx": server_ui_src_js_components_deplist_jsx,
+	"server/ui/src/js/components/DepPanel.jsx": server_ui_src_js_components_deppanel_jsx,
 	"server/ui/src/js/components/IsolationForm.jsx": server_ui_src_js_components_isolationform_jsx,
 	"server/ui/src/js/components/IsolationItem.jsx": server_ui_src_js_components_isolationitem_jsx,
 	"server/ui/src/js/components/IsolationList.jsx": server_ui_src_js_components_isolationlist_jsx,
 	"server/ui/src/js/components/IsolationPanel.jsx": server_ui_src_js_components_isolationpanel_jsx,
 	"server/ui/src/js/dispatcher/AppDispatcher.js": server_ui_src_js_dispatcher_appdispatcher_js,
+	"server/ui/src/js/stores/DepStore.js": server_ui_src_js_stores_depstore_js,
 	"server/ui/src/js/stores/IsolationStore.js": server_ui_src_js_stores_isolationstore_js,
 }
 
@@ -509,12 +623,22 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"src": &_bintree_t{nil, map[string]*_bintree_t{
 				"js": &_bintree_t{nil, map[string]*_bintree_t{
 					"actions": &_bintree_t{nil, map[string]*_bintree_t{
+						"DepActions.js": &_bintree_t{server_ui_src_js_actions_depactions_js, map[string]*_bintree_t{
+						}},
 						"IsolationActions.js": &_bintree_t{server_ui_src_js_actions_isolationactions_js, map[string]*_bintree_t{
 						}},
 					}},
 					"app.js": &_bintree_t{server_ui_src_js_app_js, map[string]*_bintree_t{
 					}},
 					"components": &_bintree_t{nil, map[string]*_bintree_t{
+						"DepForm.jsx": &_bintree_t{server_ui_src_js_components_depform_jsx, map[string]*_bintree_t{
+						}},
+						"DepItem.jsx": &_bintree_t{server_ui_src_js_components_depitem_jsx, map[string]*_bintree_t{
+						}},
+						"DepList.jsx": &_bintree_t{server_ui_src_js_components_deplist_jsx, map[string]*_bintree_t{
+						}},
+						"DepPanel.jsx": &_bintree_t{server_ui_src_js_components_deppanel_jsx, map[string]*_bintree_t{
+						}},
 						"IsolationForm.jsx": &_bintree_t{server_ui_src_js_components_isolationform_jsx, map[string]*_bintree_t{
 						}},
 						"IsolationItem.jsx": &_bintree_t{server_ui_src_js_components_isolationitem_jsx, map[string]*_bintree_t{
@@ -529,6 +653,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 						}},
 					}},
 					"stores": &_bintree_t{nil, map[string]*_bintree_t{
+						"DepStore.js": &_bintree_t{server_ui_src_js_stores_depstore_js, map[string]*_bintree_t{
+						}},
 						"IsolationStore.js": &_bintree_t{server_ui_src_js_stores_isolationstore_js, map[string]*_bintree_t{
 						}},
 					}},
