@@ -2,7 +2,7 @@
 Painless isolation for your (micro)service development process. Comes with a minimal web UI to set up dependencies in predictive states and a CLI to quickly switch between them. It uses Docker to make each isolation predictable and portable. All packed in a single lightweight (~10mb) binary that works on OSX, Linux and Windows.
 
 ## Why
-_Dockpit_ is based on rigorous user research on the development of (micro)services, what really stood was the __difficulty of managing the dependencies of a single service__: External and Internal API's responses, databases, message ques, etc. They all need to be setup and respond consistently in order to develop and test features that depend on them. Currently, this is often done through fragile shell scripts or dedicated internal tooling, both requiring significant effort to maintain. _Dockpit_ was created as an alternative to make managing these dependencies quick, predictable and, dare I say, __fun__.
+_Dockpit_ was created after user research on the development of (micro)services showed the __difficulty of managing the dependencies of a single service__: External and Internal API's responses, databases, message ques, etc. They all need to be setup and respond consistently in order to develop and test features that depend on them. Currently, this is often done through fragile shell scripts or dedicated internal tooling, both requiring significant effort to maintain. _Dockpit_ was created as an alternative to make managing these dependencies quick, predictable and, dare I say, __fun__.
 
 ## Getting Started
 NOTE: You'll need to have [Docker](https://docker.com) installed and running, the official guides for setting up Docker can be found [here](https://docs.docker.com/installation/#installation). 
