@@ -9,7 +9,7 @@ release:
 	rm -fr bin/*
 	mkdir -p bin/
 	@echo "Building..."
-	go-bindata -o=server/ui/bin/assets_prod.go -tags=!debug -pkg=uibin -ignore=server/ui/bin server/ui/...
+	go-bindata -o=server/ui/bin/assets_prod.go -tags=!debug -pkg=uibin -ignore=server/ui/bin -ignore=server/ui/node_modules server/ui/...
 	gox \
 	    -os=$(XC_OS) \
 	    -arch=$(XC_ARCH) \
