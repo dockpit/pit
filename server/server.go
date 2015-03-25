@@ -49,7 +49,8 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 
 	//api endpoints
 	mux.Get("/api/isolations", s.ListIsolations)
-	mux.Delete("/api/isolations/:name", s.RemoveIsolation)
+	mux.Delete("/api/isolations/:id", s.RemoveIsolation)
+	mux.Put("/api/isolations/:id", s.UpdateIsolation)
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Delete("/api/deps/:name", s.RemoveDep)
 	mux.Delete("/api/deps/:name/states/:state_name", s.RemoveDepState)
@@ -71,7 +72,7 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		s.view.RenderDashboard(w, isos, deps)
 	})
 
-	//serve static files
+	//static files
 	mux.Get("/static/*", func(c web.C, w http.ResponseWriter, r *http.Request) {
 		path := filepath.Clean(r.URL.Path)
 		path, _ = filepath.Rel("/static", path)
@@ -137,11 +138,11 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	})
 
 	//add a new dep to isolation
-	mux.Get("/isolations/:name/add-dep", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		iso, err := s.model.FindIsolationByName(name)
+	mux.Get("/isolations/:id/add-dep", func(c web.C, w http.ResponseWriter, r *http.Request) {
+		ID := c.URLParams["id"]
+		iso, err := s.model.FindIsolationByID(ID)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find isolation with name '%s': %s", name, err), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("Failed to find isolation with ID '%s': %s", ID, err), http.StatusBadRequest)
 			return
 		}
 
@@ -160,11 +161,11 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	})
 
 	//add state to dep
-	mux.Get("/deps/:name/add-state", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		dep, err := s.model.FindDepByName(name)
+	mux.Get("/deps/:id/add-state", func(c web.C, w http.ResponseWriter, r *http.Request) {
+		ID := c.URLParams["id"]
+		dep, err := s.model.FindDepByName(ID)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("Failed to find dep with ID '%s': %s", ID, err), http.StatusBadRequest)
 			return
 		}
 
@@ -242,29 +243,6 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		err = s.model.UpdateIsolation(iso)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed update isolation with name '%s': %s", name, err), http.StatusInternalServerError)
-			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	})
-
-	//remove an isolation
-	mux.Post("/isolations/:name/delete", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		iso, err := s.model.FindIsolationByName(name)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find isolation with name '%s': %s", name, err), http.StatusBadRequest)
-			return
-		}
-
-		if iso == nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		err = s.model.RemoveIsolation(iso)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed remove isolation with name '%s': %s", name, err), http.StatusInternalServerError)
 			return
 		}
 

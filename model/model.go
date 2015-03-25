@@ -172,6 +172,27 @@ func (m *Model) FindDepByName(name string) (*Dep, error) {
 	})
 }
 
+func (m *Model) FindIsolationByID(ID string) (*Isolation, error) {
+	var iso *Isolation
+	return iso, m.db.View(func(tx *bolt.Tx) error {
+		var err error
+		b := tx.Bucket([]byte(IsolationBucketName))
+		if b == nil {
+			return fmt.Errorf("Failed to open isolation bucket")
+		}
+
+		data := b.Get([]byte(ID))
+		if data != nil {
+			iso, err = NewIsolationFromSerialized(data)
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to deserialize isolation from db: {{err}}, data: '%s'", string(data)), err)
+			}
+		}
+
+		return nil
+	})
+}
+
 func (m *Model) FindIsolationByName(name string) (*Isolation, error) {
 	var iso *Isolation
 	return iso, m.db.View(func(tx *bolt.Tx) error {
@@ -273,7 +294,7 @@ func (m *Model) RemoveIsolation(iso *Isolation) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create isolation bucket: {{err}}"), err)
 		}
 
-		err = b.Delete([]byte(iso.Name))
+		err = b.Delete([]byte(iso.ID))
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to remove isolation with name '%s': {{err}}", iso.Name), err)
 		}
@@ -362,7 +383,7 @@ func (m *Model) UpdateIsolation(iso *Isolation) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize isolation '%s': {{err}}", iso.Name), err)
 		}
 
-		err = b.Put([]byte(iso.Name), data)
+		err = b.Put([]byte(iso.ID), data)
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to update serialized isolation '%s': {{err}}", iso.Name), err)
 		}
@@ -385,17 +406,12 @@ func (m *Model) InsertIsolation(iso *Isolation) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create isolation bucket: {{err}}"), err)
 		}
 
-		existing := b.Get([]byte(iso.Name))
-		if existing != nil {
-			return fmt.Errorf("An isolation with name '%s' already exists", iso.Name)
-		}
-
 		data, err := iso.Serialize()
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize isolation '%s': {{err}}", iso.Name), err)
 		}
 
-		err = b.Put([]byte(iso.Name), data)
+		err = b.Put([]byte(iso.ID), data)
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to insert serialized isolation '%s': {{err}}", iso.Name), err)
 		}

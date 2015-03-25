@@ -97,7 +97,7 @@ module.exports = React.createClass({
 				</tbody>
 			</table>
 
-			{ this.props.isSelected ? <a href={"/isolations/"+this.props.isolation.get('name')+"/add-dep"}>+ Add Dependency State</a> : null }
+			{ this.props.isSelected ? <a href={"/isolations/"+this.props.isolation.get('id')+"/add-dep"}>+ Add Dependency State</a> : null }
 		</li>;
 	}
 });

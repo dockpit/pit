@@ -65,7 +65,7 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
       }
 
       request
-        .del('/api/deps/'+name)
+        .del('/api/deps/'+name)        
         .end(function(err, res){
           if(err) {
             return console.error(err)

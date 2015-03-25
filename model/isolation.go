@@ -3,11 +3,14 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+
+	"code.google.com/p/go-uuid/uuid"
 )
 
 var IsolationBucketName = "isolations"
 
 type Isolation struct {
+	ID     string            `json:"id"`
 	Name   string            `json:"name"`
 	States map[string]string `json:"states"`
 }
@@ -18,6 +21,7 @@ func NewIsolation(name string) (*Isolation, error) {
 	}
 
 	return &Isolation{
+		ID:     uuid.New(),
 		Name:   name,
 		States: map[string]string{},
 	}, nil
