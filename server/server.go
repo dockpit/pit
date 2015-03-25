@@ -37,7 +37,7 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	}
 
 	s := &Server{
-		view:     NewView(dbmeta),
+		view:     NewView(dbmeta, m.DBPath),
 		client:   client,
 		model:    m,
 		bind:     baddr,
@@ -53,7 +53,21 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	mux.Get("/api/deps", s.ListDeps)
 
 	//page endpoints
-	mux.Get("/isolations/:name", s.RenderIsolation)
+	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
+		isos, err := s.model.GetAllIsolations()
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to get all isolations: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		deps, err := s.model.GetAllDeps()
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to get all dependencies: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		s.view.RenderDashboard(w, isos, deps)
+	})
 
 	//serve static files
 	mux.Get("/static/*", func(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -72,22 +86,7 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		w.Write(data)
 	})
 
-	//list isolations
-	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		isos, err := s.model.GetAllIsolations()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to get all isolations: %s", err), http.StatusInternalServerError)
-			return
-		}
-
-		deps, err := s.model.GetAllDeps()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to get all dependencies: %s", err), http.StatusInternalServerError)
-			return
-		}
-
-		s.view.RenderIsolationList(w, isos, deps)
-	})
+	// @TODO DEPRECATE
 
 	//create new isolation
 	mux.Post("/isolations", func(c web.C, w http.ResponseWriter, r *http.Request) {

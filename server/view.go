@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/dockpit/pit/model"
@@ -14,11 +15,13 @@ var TemplateDir = filepath.Join("server", "ui")
 
 type View struct {
 	dbMeta *model.Meta
+	dbPath string
 }
 
-func NewView(dbmeta *model.Meta) *View {
+func NewView(dbmeta *model.Meta, dbpath string) *View {
 	return &View{
 		dbMeta: dbmeta,
+		dbPath: dbpath,
 	}
 }
 
@@ -71,15 +74,27 @@ func (v *View) Render(w http.ResponseWriter, name string, data map[string]interf
 		return
 	}
 
+	//expose some system variables on eacht render
+	cwd, err := os.Getwd()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to get CWD while rendering: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	data["Meta"] = v.dbMeta
+	data["DBPath"] = filepath.Join(cwd, v.dbPath)
+
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to execute template '%s': %s", name, err), http.StatusInternalServerError)
 	}
 }
 
-func (v *View) RenderIsolationList(w http.ResponseWriter, isos []*model.Isolation, deps []*model.Dep) {
-	v.Render(w, filepath.Join(TemplateDir, "list_isolations.html"), map[string]interface{}{"Isolations": isos, "Deps": deps})
+func (v *View) RenderDashboard(w http.ResponseWriter, isos []*model.Isolation, deps []*model.Dep) {
+	v.Render(w, filepath.Join(TemplateDir, "dashboard.html"), map[string]interface{}{"Isolations": isos, "Deps": deps})
 }
+
+// @TODO DEPRECATE
 
 func (v *View) RenderAddDep(w http.ResponseWriter, iso *model.Isolation, deps []*model.Dep) {
 	v.Render(w, filepath.Join(TemplateDir, "add_dep.html"), map[string]interface{}{"Isolation": iso, "Deps": deps})

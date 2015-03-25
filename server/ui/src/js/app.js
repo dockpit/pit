@@ -6,12 +6,12 @@ var DepPanel = require("./components/DepPanel.jsx");
 
 //render panels on pages that contain them
 //replace this later for a true one-page-app
-var is = document.getElementById("isolation-section")
+var is = document.getElementById("dp-iso-panel")
 if (is) {
   React.render(<IsolationPanel/>, is)
 }
 
-var ds = document.getElementById("dep-section")
+var ds = document.getElementById("dp-dep-panel")
 if (ds) {
   React.render(<DepPanel/>, ds)
 }

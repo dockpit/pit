@@ -115,10 +115,10 @@ func server_ui_add_state_html() (*asset, error) {
 	return a, err
 }
 
-// server_ui_dist_app_js reads file data from disk. It returns an error on failure.
-func server_ui_dist_app_js() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/dist/app.js"
-	name := "server/ui/dist/app.js"
+// server_ui_dashboard_html reads file data from disk. It returns an error on failure.
+func server_ui_dashboard_html() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/dashboard.html"
+	name := "server/ui/dashboard.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -133,10 +133,10 @@ func server_ui_dist_app_js() (*asset, error) {
 	return a, err
 }
 
-// server_ui_dist_less_main_css reads file data from disk. It returns an error on failure.
-func server_ui_dist_less_main_css() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/dist/less/main.css"
-	name := "server/ui/dist/less/main.css"
+// server_ui_dist_app_js reads file data from disk. It returns an error on failure.
+func server_ui_dist_app_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/dist/app.js"
+	name := "server/ui/dist/app.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -227,24 +227,6 @@ func server_ui_gulpfile_js() (*asset, error) {
 func server_ui_head_html() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/head.html"
 	name := "server/ui/head.html"
-	bytes, err := bindata_read(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// server_ui_list_isolations_html reads file data from disk. It returns an error on failure.
-func server_ui_list_isolations_html() (*asset, error) {
-	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/list_isolations.html"
-	name := "server/ui/list_isolations.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -1918,14 +1900,13 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/.jshintrc": server_ui_jshintrc,
 	"server/ui/add_dep.html": server_ui_add_dep_html,
 	"server/ui/add_state.html": server_ui_add_state_html,
+	"server/ui/dashboard.html": server_ui_dashboard_html,
 	"server/ui/dist/app.js": server_ui_dist_app_js,
-	"server/ui/dist/less/main.css": server_ui_dist_less_main_css,
 	"server/ui/dist/main.css": server_ui_dist_main_css,
 	"server/ui/edit_state.html": server_ui_edit_state_html,
 	"server/ui/foot.html": server_ui_foot_html,
 	"server/ui/gulpfile.js": server_ui_gulpfile_js,
 	"server/ui/head.html": server_ui_head_html,
-	"server/ui/list_isolations.html": server_ui_list_isolations_html,
 	"server/ui/one_isolation.html": server_ui_one_isolation_html,
 	"server/ui/package.json": server_ui_package_json,
 	"server/ui/src/.DS_Store": server_ui_src_ds_store,
@@ -2069,12 +2050,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			}},
 			"add_state.html": &_bintree_t{server_ui_add_state_html, map[string]*_bintree_t{
 			}},
+			"dashboard.html": &_bintree_t{server_ui_dashboard_html, map[string]*_bintree_t{
+			}},
 			"dist": &_bintree_t{nil, map[string]*_bintree_t{
 				"app.js": &_bintree_t{server_ui_dist_app_js, map[string]*_bintree_t{
-				}},
-				"less": &_bintree_t{nil, map[string]*_bintree_t{
-					"main.css": &_bintree_t{server_ui_dist_less_main_css, map[string]*_bintree_t{
-					}},
 				}},
 				"main.css": &_bintree_t{server_ui_dist_main_css, map[string]*_bintree_t{
 				}},
@@ -2086,8 +2065,6 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"gulpfile.js": &_bintree_t{server_ui_gulpfile_js, map[string]*_bintree_t{
 			}},
 			"head.html": &_bintree_t{server_ui_head_html, map[string]*_bintree_t{
-			}},
-			"list_isolations.html": &_bintree_t{server_ui_list_isolations_html, map[string]*_bintree_t{
 			}},
 			"one_isolation.html": &_bintree_t{server_ui_one_isolation_html, map[string]*_bintree_t{
 			}},

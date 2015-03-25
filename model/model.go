@@ -9,7 +9,8 @@ import (
 )
 
 type Model struct {
-	db *bolt.DB
+	db     *bolt.DB
+	DBPath string
 
 	Events chan Event
 }
@@ -22,7 +23,7 @@ func NewModel(dbpath string) (*Model, error) {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to open Dockpit db at '%s': {{err}}, is Dockpit already running?", dbpath), err)
 	}
 
-	m := &Model{db: db, Events: make(chan Event)}
+	m := &Model{db: db, DBPath: dbpath, Events: make(chan Event)}
 	err = m.UpsertMetaData()
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize metadata for '%s': {{err}}", dbpath), err)

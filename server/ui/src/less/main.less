@@ -2,3 +2,65 @@
 @import	"../vendor/bootstrap-3.3.4/normalize.less";
 @import	"../vendor/bootstrap-3.3.4/scaffolding.less";
 @import (reference) "../vendor/bootstrap-3.3.4/bootstrap.less";
+
+//colors
+@dp-grey-light: #DFDFDF;
+
+/**
+ * Global Elements
+ */
+#dp-navbar:extend(.navbar, .navbar-default, .navbar-fixed-top) {
+	& > div:extend(.container-fluid) {}
+	
+	ul:extend(.nav, .navbar-nav) {}
+	h1:extend(.navbar-text){
+		font-size: 1em;
+	}
+	
+	#dp-navbar-h:extend(.navbar-header){
+		#dp-logo:extend(.navbar-brand) {
+			border-right: 1px solid @dp-grey-light;
+		}
+	}	
+}
+
+.dp-panel() {
+	h2 {
+		margin: 0;
+		padding: 10px;
+		border-bottom: 1px solid @dp-grey-light;
+		button.dp-add:extend(.btn, .btn-default) {
+			position: absolute;
+			right: 10px;
+
+		}
+	}
+}
+
+/**
+ * Dashboard specific
+ */
+@dp-dep-panel-width: 228px;
+
+section#dp-dashboard {	
+	#dp-dep-panel {
+		.dp-panel();
+		position: fixed;
+		overflow-y: auto;
+		top: @navbar-height;
+		bottom: 0px;
+		width: @dp-dep-panel-width;
+		border: 1px solid @dp-grey-light;
+	}
+
+	#dp-iso-panel {
+		.dp-panel();
+		position: relative;
+		margin-top: @navbar-height+1;
+		margin-left: @dp-dep-panel-width;
+		& > div {
+			position: absolute;
+			width: 100%;
+		}
+	}
+}

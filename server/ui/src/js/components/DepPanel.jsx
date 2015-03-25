@@ -38,11 +38,10 @@ module.exports = React.createClass({
 
   render: function() {
     return <div>
-      <h2>Deps {this.state.data.get('deps').size}</h2>
-      <DepList deps={this.state.data.get('deps')}/>
-
+      <h2>Deps<button className="dp-add" onClick={this.openDepForm}>+</button></h2>
       { this.state.showForm ? <DepForm closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
-      <button onClick={this.openDepForm}>New Dep</button>
+
+      <DepList deps={this.state.data.get('deps')}/>
     </div>;
   }
 });
