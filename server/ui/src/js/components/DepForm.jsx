@@ -1,7 +1,6 @@
 var React = require('react')
 
 module.exports = React.createClass({
-
 	componentDidMount: function() {
 		React.findDOMNode(this.refs.nameInput).focus();  
 	},

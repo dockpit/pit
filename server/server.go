@@ -47,10 +47,13 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		Server: &http.Server{Handler: mux},
 	}
 
+	//api endpoints
 	mux.Get("/api/isolations", s.ListIsolations)
 	mux.Delete("/api/isolations/:name", s.RemoveIsolation)
-
 	mux.Get("/api/deps", s.ListDeps)
+
+	//page endpoints
+	mux.Get("/isolations/:name", s.RenderIsolation)
 
 	//serve static files
 	mux.Get("/static/*", func(c web.C, w http.ResponseWriter, r *http.Request) {

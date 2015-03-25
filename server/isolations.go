@@ -41,3 +41,19 @@ func (s *Server) RemoveIsolation(c web.C, w http.ResponseWriter, r *http.Request
 		return
 	}
 }
+
+func (s *Server) RenderIsolation(c web.C, w http.ResponseWriter, r *http.Request) {
+	name := c.URLParams["name"]
+	iso, err := s.model.FindIsolationByName(name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to find isolation with name '%s': %s", name, err), http.StatusBadRequest)
+		return
+	}
+
+	if iso == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	s.view.RenderOneIsolation(w, iso)
+}

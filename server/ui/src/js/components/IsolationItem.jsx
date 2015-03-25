@@ -1,16 +1,11 @@
 var React = require('react')
 
 var IsolationActions  = require('../actions/IsolationActions')
+var IsolationItem = require('./IsolationItem.jsx')
 
 module.exports = React.createClass({
 	selectIsolation: function() {
-		IsolationActions.select(this.props.isolation)
-	},
-
-	removeIsolation: function() {
-		if(confirm("Are you sure?")) {
-			IsolationActions.remove(this.props.isolation)	
-		}
+		window.location = "/isolations/"+this.props.isolation.get('name')
 	},
 
 	render: function() {
@@ -19,10 +14,23 @@ module.exports = React.createClass({
 			classes = classes + " selected"
 		}
 
+		var states = this.props.isolation.get('states').map(function(sname, dname){
+			return {sname: sname, dname: dname}
+		}).toSetSeq()
+
 		return <li className={classes} onClick={this.selectIsolation}>
-			{this.props.isolation.get('name')}
-			<a href={"/isolations/"+this.props.isolation.get('name')+"/add-dep"}>+ Add dep</a>
-			{ this.props.isSelected ? <button onClick={this.removeIsolation}>Remove</button> : null }
+			<h3>{this.props.isolation.get('name')}</h3>
+			<hr />
+
+			<table>
+				<tr><td rowSpan={states.size+1}>Given</td></tr>
+				{states.map(function(st){
+					return <tr key={st.dname+st.sname}>
+						<td>{st.dname}:</td>
+						<td>'{st.sname}'</td>
+					</tr>				
+				})}
+			</table>
 		</li>;
 	}
 });

@@ -11,6 +11,8 @@
   "devDependencies": {
     "browserify": "^9.0.3",
     "gulp": "^3.8.11",
+    "gulp-less": "^3.0.2",
+    "gulp-plumber": "^1.0.0",
     "gulp-util": "^3.0.4",
     "reactify": "^1.1.0",
     "vinyl-source-stream": "^1.1.0",
@@ -25,6 +27,7 @@
     "superagent": "^1.1.0"
   },
   "paths": {
+    "less": "./src/less/*.less",
     "js": "./src/**/*.js",
     "jsx": "./src/**/*.jsx",
     "app": "./src/js/app.js"

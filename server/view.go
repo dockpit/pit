@@ -96,3 +96,7 @@ func (v *View) RenderEditState(w http.ResponseWriter, dep *model.Dep, s *model.S
 func (v *View) RenderEditStateBuilt(w http.ResponseWriter, dep *model.Dep, s *model.State, output string) {
 	v.Render(w, filepath.Join(TemplateDir, "edit_state.html"), map[string]interface{}{"Dep": dep, "State": s, "Output": output})
 }
+
+func (v *View) RenderOneIsolation(w http.ResponseWriter, iso *model.Isolation) {
+	v.Render(w, filepath.Join(TemplateDir, "one_isolation.html"), map[string]interface{}{"Isolation": iso})
+}
