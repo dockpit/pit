@@ -51,6 +51,8 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	mux.Get("/api/isolations", s.ListIsolations)
 	mux.Delete("/api/isolations/:name", s.RemoveIsolation)
 	mux.Get("/api/deps", s.ListDeps)
+	mux.Delete("/api/deps/:name", s.RemoveDep)
+	mux.Delete("/api/deps/:name/states/:state_name", s.RemoveDepState)
 
 	//page endpoints
 	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -129,52 +131,6 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to insert dep: %s", err), http.StatusBadRequest)
 			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	})
-
-	//remove a dep
-	mux.Post("/deps/:name/delete", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		dep, err := s.model.FindDepByName(name)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
-			return
-		}
-
-		if dep == nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		err = s.model.RemoveDep(dep)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed remove dep with name '%s': %s", name, err), http.StatusInternalServerError)
-			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	})
-
-	//remove a dep state
-	mux.Post("/deps/:name/states/:state_name/delete", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		dep, err := s.model.FindDepByName(name)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
-			return
-		}
-
-		if dep == nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		sname := c.URLParams["state_name"]
-		err = s.model.RemoveDepStateByName(dep, sname)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to remove state from dep: %s", err), http.StatusInternalServerError)
 		}
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)

@@ -85,14 +85,16 @@ module.exports = React.createClass({
 				{this.props.isSelected && !this.state.showNameEdit ? <button onClick={this.removeIsolation}>x</button> : null }
 			</h3>
 			<table>
-				<tr><td rowSpan={states.size+1}>Given</td></tr>
-				{states.map(function(st){
-					return 	<IsolationStateItem 
-								isolation={me.props.isolation}
-								isSelected={me.props.isSelected} 
-								key={st.dname+st.sname} 
-								state={st}/>	
-				})}
+				<tbody>
+					<tr><td rowSpan={states.size+1}>Given</td></tr>
+					{states.map(function(st){
+						return 	<IsolationStateItem 
+									isolation={me.props.isolation}
+									isSelected={me.props.isSelected} 
+									key={st.dname+st.sname} 
+									state={st}/>	
+					})}
+				</tbody>
 			</table>
 
 			{ this.props.isSelected ? <a href={"/isolations/"+this.props.isolation.get('name')+"/add-dep"}>+ Add Dependency State</a> : null }
