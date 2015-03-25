@@ -2,6 +2,7 @@ var Dispatcher = require('../dispatcher/AppDispatcher')
 
 var IsolationActions = {
   REFRESH: "ISOLATION_REFRESH_ACTION",
+  CREATE: "ISOLATION_CREATE_ACTION",
   SELECT: "ISOLATION_SELECT_ACTION",
   REMOVE: "ISOLATION_REMOVE_ACTION",
   REMOVE_STATE: "ISOLATION_STATE_REMOVE_ACTION",
@@ -27,6 +28,14 @@ var IsolationActions = {
     Dispatcher.dispatch({
       type: IsolationActions.REMOVE_STATE,
       args: [isolation, state],
+    });
+  },
+
+  //create a new isolation
+  create: function(isolation) {
+    Dispatcher.dispatch({
+      type: IsolationActions.CREATE,
+      args: [isolation],
     });
   },
 

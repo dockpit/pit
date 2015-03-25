@@ -25,6 +25,23 @@ var DepStore = assign({}, EventEmitter.prototype, {
 //register with all actions in the dispatcher
 DepStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
+      
+    case DepActions.CREATE:
+      request
+        .post('/api/deps')
+        .send(a.args[0])
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          DepActions.refresh()
+          DepStore.emit(DepStore.CHANGED)
+        });
+
+      break
+
+
     case DepActions.REMOVE_DEP_STATE:
       var dname = a.args[0].get('name')
       if(!dname) {

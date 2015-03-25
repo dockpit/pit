@@ -24,6 +24,30 @@ func (s *Server) ListIsolations(c web.C, w http.ResponseWriter, r *http.Request)
 	}
 }
 
+func (s *Server) CreateIsolation(c web.C, w http.ResponseWriter, r *http.Request) {
+	dec := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	var newiso *model.Isolation
+	err := dec.Decode(&newiso)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed decode new isolation: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	i, err := model.NewIsolation(newiso.Name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to create isolation: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	err = s.model.InsertIsolation(i)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to insert isolation: %s", err), http.StatusBadRequest)
+		return
+	}
+}
+
 func (s *Server) RemoveIsolation(c web.C, w http.ResponseWriter, r *http.Request) {
 	ID := c.URLParams["id"]
 	iso, err := s.model.FindIsolationByID(ID)

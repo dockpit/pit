@@ -2,6 +2,7 @@ var Dispatcher = require('../dispatcher/AppDispatcher')
 
 var DepActions = {
   REFRESH: "DEP_REFRESH_ACTION",
+  CREATE: "DEP_CREATE_ACTION",
   REMOVE_DEP: "DEP_REMOVE_ACTION",
   REMOVE_DEP_STATE: "DEP_STATE_REMOVE_ACTION",
 
@@ -16,6 +17,14 @@ var DepActions = {
   removeDep: function(dep) {
     Dispatcher.dispatch({
       type: DepActions.REMOVE_DEP,
+      args: [dep],
+    });
+  },
+
+  //create a new dependency
+  create: function(dep) {
+    Dispatcher.dispatch({
+      type: DepActions.CREATE,
       args: [dep],
     });
   },

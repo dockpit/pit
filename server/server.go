@@ -49,9 +49,11 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 
 	//api endpoints
 	mux.Get("/api/isolations", s.ListIsolations)
+	mux.Post("/api/isolations", s.CreateIsolation)
 	mux.Delete("/api/isolations/:id", s.RemoveIsolation)
 	mux.Put("/api/isolations/:id", s.UpdateIsolation)
 	mux.Get("/api/deps", s.ListDeps)
+	mux.Post("/api/deps", s.CreateDep)
 	mux.Delete("/api/deps/:name", s.RemoveDep)
 	mux.Delete("/api/deps/:name/states/:state_name", s.RemoveDepState)
 
@@ -91,52 +93,6 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 
 	// @TODO DEPRECATE
 
-	//create new isolation
-	mux.Post("/isolations", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		err := r.ParseForm()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse form data: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		i, err := model.NewIsolation(r.Form.Get("name"))
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to create isolation: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		err = s.model.InsertIsolation(i)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to insert isolation: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	})
-
-	//create new dep
-	mux.Post("/deps", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		err := r.ParseForm()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse form data: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		dep, err := model.NewDep(r.Form.Get("name"))
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to create dep: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		err = s.model.InsertDep(dep)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to insert dep: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	})
-
 	//add a new dep to isolation
 	mux.Get("/isolations/:id/add-dep", func(c web.C, w http.ResponseWriter, r *http.Request) {
 		ID := c.URLParams["id"]
@@ -172,7 +128,7 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		s.view.RenderAddState(w, dep)
 	})
 
-	//create state
+	//add state to dep
 	mux.Post("/deps/:name/add-state", func(c web.C, w http.ResponseWriter, r *http.Request) {
 		name := c.URLParams["name"]
 		dep, err := s.model.FindDepByName(name)

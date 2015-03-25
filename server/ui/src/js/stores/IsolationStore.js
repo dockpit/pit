@@ -46,6 +46,22 @@ var IsolationStore = assign({}, EventEmitter.prototype, {
 //register with all actions in the dispatcher
 IsolationStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
+
+    //create a new isolation
+    case IsolationActions.CREATE:
+      request
+        .post('/api/isolations')
+        .send(a.args[0])
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          IsolationActions.refresh()
+          IsolationStore.emit(IsolationStore.CHANGED)  
+        });
+      break
+
     //remove a state from an isolation
     case IsolationActions.REMOVE_STATE:
       var oldiso = a.args[0]
