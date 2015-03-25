@@ -24,6 +24,16 @@ var DepStore = assign({}, EventEmitter.prototype, {
 //register with all actions in the dispatcher
 DepStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
+    case DepActions.REMOVE_DEP_STATE:
+      //@todo implement
+      console.log("implement depstate", a.args)
+      break
+
+    case DepActions.REMOVE_DEP:
+      //@todo implement
+      console.log("implement dep", a.args)
+      break
+
     case DepActions.REFRESH:
       request
         .get('/api/deps')

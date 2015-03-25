@@ -38,7 +38,7 @@ module.exports = React.createClass({
 
   render: function() {
     return <div>
-      <h2>Deps<button className="dp-add" onClick={this.openDepForm}>+</button></h2>
+      <h2>Dependencies<button className="dp-add" onClick={this.openDepForm}>+</button></h2>
       { this.state.showForm ? <DepForm closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
 
       <DepList deps={this.state.data.get('deps')}/>

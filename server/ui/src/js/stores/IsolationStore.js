@@ -25,6 +25,19 @@ var IsolationStore = assign({}, EventEmitter.prototype, {
 //register with all actions in the dispatcher
 IsolationStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
+    //remove a state from an isolation
+    case IsolationActions.REMOVE_STATE:
+      //@todo implement
+      console.log("impement rem state", a.args)
+      break
+    
+    //isolation name was changed
+    case IsolationActions.UPDATE_NAME:
+      //@todo implement
+      console.log("namechanged", a.args[0].get('name'))
+      break
+
+    //removes an isolation
     case IsolationActions.REMOVE:
       var name = a.args[0].get('name')
       if(!name) {
@@ -46,10 +59,14 @@ IsolationStore.dispatchToken = Dispatcher.register(function(a){
         });
         
       break
+    
+    //select a specific isolation
     case IsolationActions.SELECT:
       state = state.set('selection', a.args[0])
       IsolationStore.emit(IsolationStore.CHANGED)
       break
+
+    //refresh list of isolations
     case IsolationActions.REFRESH:
       request
         .get('/api/isolations')
