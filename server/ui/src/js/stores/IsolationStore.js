@@ -62,6 +62,16 @@ IsolationStore.dispatchToken = Dispatcher.register(function(a){
         });
       break
 
+    //add a state to an isolation
+    case IsolationActions.ADD_STATE:
+      var oldiso = a.args[0]
+      newiso = oldiso.set('states', oldiso.get('states').set(a.args[1], a.args[2]))
+      IsolationStore.sendUpdateReq(newiso, oldiso, function(){
+        IsolationStore.emit(IsolationStore.CHANGED)  
+      })
+
+      break
+
     //remove a state from an isolation
     case IsolationActions.REMOVE_STATE:
       var oldiso = a.args[0]

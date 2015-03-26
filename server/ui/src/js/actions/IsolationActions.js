@@ -6,6 +6,7 @@ var IsolationActions = {
   SELECT: "ISOLATION_SELECT_ACTION",
   REMOVE: "ISOLATION_REMOVE_ACTION",
   REMOVE_STATE: "ISOLATION_STATE_REMOVE_ACTION",
+  ADD_STATE: "ISOLATION_STATE_ADD_ACTION",
   UPDATE_NAME: "ISOLATION_NAME_UPDATE_ACTION",
 
   //simply request to reload isolations from server
@@ -28,6 +29,14 @@ var IsolationActions = {
     Dispatcher.dispatch({
       type: IsolationActions.REMOVE_STATE,
       args: [isolation, state],
+    });
+  },
+
+  //remove a single isolation
+  addState: function(isolation, dname, sname) {
+    Dispatcher.dispatch({
+      type: IsolationActions.ADD_STATE,
+      args: [isolation, dname, sname],
     });
   },
 

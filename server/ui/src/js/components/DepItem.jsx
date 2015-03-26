@@ -27,19 +27,18 @@ module.exports = React.createClass({
 
 	render: function() {
 		var dep = this.props.dep
-		return <li>
-			<div className="hr-text">
-			  <h3>
-			    {dep.get('name')}		    
-			  </h3>
-			  <button onClick={this.removeDep}>x</button>
+		return <div className="ui attached segment" style={{position: 'relative'}}>		
+			<div className="content">
+				<h3 className="header">{dep.get('name')}</h3>
+				<button style={{position: 'absolute', top: '10px', right: '10px'}} className="circular ui basic icon small button" onClick={this.removeDep}><i className="remove icon"></i></button>
+
+				<ul className="dp-state-list">
+					{dep.get('states').map(function(st){
+						return <DepStateItem key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
+					})}
+			    </ul>
+				<a className="add-state-btn" href={"/deps/"+dep.get('name')+"/add-state"}>+ Add State</a>
 			</div>
-			<ul className="dp-state-list">
-				{dep.get('states').map(function(st){
-					return <DepStateItem key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
-				})}
-		    </ul>
-			<a className="add-state-btn" href={"/deps/"+dep.get('name')+"/add-state"}>+ Add State</a>
-		</li>;
+		</div>;
 	}
 });

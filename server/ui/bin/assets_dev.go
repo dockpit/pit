@@ -583,6 +583,24 @@ func server_ui_vendor_ds_store() (*asset, error) {
 	return a, err
 }
 
+// server_ui_vendor_jquery_2_1_3_jquery_min_js reads file data from disk. It returns an error on failure.
+func server_ui_vendor_jquery_2_1_3_jquery_min_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/vendor/jquery-2.1.3/jquery.min.js"
+	name := "server/ui/vendor/jquery-2.1.3/jquery.min.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_vendor_semantic_ui_1_11_5_csscomb_json reads file data from disk. It returns an error on failure.
 func server_ui_vendor_semantic_ui_1_11_5_csscomb_json() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/vendor/semantic-ui-1.11.5/.csscomb.json"
@@ -3546,6 +3564,7 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/src/js/stores/IsolationStore.js": server_ui_src_js_stores_isolationstore_js,
 	"server/ui/src/less/main.less": server_ui_src_less_main_less,
 	"server/ui/vendor/.DS_Store": server_ui_vendor_ds_store,
+	"server/ui/vendor/jquery-2.1.3/jquery.min.js": server_ui_vendor_jquery_2_1_3_jquery_min_js,
 	"server/ui/vendor/semantic-ui-1.11.5/.csscomb.json": server_ui_vendor_semantic_ui_1_11_5_csscomb_json,
 	"server/ui/vendor/semantic-ui-1.11.5/.csslintrc": server_ui_vendor_semantic_ui_1_11_5_csslintrc,
 	"server/ui/vendor/semantic-ui-1.11.5/.gitignore": server_ui_vendor_semantic_ui_1_11_5_gitignore,
@@ -3828,6 +3847,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			}},
 			"vendor": &_bintree_t{nil, map[string]*_bintree_t{
 				".DS_Store": &_bintree_t{server_ui_vendor_ds_store, map[string]*_bintree_t{
+				}},
+				"jquery-2.1.3": &_bintree_t{nil, map[string]*_bintree_t{
+					"jquery.min.js": &_bintree_t{server_ui_vendor_jquery_2_1_3_jquery_min_js, map[string]*_bintree_t{
+					}},
 				}},
 				"semantic-ui-1.11.5": &_bintree_t{nil, map[string]*_bintree_t{
 					".csscomb.json": &_bintree_t{server_ui_vendor_semantic_ui_1_11_5_csscomb_json, map[string]*_bintree_t{
