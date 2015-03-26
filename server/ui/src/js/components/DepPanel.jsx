@@ -2,6 +2,7 @@ var React = require('react');
 
 var DepActions  = require('../actions/DepActions')
 var DepStore = require('../stores/DepStore')
+var IsolationStore = require('../stores/IsolationStore')
 var DepItem = require("./DepItem.jsx")
 var DepForm = require('./DepForm.jsx')
 
@@ -10,12 +11,14 @@ module.exports = React.createClass({
   getInitialState: function() {
     return {
       data: DepStore.state(),
+      isoData: IsolationStore.state(),
       showForm: false,
     }
   },
 
   componentDidMount: function() {
   	DepStore.on(DepStore.CHANGED, this.onStoreChange)
+    IsolationStore.on(IsolationStore.CHANGED, this.onStoreChange)
     DepActions.refresh()
   },
 
@@ -24,7 +27,7 @@ module.exports = React.createClass({
   },
 
   onStoreChange: function() {
-  	this.setState({data: DepStore.state()})
+  	this.setState({data: DepStore.state(), isoData: IsolationStore.state()})
   },
 
   openDepForm: function() {
@@ -37,6 +40,7 @@ module.exports = React.createClass({
   },
 
   render: function() {
+    var me = this
     return <div style={{position: 'relative'}}>
       <h2 className="ui top attached header">
         <div className="content">
@@ -50,7 +54,7 @@ module.exports = React.createClass({
       { this.state.showForm ? <DepForm closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
 
       {this.state.data.get('deps').map(function(dep){
-        return <DepItem key={dep.get('name')} dep={dep}/> 
+        return <DepItem isolations={me.state.isoData.get('isolations')} key={dep.get('name')} dep={dep}/> 
       })}
 
       <div className="ui bottom attached segment"></div>
