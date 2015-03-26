@@ -8,9 +8,9 @@ module.exports = React.createClass({
     return <ul>
 		{this.props.isolations.map(function(iso){			
 			{if (me.props.selection === iso) {
-				return <IsolationItem isSelected={true} key={iso.get('name')} isolation={iso}/> 
+				return <IsolationItem isSelected={true} key={iso.get('id')} isolation={iso}/> 
 			} else{
-				return <IsolationItem isSelected={false} key={iso.get('name')} isolation={iso}/> 
+				return <IsolationItem isSelected={false} key={iso.get('id')} isolation={iso}/> 
 			}}
 		})}
     </ul>;
