@@ -2,14 +2,36 @@ XC_ARCH = "amd64"
 XC_OS = "darwin linux windows"
 
 debug:
-	go-bindata -o=server/ui/bin/assets_dev.go -tags=debug -pkg=uibin -ignore=server/ui/bin -ignore=server/ui/node_modules -debug=true server/ui/...
+	go-bindata \
+		-o=server/ui/bin/assets_dev.go \
+		-tags=debug \
+		-pkg=uibin \
+		-ignore=server/ui/bin \
+		-ignore=server/ui/node_modules \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/node_modules \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/src \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/examples \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/tasks \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/test \
+		-debug=true server/ui/...
 	go run -tags=debug main.go start 
 
 release:
 	rm -fr bin/*
 	mkdir -p bin/
 	@echo "Building..."
-	go-bindata -o=server/ui/bin/assets_prod.go -tags=!debug -pkg=uibin -ignore=server/ui/bin -ignore=server/ui/node_modules server/ui/...
+	go-bindata \
+		-o=server/ui/bin/assets_prod.go \
+		-tags=!debug \
+		-pkg=uibin \
+		-ignore=server/ui/bin \
+		-ignore=server/ui/node_modules \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/node_modules \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/src \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/examples \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/tasks \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/test \
+		server/ui/...
 	gox \
 	    -os=$(XC_OS) \
 	    -arch=$(XC_ARCH) \
