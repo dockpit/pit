@@ -15,10 +15,11 @@ import (
 
 type Start struct {
 	*command
+	version string
 }
 
-func NewStart() *Start {
-	return &Start{newCommand()}
+func NewStart(v string) *Start {
+	return &Start{newCommand(), v}
 }
 
 func (c *Start) Name() string {
@@ -58,7 +59,7 @@ func (c *Start) Run(ctx *cli.Context) error {
 		return errwrap.Wrapf("Failed to connect to Docker host: {{err}}", err)
 	}
 
-	svr, err := server.New(ctx.String("bind"), m, docker)
+	svr, err := server.New(c.version, ctx.String("bind"), m, docker)
 	if err != nil {
 		return errwrap.Wrapf("Failed to init server: {{err}}", err)
 	}

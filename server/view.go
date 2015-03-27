@@ -14,14 +14,16 @@ import (
 var TemplateDir = filepath.Join("server", "ui")
 
 type View struct {
-	dbMeta *model.Meta
-	dbPath string
+	dbMeta  *model.Meta
+	dbPath  string
+	version string
 }
 
-func NewView(dbmeta *model.Meta, dbpath string) *View {
+func NewView(dbmeta *model.Meta, dbpath, version string) *View {
 	return &View{
-		dbMeta: dbmeta,
-		dbPath: dbpath,
+		dbMeta:  dbmeta,
+		dbPath:  dbpath,
+		version: version,
 	}
 }
 
@@ -82,6 +84,7 @@ func (v *View) Render(w http.ResponseWriter, name string, data map[string]interf
 	}
 
 	data["Meta"] = v.dbMeta
+	data["Version"] = v.version
 	data["DBPath"] = filepath.Join(cwd, v.dbPath)
 
 	err = tmpl.Execute(w, data)

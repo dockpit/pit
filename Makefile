@@ -14,7 +14,7 @@ debug:
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/tasks \
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/test \
 		-debug=true server/ui/...
-	go run -tags=debug main.go start 
+	go run -tags=debug -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" main.go start 
 
 release:
 	rm -fr bin/*

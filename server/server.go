@@ -29,7 +29,7 @@ type Server struct {
 	*http.Server
 }
 
-func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
+func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	mux := web.New()
 	dbmeta, err := m.GetDBMetaData()
 	if err != nil {
@@ -37,7 +37,7 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 	}
 
 	s := &Server{
-		view:     NewView(dbmeta, m.DBPath),
+		view:     NewView(dbmeta, m.DBPath, v),
 		client:   client,
 		model:    m,
 		bind:     baddr,
