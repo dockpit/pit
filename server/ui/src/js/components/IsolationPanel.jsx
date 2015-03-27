@@ -41,6 +41,10 @@ module.exports = React.createClass({
 
   render: function() {
     var disabled = (this.state.depData.get('deps').size < 1)
+    if (!disabled && this.state.depData.get('deps').get(0).get('states').size < 1 ) {
+      disabled = true
+    }
+
     var list = <IsolationList deps={this.state.depData.get('deps')} selection={this.state.data.get('selection')} isolations={this.state.data.get('isolations')}/>
     if (this.state.data.get('isolations').size < 1) {
       list = <div className="ui icon message">

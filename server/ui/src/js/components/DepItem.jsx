@@ -20,6 +20,7 @@ var DepStateItem = React.createClass({
 	render: function() {
 		st = this.props.state
 		dep = this.props.dep
+		imageName = st.get('image_name')
 
 		var isolations = this.props.isolations.filter(function(iso){
 			var res = false
@@ -36,7 +37,10 @@ var DepStateItem = React.createClass({
 			{this.state.hover ? <button style={{margin: '5px 5px 0 0'}} className="right floated circular compact ui red icon mini button" onClick={this.removeDepState}><i className="trash icon"></i></button> : null }
 			<i className="angle right icon"></i>
 			<div className="content">
-				<a className="header" href={"/deps/"+dep.get('name')+"/states/"+st.get('name')}>{st.get('name')}</a>
+				<a className="header" href={"/deps/"+dep.get('name')+"/states/"+st.get('name')}>
+					{st.get('name')}
+					{imageName ? <span> (image: {imageName})</span> : null}
+				</a>
 				<div className="description">In isolations: {isolations.size > 0 ? isolations.map(function(iso, i){
 					return <em key={i}>{i ? ', ' : null}'{iso.get('name')}'</em>
 				}) : <em>none</em>}</div>				
@@ -72,7 +76,7 @@ module.exports = React.createClass({
 						return <DepStateItem isolations={me.props.isolations} key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
 					})}
 					<div style={{paddingLeft: '20px'}} className="item dp-add-state">
-						<a href={"/deps/"+dep.get('name')+"/add-state"}><i style={{fontSize: '0.65em'}} className="plus icon"></i>Add State...</a>
+						<a href={"/deps/"+dep.get('name')+"/add-state"}><i style={{fontSize: '0.65em'}} className="plus icon"></i>Add {me.props.dep.get('name')} state...</a>
 					</div>
 			    </div>
 				

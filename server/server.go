@@ -93,29 +93,6 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 
 	// @TODO DEPRECATE
 
-	//add a new dep to isolation
-	mux.Get("/isolations/:id/add-dep", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		ID := c.URLParams["id"]
-		iso, err := s.model.FindIsolationByID(ID)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find isolation with ID '%s': %s", ID, err), http.StatusBadRequest)
-			return
-		}
-
-		if iso == nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		deps, err := s.model.GetAllDeps()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to get all dependencies: %s", err), http.StatusInternalServerError)
-			return
-		}
-
-		s.view.RenderAddDep(w, iso, deps)
-	})
-
 	//add state to dep
 	mux.Get("/deps/:id/add-state", func(c web.C, w http.ResponseWriter, r *http.Request) {
 		ID := c.URLParams["id"]
@@ -153,52 +130,6 @@ func New(baddr string, m *model.Model, client *client.Docker) (*Server, error) {
 		err = s.model.UpdateDep(dep)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed update dep with name '%s': %s", name, err), http.StatusInternalServerError)
-			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	})
-
-	//add dep to state
-	mux.Post("/isolations/:name/add-dep", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		iso, err := s.model.FindIsolationByName(name)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find isolation with name '%s': %s", name, err), http.StatusBadRequest)
-			return
-		}
-
-		if iso == nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		err = r.ParseForm()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse form data: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		selection := strings.SplitN(r.Form.Get("dep"), "::", 2)
-		if len(selection) != 2 {
-			http.Error(w, fmt.Sprintf("Unexpected value for dependency: '%s'", r.Form.Get("dep")), http.StatusBadRequest)
-		}
-
-		dep, err := s.model.FindDepByName(selection[0])
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
-			return
-		}
-
-		if dep == nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		iso.AddDep(dep, selection[1])
-		err = s.model.UpdateIsolation(iso)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed update isolation with name '%s': %s", name, err), http.StatusInternalServerError)
 			return
 		}
 

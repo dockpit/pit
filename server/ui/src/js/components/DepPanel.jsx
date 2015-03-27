@@ -47,12 +47,15 @@ module.exports = React.createClass({
     
     if (this.state.data.get('deps').size < 1) {
       list = <div className="ui attached bottom segment"><div className="ui icon message">
-          <i className="cube icon"></i>
+          <i className="database icon"></i>
           <div className="content">
             <div className="header">
               You don't have any dependencies configured
             </div>
-            <p>A dependency represents another service you depend on: A database, HTTP API, message queues, etc</p>
+            <p>
+              A dependency represents another service you depend on: databases, HTTP APIs, message queues, etc.
+
+            </p>
           </div>
         </div></div>
     }
