@@ -71,7 +71,7 @@ module.exports = React.createClass({
 					{dep.get('states').map(function(st){
 						return <DepStateItem isolations={me.props.isolations} key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
 					})}
-					<div style={{paddingLeft: '20px'}} className="item">
+					<div style={{paddingLeft: '20px'}} className="item dp-add-state">
 						<a href={"/deps/"+dep.get('name')+"/add-state"}><i style={{fontSize: '0.65em'}} className="plus icon"></i>Add State...</a>
 					</div>
 			    </div>

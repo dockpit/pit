@@ -110,7 +110,7 @@ module.exports = React.createClass({
 
 	render: function() {
 		var me = this
-		var classes = "isolation ui card"
+		var classes = "isolation ui card fluid"
 		if (this.props.isSelected) {
 			classes = classes + " red"
 		}
