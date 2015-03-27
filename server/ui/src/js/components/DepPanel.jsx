@@ -41,23 +41,36 @@ module.exports = React.createClass({
 
   render: function() {
     var me = this
+    var list = this.state.data.get('deps').map(function(dep){
+      return <DepItem isolations={me.state.isoData.get('isolations')} key={dep.get('name')} dep={dep}/> 
+    })
+    
+    if (this.state.data.get('deps').size < 1) {
+      list = <div className="ui attached bottom segment"><div className="ui icon message">
+          <i className="cube icon"></i>
+          <div className="content">
+            <div className="header">
+              You don't have any dependencies configured
+            </div>
+            <p>A dependency represents another service you depend on: A database, HTTP API, message queues, etc</p>
+          </div>
+        </div></div>
+    }
+
     return <div style={{position: 'relative'}}>
       <h2 className="ui top attached header">
         <div className="content">
-          Dependencies
-          <div style={{paddingRight: '200px'}} className="sub header">{'Other services you project depends on: Databases, Queues, HTTP API\'s etc'}</div>
+          Dependencies          
         </div>
       </h2>
 
-      <button style={{position: 'absolute', top: '18px', right: '10px'}} className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>New Dependency</button>
+      <button style={{position: 'absolute', top: '10px', right: '10px'}} className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>New Dependency</button>
 
       { this.state.showForm ? <DepForm closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
 
-      {this.state.data.get('deps').map(function(dep){
-        return <DepItem isolations={me.state.isoData.get('isolations')} key={dep.get('name')} dep={dep}/> 
-      })}
-
-      <div className="ui bottom attached segment"></div>
+      {list}
+      {this.state.data.get('deps').size > 0 ? <div className="ui bottom attached segment"></div> : null }
+    
     </div>;
   }
 });

@@ -55,7 +55,7 @@ module.exports = React.createClass({
 					<form ref="form" className="ui form">
 					    <div className="required field">
 					      <label>Name</label>
-					      <input ref="nameInput" type="text" placeholder="e.g two users and a project" name="name"/>
+					      <input ref="nameInput" type="text" placeholder="e.g postgresql, rabbitmq, api.github.com" name="name"/>
 					    </div>		    
 					</form>
 				</div>

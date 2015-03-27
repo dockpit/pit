@@ -10,10 +10,10 @@ module.exports = React.createClass({
 	var right = Immutable.List()
 	this.props.isolations.forEach(function(iso, i){
 		if(i & 1) {
-		    left = left.push(iso)
+		    right = right.push(iso)
 		    return
 		} 
-		right = right.push(iso)
+		left = left.push(iso)
 	})
 
     return <div className="ui two column grid doubling row">

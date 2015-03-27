@@ -40,20 +40,32 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    return <div style={{position: 'relative'}}>
-      <h2 className="ui top attached header">
+    var disabled = (this.state.depData.get('deps').size < 1)
+    var list = <IsolationList deps={this.state.depData.get('deps')} selection={this.state.data.get('selection')} isolations={this.state.data.get('isolations')}/>
+    if (this.state.data.get('isolations').size < 1) {
+      list = <div className="ui icon message">
+          <i className="cube icon"></i>
+          <div className="content">
+            <div className="header">
+              You don't have any isolations yet
+            </div>
+            <p>An isolation groupa a set of dependencies in certain states</p>
+          </div>
+        </div>
+    }
+
+    return <div className="ui" style={{position: 'relative'}}>
+      <h2 className={'ui top attached header ' + (disabled ? 'disabled': null)}>
         <div className="content">
-          Isolations
-          <div style={{paddingRight: "180px"}} className="sub header">Isolations make groups of dependencies in specific states accessible under a certain name</div>
+          Isolations          
         </div>
       </h2>
 
-      <button style={{position: 'absolute', top: '18px', right: '10px'}} className="ui secondary labeled icon button" onClick={this.openIsolationForm}><i className="plus icon"></i>New Isolation</button>
-      
+      <button style={{position: 'absolute', top: '10px', right: '10px'}} className={'ui secondary labeled icon button '+ (disabled ? 'disabled': null)} onClick={this.openIsolationForm}><i className="plus icon"></i>New Isolation</button>      
       { this.state.showForm ? <IsolationForm closeFormFn={this.closeIsolationForm} isolation={this.state.data.get('selection')}/> : null }
 
-      <div className="ui bottom attached segment">
-        <IsolationList deps={this.state.depData.get('deps')} selection={this.state.data.get('selection')} isolations={this.state.data.get('isolations')}/>
+      <div className={'ui bottom attached segment '+ (disabled ? 'disabled': null)}>
+        {list}        
       </div>
     </div>;
   }
