@@ -46,3 +46,17 @@ func (d *Dep) GetState(sname string) *State {
 	}
 	return nil
 }
+
+func (d *Dep) UpdateState(newstate *State) {
+	newstates := []*State{}
+	for _, state := range d.States {
+		if state.Name == newstate.Name {
+			newstates = append(newstates, newstate)
+			continue
+		}
+
+		newstates = append(newstates, state)
+	}
+
+	d.States = newstates
+}

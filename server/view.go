@@ -107,12 +107,12 @@ func (v *View) RenderAddState(w http.ResponseWriter, dep *model.Dep) {
 	v.Render(w, filepath.Join(TemplateDir, "add_state.html"), map[string]interface{}{"Dep": dep})
 }
 
-func (v *View) RenderEditState(w http.ResponseWriter, dep *model.Dep, s *model.State) {
-	v.Render(w, filepath.Join(TemplateDir, "edit_state.html"), map[string]interface{}{"Dep": dep, "State": s})
+func (v *View) RenderEditor(w http.ResponseWriter, dep *model.Dep, s *model.State) {
+	v.Render(w, filepath.Join(TemplateDir, "editor.html"), map[string]interface{}{"Dep": dep, "State": s})
 }
 
 func (v *View) RenderEditStateBuilt(w http.ResponseWriter, dep *model.Dep, s *model.State, output string) {
-	v.Render(w, filepath.Join(TemplateDir, "edit_state.html"), map[string]interface{}{"Dep": dep, "State": s, "Output": output})
+	v.Render(w, filepath.Join(TemplateDir, "editor.html"), map[string]interface{}{"Dep": dep, "State": s, "Output": output})
 }
 
 func (v *View) RenderOneIsolation(w http.ResponseWriter, iso *model.Isolation) {

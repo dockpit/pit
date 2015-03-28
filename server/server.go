@@ -55,6 +55,9 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Post("/api/deps", s.CreateDep)
 	mux.Delete("/api/deps/:name", s.RemoveDep)
+
+	mux.Put("/api/deps/:name/states/:state_name", s.UpdateDepState)
+	mux.Get("/api/deps/:name/states/:state_name", s.OneDepState)
 	mux.Delete("/api/deps/:name/states/:state_name", s.RemoveDepState)
 
 	//page endpoints
@@ -157,7 +160,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 			return
 		}
 
-		s.view.RenderEditState(w, dep, state)
+		s.view.RenderEditor(w, dep, state)
 	})
 
 	//edit a state
@@ -187,7 +190,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 			return
 		}
 
-		state.Dockerfile = r.Form.Get("dockerfile")
+		state.Files["Dockerfile"] = r.Form.Get("dockerfile")
 		if r.Form.Get("save") != "" {
 			state.ImageName = r.Form.Get("image_name")
 			if state.ImageName == "" {

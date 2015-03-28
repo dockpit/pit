@@ -9,10 +9,10 @@ const (
 )
 
 type State struct {
-	Name       string `json:"name"`
-	Type       string `json:"type"`
-	Dockerfile string `json:"dockerfile"`
-	ImageName  string `json:"image_name"`
+	Name      string            `json:"name"`
+	Type      string            `json:"type"`
+	Files     map[string]string `json:"files"`
+	ImageName string            `json:"image_name"`
 }
 
 func NewState(name string, t string) (*State, error) {
@@ -21,7 +21,8 @@ func NewState(name string, t string) (*State, error) {
 	}
 
 	return &State{
-		Name: name,
-		Type: t,
+		Name:  name,
+		Files: map[string]string{"Dockerfile": "FROM scratch"},
+		Type:  t,
 	}, nil
 }

@@ -145,7 +145,7 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 func (d *Docker) Build(dep *model.Dep, state *model.State, out io.Writer) (string, error) {
 
 	//create writer for tar data
-	f := bytes.NewReader([]byte(state.Dockerfile))
+	f := bytes.NewReader([]byte(state.Files["Dockerfile"]))
 	in := bytes.NewBuffer(nil)
 	tw := tar.NewWriter(in)
 	hdr := &tar.Header{
