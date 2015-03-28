@@ -13,6 +13,7 @@ debug:
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/examples \
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/tasks \
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/test \
+		-ignore=server/ui/vendor/ace-1.1.8/src/ \
 		-debug=true server/ui/...
 	go run -tags=debug -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" main.go start 
 
@@ -31,6 +32,7 @@ release:
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/examples \
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/tasks \
 		-ignore=server/ui/vendor/semantic-ui-1.11.5/test \
+		-ignore=server/ui/vendor/ace-1.1.8/src/ \
 		server/ui/...
 	gox \
 	    -os=$(XC_OS) \

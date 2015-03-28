@@ -33,14 +33,20 @@ module.exports = React.createClass({
 		            <i className="repeat icon"></i>(Re)build
 		          </button>
 		          <button className="ui  button">
-		            <i className="checkmark icon"></i>Save
+		            <i className="terminal icon"></i>Test
 		          </button>
 		        </div>
-				<div className="ui attached segment buttom">			
+				<div className="ui attached segment">			
 					<pre>
 						Output
 					</pre>
 				</div>		      	
+			    <div className="ui fluid bottom positive attached buttons">
+			      <button className="ui button">
+			        <i className="checkmark icon"></i>
+			        Save
+			      </button>
+			    </div>
 		      </div>
 		    </div>
 		</div>

@@ -4,8 +4,22 @@ var Immutable = require('immutable')
 var EditorActions  = require('../actions/EditorActions')
 var EditorStore = require('../stores/EditorStore')
 
+//throttle function calls
+function debounce(fn, delay) {
+  var timer = null;
+  return function () {
+    var context = this, args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      fn.apply(context, args);
+    }, delay);
+  };
+}
+
 var EditorACE = React.createClass({
 	editor: false,
+	modeList: false,
+	mode: '',
 
 	getInitialState: function(){
 		return {height: 500}
@@ -14,20 +28,31 @@ var EditorACE = React.createClass({
 	componentDidMount: function() {
 		var me = this
 		EditorStore.on(EditorStore.STATE_CHANGED, this.onStoreChange)
-	    
+
+		this.modelist = ace.require("ace/ext/modelist");	    
+	    this.mode = this.modelist.getModeForPath(this.props.file.get('name')).mode
+
 	    this.editor = ace.edit(React.findDOMNode(this.refs.editor).id);
 	    this.editor.setTheme("ace/theme/github");
-	    this.editor.getSession().setMode("ace/mode/dockerfile");
-		this.editor.getSession().on('change', function(e) {
-		    //@todo save
-		});		
+    	this.editor.getSession().setMode(this.mode)
 
-		//initial focus?
+		this.editor.getSession().on('change', debounce(function(e) {
+		    EditorActions.saveFile(
+		    	me.props.depName, 
+		    	me.props.state, 
+		    	me.props.file.get('name'),
+		    	me.editor.getValue()
+		    )
+		},250));		
+
+		//initial focus
 		if(me.props.active) {
 			this.editor.focus()						
 			this.updateDimensions()
 		}
 
+
+		this.editor.setValue(this.props.file.get('content'))
 		window.addEventListener("resize", this.updateDimensions);
 	},
 
@@ -40,7 +65,7 @@ var EditorACE = React.createClass({
 
     updateDimensions: function() {    	
         this.setState({        
-        	height: $(window).height() - 180
+        	height: $(window).height() - 140
         });
     },
 
@@ -49,9 +74,36 @@ var EditorACE = React.createClass({
     },
 
 	render: function(){
-		return <div style={{height: this.state.height + 'px'}} id={'editor-'+this.props.nr} ref="editor">
-		{this.props.file.get('content')}
+		return <div>
+			<div style={{float: 'right', zIndex: 100}} className="ui top right attached label">{this.mode.split('/')[2]}</div>
+			<div style={{float: 'left', width: '100%', marginTop: '0px !important', height: this.state.height + 'px'}} id={'editor-'+this.props.nr} ref="editor"></div>
 		</div>
+	}
+})
+
+var EditorFileTab = React.createClass({
+	getInitialState: function() {
+		return {
+			hover: false
+		}
+	},
+
+	removeFile: function(ev) {
+		if(confirm("Are you sure you want to remove file '"+this.props.file.get('name')+"'?")) {
+			EditorActions.removeFileFromState(this.props.depName, this.props.state, this.props.file.get('name'))
+		}
+		ev.stopPropagation()
+	},
+
+	enter: function() { this.setState({hover: true})},
+	leave: function() { this.setState({hover: false})},
+
+	render: function() {
+		return <a onMouseEnter={this.enter} onMouseLeave={this.leave} onClick={this.props.switchFileFn} className={'item'+ (this.props.file.get('name') == this.props.activeFile ? ' active' : '')}>
+			{this.props.file.get('name')}
+			
+			{this.state.hover ? <i style={{position: 'absolute'}} onClick={this.removeFile} className="icon trash"></i> : null }
+		</a>
 	}
 })
 
@@ -75,12 +127,6 @@ module.exports = React.createClass({
 		EditorActions.switchFile(f.get('name'))
 	},
 
-	removeFile: function(f) {
-		if(confirm("Are you sure you want to remove file '"+f.get('name')+"'?")) {
-			//@todo submit update to state
-		}
-	},
-
 	submitNewFile: function(ev) {
 		ev.preventDefault()
 		var fname = React.findDOMNode(this.refs.fileNameInput).value
@@ -88,6 +134,7 @@ module.exports = React.createClass({
 			EditorActions.addFileToState(this.props.depName, this.props.state, fname)
 		}
 
+		EditorActions.switchFile(fname)
 		React.findDOMNode(this.refs.fileNameInput).value = ''
 		$(React.findDOMNode(this.refs.addBtn)).popup('hide')
 	},
@@ -114,23 +161,12 @@ module.exports = React.createClass({
 				</div>
 
 				{files.map(function(f, i){
-					return <a onClick={me.switchFile.bind(me, f)} key={f.get('name')} className={'item'+ (f.get('name') == me.props.activeFile ? ' active' : '')}>
-						{f.get('name')}
-					</a>
+					return <EditorFileTab state={me.props.state} depName={me.props.depName} key={i}  activeFile={me.props.activeFile} file={f} switchFileFn={me.switchFile.bind(me, f)}/>
 				})}			  
 			</div>
 			{files.map(function(f, i){				
 				return <div key={f.get('name')} className={'ui bottom attached tab segment'+ (f.get('name') == me.props.activeFile ? ' active' : '')}>
-					<EditorACE active={f.get('name') == me.props.activeFile ? true : false} file={f} nr={i}/>
-
-				    <div style={{float: 'right'}} className="ui icon buttons">
-					  <button onClick={me.removeFile.bind(me, f)} className="ui red button">
-					    <i className="trash icon"></i>
-					  </button>
-					  <button className="ui button">
-					    <i className="edit icon"></i>
-					  </button>
-					</div>
+					<EditorACE state={me.props.state} depName={me.props.depName} active={f.get('name') == me.props.activeFile ? true : false} file={f} nr={i}/>
 				</div>
 			})}
 		</div>

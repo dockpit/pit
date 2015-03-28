@@ -19,10 +19,50 @@ var EditorStore = assign({}, EventEmitter.prototype, {
   state: function() {
     return state
   },
+
 })
 
 EditorStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
+
+    case EditorActions.UPDATE_FILE_IN_STATE:
+      var newfiles = state.get('state').get('files').set(a.args[2], a.args[3])
+      var newstate = state.get('state').set('files', newfiles)
+      
+      request
+        .put('/api/deps/'+a.args[0]+'/states/'+a.args[1].get('name'))
+        .send(newstate)
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          state = state.set('state', newstate)
+          EditorStore.emit(EditorStore.STATE_CHANGED)  
+        });
+
+      break;
+
+    //switch to other file
+    case EditorActions.REMOVE_FILE_FROM_STATE:
+      var newfiles = state.get('state').get('files').delete(a.args[2])
+      var newstate = state.get('state').set('files', newfiles)
+
+      request
+        .put('/api/deps/'+a.args[0]+'/states/'+a.args[1].get('name'))
+        .send(newstate)
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          state = state.set('state', newstate)
+          state = state.set('activeFile', state.get('state').get('files').keys().next().value)
+          
+          EditorStore.emit(EditorStore.STATE_CHANGED)  
+        });
+
+      break
 
     //switch to other file
     case EditorActions.SWITCH_FILE:
