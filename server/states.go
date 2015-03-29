@@ -10,6 +10,89 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
+var Builds = map[string]*model.Build{}
+
+func (s *Server) OneBuild(c web.C, w http.ResponseWriter, r *http.Request) {
+	id := c.URLParams["id"]
+	if b, ok := Builds[id]; !ok {
+		http.NotFound(w, r)
+		return
+	} else {
+		enc := json.NewEncoder(w)
+		err := enc.Encode(b)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to encode: %s", err), http.StatusInternalServerError)
+		}
+	}
+}
+
+func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) {
+	name := c.URLParams["name"]
+	dep, err := s.model.FindDepByName(name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		return
+	}
+
+	if dep == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	sname := c.URLParams["state_name"]
+	state := dep.GetState(sname)
+	if state == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	b, err := model.NewBuild(*dep, *state)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to create build from state '%s': %s", state.Name, err), http.StatusInternalServerError)
+	}
+
+	//builds are run in the background
+	Builds[b.ID] = b
+	go func() {
+		iname, err := s.client.Build(b)
+		if err != nil {
+			b.Error = err
+			return
+		}
+		b.ImageName = iname
+	}()
+
+	enc := json.NewEncoder(w)
+	err = enc.Encode(b)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to encode: %s", err), http.StatusInternalServerError)
+	}
+}
+
+func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
+	name := c.URLParams["name"]
+	dep, err := s.model.FindDepByName(name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		return
+	}
+
+	if dep == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	sname := c.URLParams["state_name"]
+	state := dep.GetState(sname)
+	if state == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	//@todo implement
+
+}
+
 func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 	name := c.URLParams["name"]
 	dep, err := s.model.FindDepByName(name)
@@ -33,7 +116,7 @@ func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	err = enc.Encode(state)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to encode: {{err}}", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed to encode: %s", err), http.StatusInternalServerError)
 	}
 }
 

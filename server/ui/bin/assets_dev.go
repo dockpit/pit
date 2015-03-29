@@ -439,6 +439,24 @@ func server_ui_src_js_components_editorfilepanel_jsx() (*asset, error) {
 	return a, err
 }
 
+// server_ui_src_js_components_editorrunpanel_jsx reads file data from disk. It returns an error on failure.
+func server_ui_src_js_components_editorrunpanel_jsx() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/EditorRunPanel.jsx"
+	name := "server/ui/src/js/components/EditorRunPanel.jsx"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_src_js_components_editorworkspace_jsx reads file data from disk. It returns an error on failure.
 func server_ui_src_js_components_editorworkspace_jsx() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/js/components/EditorWorkspace.jsx"
@@ -22492,6 +22510,7 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/src/js/components/DepItem.jsx": server_ui_src_js_components_depitem_jsx,
 	"server/ui/src/js/components/DepPanel.jsx": server_ui_src_js_components_deppanel_jsx,
 	"server/ui/src/js/components/EditorFilePanel.jsx": server_ui_src_js_components_editorfilepanel_jsx,
+	"server/ui/src/js/components/EditorRunPanel.jsx": server_ui_src_js_components_editorrunpanel_jsx,
 	"server/ui/src/js/components/EditorWorkspace.jsx": server_ui_src_js_components_editorworkspace_jsx,
 	"server/ui/src/js/components/IsolationForm.jsx": server_ui_src_js_components_isolationform_jsx,
 	"server/ui/src/js/components/IsolationItem.jsx": server_ui_src_js_components_isolationitem_jsx,
@@ -23809,6 +23828,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 						"DepPanel.jsx": &_bintree_t{server_ui_src_js_components_deppanel_jsx, map[string]*_bintree_t{
 						}},
 						"EditorFilePanel.jsx": &_bintree_t{server_ui_src_js_components_editorfilepanel_jsx, map[string]*_bintree_t{
+						}},
+						"EditorRunPanel.jsx": &_bintree_t{server_ui_src_js_components_editorrunpanel_jsx, map[string]*_bintree_t{
 						}},
 						"EditorWorkspace.jsx": &_bintree_t{server_ui_src_js_components_editorworkspace_jsx, map[string]*_bintree_t{
 						}},

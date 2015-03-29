@@ -1,7 +1,7 @@
 package server
 
 import (
-	"bytes"
+	// "bytes"
 	"fmt"
 	"mime"
 	"net"
@@ -59,6 +59,10 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	mux.Put("/api/deps/:name/states/:state_name", s.UpdateDepState)
 	mux.Get("/api/deps/:name/states/:state_name", s.OneDepState)
 	mux.Delete("/api/deps/:name/states/:state_name", s.RemoveDepState)
+	mux.Post("/api/deps/:name/states/:state_name/builds", s.BuildDepState)
+	mux.Post("/api/deps/:name/states/:state_name/runs", s.RunDepState)
+
+	mux.Get("/api/builds/:id", s.OneBuild)
 
 	//page endpoints
 	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -164,60 +168,60 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	})
 
 	//edit a state
-	mux.Post("/deps/:name/states/:state_name", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		err := r.ParseForm()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse form data: %s", err), http.StatusBadRequest)
-			return
-		}
+	// 	mux.Post("/deps/:name/states/:state_name", func(c web.C, w http.ResponseWriter, r *http.Request) {
+	// 		err := r.ParseForm()
+	// 		if err != nil {
+	// 			http.Error(w, fmt.Sprintf("Failed to parse form data: %s", err), http.StatusBadRequest)
+	// 			return
+	// 		}
 
-		name := c.URLParams["name"]
-		dep, err := s.model.FindDepByName(name)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
-			return
-		}
+	// 		name := c.URLParams["name"]
+	// 		dep, err := s.model.FindDepByName(name)
+	// 		if err != nil {
+	// 			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+	// 			return
+	// 		}
 
-		if dep == nil {
-			http.NotFound(w, r)
-			return
-		}
+	// 		if dep == nil {
+	// 			http.NotFound(w, r)
+	// 			return
+	// 		}
 
-		sname := c.URLParams["state_name"]
-		state := dep.GetState(sname)
-		if state == nil {
-			http.NotFound(w, r)
-			return
-		}
+	// 		sname := c.URLParams["state_name"]
+	// 		state := dep.GetState(sname)
+	// 		if state == nil {
+	// 			http.NotFound(w, r)
+	// 			return
+	// 		}
 
-		state.Files["Dockerfile"] = r.Form.Get("dockerfile")
-		if r.Form.Get("save") != "" {
-			state.ImageName = r.Form.Get("image_name")
-			if state.ImageName == "" {
-				http.Error(w, fmt.Sprintf("Image name cannot be empty, please build it first"), http.StatusBadRequest)
-				return
-			}
+	// 		state.Files["Dockerfile"] = r.Form.Get("dockerfile")
+	// 		if r.Form.Get("save") != "" {
+	// 			state.ImageName = r.Form.Get("image_name")
+	// 			if state.ImageName == "" {
+	// 				http.Error(w, fmt.Sprintf("Image name cannot be empty, please build it first"), http.StatusBadRequest)
+	// 				return
+	// 			}
 
-			err = s.model.UpdateDep(dep)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Failed update dep state with name '%s'::'%s': %s", name, sname, err), http.StatusInternalServerError)
-				return
-			}
+	// 			err = s.model.UpdateDep(dep)
+	// 			if err != nil {
+	// 				http.Error(w, fmt.Sprintf("Failed update dep state with name '%s'::'%s': %s", name, sname, err), http.StatusInternalServerError)
+	// 				return
+	// 			}
 
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		} else {
+	// 			http.Redirect(w, r, "/", http.StatusSeeOther)
+	// 		} else {
 
-			buf := bytes.NewBuffer(nil)
-			iname, err := s.client.Build(dep, state, buf)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Failed to build dep::state '%s'::'%s': %s (%s)", name, sname, err, buf.String()), http.StatusInternalServerError)
-				return
-			}
+	// 			buf := bytes.NewBuffer(nil)
+	// 			iname, err := s.client.Build(dep, state, buf)
+	// 			if err != nil {
+	// 				http.Error(w, fmt.Sprintf("Failed to build dep::state '%s'::'%s': %s (%s)", name, sname, err, buf.String()), http.StatusInternalServerError)
+	// 				return
+	// 			}
 
-			state.ImageName = iname
-			s.view.RenderEditStateBuilt(w, dep, state, buf.String())
-		}
-	})
+	// 			state.ImageName = iname
+	// 			s.view.RenderEditStateBuilt(w, dep, state, buf.String())
+	// 		}
+	// 	})
 
 	return s, nil
 }

@@ -1,6 +1,7 @@
 var Dispatcher = require('../dispatcher/AppDispatcher')
 
 var EditorActions = {
+  START_BUILD: "EDITOR_START_BUILD",
   REFRESH_STATE: "EDITOR_REFRESH_ACTION",
   SWITCH_FILE: "EDITOR_SWITCH_FILE",
   UPDATE_FILE_IN_STATE: "EDITOR_UPDATE_FILE_IN_STATE_ACTION",
@@ -39,6 +40,13 @@ var EditorActions = {
     });
   },
 
+  //start building the current state
+  startBuild: function(dname, state) {
+    Dispatcher.dispatch({
+      type: EditorActions.START_BUILD,
+      args: [dname, state]
+    });
+  },
 
   //switch to editing another file
   switchFile: function(fname) {

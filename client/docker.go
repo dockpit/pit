@@ -142,7 +142,10 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 	return nil
 }
 
-func (d *Docker) Build(dep *model.Dep, state *model.State, out io.Writer) (string, error) {
+func (d *Docker) Build(b *model.Build) (string, error) {
+	dep := b.Dep
+	state := b.State
+	out := b.Output.Buffer
 
 	//create writer for tar data
 	f := bytes.NewReader([]byte(state.Files["Dockerfile"]))
@@ -173,10 +176,14 @@ func (d *Docker) Build(dep *model.Dep, state *model.State, out io.Writer) (strin
 	}
 
 	req.Header.Set("Content-Type", "application/tar")
+
+	b.IsRunning = true
 	resp, err := d.client.HTTPClient.Do(req)
 	if err != nil {
 		return "", errwrap.Wrapf(fmt.Sprintf("Docker build request failed for '%s'::'%s': {{err}}", dep.Name, state.Name), err)
 	}
+
+	b.IsRunning = false
 
 	defer resp.Body.Close()
 	defer io.Copy(out, resp.Body)
