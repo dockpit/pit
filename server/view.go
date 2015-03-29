@@ -76,7 +76,7 @@ func (v *View) Render(w http.ResponseWriter, name string, data map[string]interf
 		return
 	}
 
-	//expose some system variables on eacht render
+	//expose some system variables on each render
 	cwd, err := os.Getwd()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to get CWD while rendering: %s", err), http.StatusInternalServerError)
@@ -97,24 +97,6 @@ func (v *View) RenderDashboard(w http.ResponseWriter, isos []*model.Isolation, d
 	v.Render(w, filepath.Join(TemplateDir, "dashboard.html"), map[string]interface{}{"Isolations": isos, "Deps": deps})
 }
 
-// @TODO DEPRECATE
-
-func (v *View) RenderAddDep(w http.ResponseWriter, iso *model.Isolation, deps []*model.Dep) {
-	v.Render(w, filepath.Join(TemplateDir, "add_dep.html"), map[string]interface{}{"Isolation": iso, "Deps": deps})
-}
-
-func (v *View) RenderAddState(w http.ResponseWriter, dep *model.Dep) {
-	v.Render(w, filepath.Join(TemplateDir, "add_state.html"), map[string]interface{}{"Dep": dep})
-}
-
 func (v *View) RenderEditor(w http.ResponseWriter, dep *model.Dep, s *model.State) {
 	v.Render(w, filepath.Join(TemplateDir, "editor.html"), map[string]interface{}{"Dep": dep, "State": s})
-}
-
-func (v *View) RenderEditStateBuilt(w http.ResponseWriter, dep *model.Dep, s *model.State, output string) {
-	v.Render(w, filepath.Join(TemplateDir, "editor.html"), map[string]interface{}{"Dep": dep, "State": s, "Output": output})
-}
-
-func (v *View) RenderOneIsolation(w http.ResponseWriter, iso *model.Isolation) {
-	v.Render(w, filepath.Join(TemplateDir, "one_isolation.html"), map[string]interface{}{"Isolation": iso})
 }

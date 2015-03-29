@@ -5,6 +5,7 @@ var DepActions = {
   CREATE: "DEP_CREATE_ACTION",
   REMOVE_DEP: "DEP_REMOVE_ACTION",
   REMOVE_DEP_STATE: "DEP_STATE_REMOVE_ACTION",
+  ADD_DEP_STATE: "DEP_STATE_ADD_ACTION",
 
   //simply request to reload Deps from server
   refresh: function() {
@@ -33,6 +34,14 @@ var DepActions = {
   removeDepState: function(dep, state) {
     Dispatcher.dispatch({
       type: DepActions.REMOVE_DEP_STATE,
+      args: [dep, state],
+    });
+  },
+
+  //add a new deps state
+  addDepState: function(dep, state) {
+    Dispatcher.dispatch({
+      type: DepActions.ADD_DEP_STATE,
       args: [dep, state],
     });
   },

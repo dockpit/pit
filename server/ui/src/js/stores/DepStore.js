@@ -26,6 +26,22 @@ var DepStore = assign({}, EventEmitter.prototype, {
 DepStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
       
+    case DepActions.ADD_DEP_STATE:
+
+      request
+        .post('/api/deps/'+a.args[0].get('name')+'/states')
+        .send(a.args[1])
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          DepActions.refresh()
+        });
+
+      break;
+
+    //create a new dep on server
     case DepActions.CREATE:
       request
         .post('/api/deps')
@@ -36,12 +52,11 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
           }
 
           DepActions.refresh()
-          DepStore.emit(DepStore.CHANGED)
         });
 
       break
 
-
+    //remove a state from the dep
     case DepActions.REMOVE_DEP_STATE:
       var dname = a.args[0].get('name')
       if(!dname) {
@@ -71,10 +86,10 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
           }))
 
           IsolationActions.refresh()
-          DepStore.emit(DepStore.CHANGED)
         });
       break
 
+    //remove dependency
     case DepActions.REMOVE_DEP:
       var name = a.args[0].get('name')
       if(!name) {
@@ -93,10 +108,10 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
           }))
 
           IsolationActions.refresh()
-          DepStore.emit(DepStore.CHANGED)
         });
       break
 
+    //refresh depenency state
     case DepActions.REFRESH:
       request
         .get('/api/deps')

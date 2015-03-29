@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/dockpit/iowait"
+	"github.com/extemporalgenome/slug"
 	"github.com/hashicorp/errwrap"
 	"github.com/samalba/dockerclient"
 
@@ -145,28 +146,33 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 func (d *Docker) Build(b *model.Build) (string, error) {
 	dep := b.Dep
 	state := b.State
-	out := b.Output.Buffer
 
-	//create writer for tar data
-	f := bytes.NewReader([]byte(state.Files["Dockerfile"]))
+	out := b.Output.Buffer
 	in := bytes.NewBuffer(nil)
 	tw := tar.NewWriter(in)
-	hdr := &tar.Header{
-		Name: "Dockerfile",
-		Size: int64(f.Len()),
-	}
 
-	err := tw.WriteHeader(hdr)
-	if err != nil {
-		return "", errwrap.Wrapf(fmt.Sprintf("Failed to write tar file header for '%s'::'%s': {{err}}", dep.Name, state.Name), err)
-	}
+	for fname, fcontent := range state.Files {
+		//create writer for tar data
+		f := bytes.NewReader([]byte(fcontent))
 
-	if _, err = io.Copy(tw, f); err != nil {
-		return "", errwrap.Wrapf(fmt.Sprintf("Failed to tar Dockerfile for '%s'::'%s': {{err}}", dep.Name, state.Name), err)
+		hdr := &tar.Header{
+			Name: fname,
+			Size: int64(f.Len()),
+		}
+
+		err := tw.WriteHeader(hdr)
+		if err != nil {
+			return "", errwrap.Wrapf(fmt.Sprintf("Failed to write tar file '%s' header for '%s'::'%s': {{err}}", fname, dep.Name, state.Name), err)
+		}
+
+		if _, err = io.Copy(tw, f); err != nil {
+			return "", errwrap.Wrapf(fmt.Sprintf("Failed to tar file '%s' for '%s'::'%s': {{err}}", fname, dep.Name, state.Name), err)
+		}
 	}
 
 	// generate an unique image name based on the provider name and path to the state folder
 	iname := fmt.Sprintf("dockpit_%s_%s", dep.Name, state.Name)
+	iname = slug.SlugAscii(iname)
 
 	// fall back to streaming ourselves for building the image, samalba has yet to
 	// implement image building: https://github.com/samalba/dockerclient/issues/62

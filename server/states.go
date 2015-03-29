@@ -56,6 +56,7 @@ func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) 
 	go func() {
 		iname, err := s.client.Build(b)
 		if err != nil {
+			fmt.Println(err)
 			b.Error = err
 			return
 		}
@@ -91,6 +92,43 @@ func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	//@todo implement
 
+}
+
+func (s *Server) CreateState(c web.C, w http.ResponseWriter, r *http.Request) {
+	name := c.URLParams["name"]
+	dep, err := s.model.FindDepByName(name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		return
+	}
+
+	if dep == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	dec := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	var newstate *model.State
+	err = dec.Decode(&newstate)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed decode new state: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	state, err := model.NewState(newstate.Name, "bogus")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to create state: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	dep.AddState(state)
+	err = s.model.UpdateDep(dep)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed update dep with name '%s': %s", name, err), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {

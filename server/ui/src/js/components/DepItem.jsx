@@ -1,4 +1,5 @@
 var React = require('react')
+var Immutable = require('immutable')
 
 var DepActions  = require('../actions/DepActions')
 var DepStateItem = React.createClass({
@@ -56,6 +57,20 @@ module.exports = React.createClass({
 		}
 	},
 
+	componentDidMount: function() {
+		var me = this
+		$(React.findDOMNode(this.refs.addStateBtn))
+		  .popup({
+		    inline   : true,
+		    on    : 'click',
+		    position : 'right center',
+		    onVisible: function() {
+		    	React.findDOMNode(me.refs.stateNameInput).focus()
+		    }
+		  })
+		;
+	},
+
 	removeDep: function() {
 		if(confirm("Are you sure you want to remove dependency '"+this.props.dep.get('name')+"' and all its states?")) {
 			DepActions.removeDep(this.props.dep)	
@@ -64,6 +79,19 @@ module.exports = React.createClass({
 
 	enter: function() { this.setState({hover: true})},
 	leave: function() { this.setState({hover: false})},
+
+	submitNewState: function(ev) {
+		ev.preventDefault()
+		var sname = React.findDOMNode(this.refs.stateNameInput).value
+		if (sname) {
+			var state = Immutable.Map({name: sname})
+
+			DepActions.addDepState(this.props.dep, state)
+		}
+
+		React.findDOMNode(this.refs.stateNameInput).value = ''
+		$(React.findDOMNode(this.refs.addStateBtn)).popup('hide')
+	},
 
 	render: function() {
 		var me = this
@@ -76,7 +104,17 @@ module.exports = React.createClass({
 						return <DepStateItem isolations={me.props.isolations} key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
 					})}
 					<div style={{paddingLeft: '20px'}} className="item dp-add-state">
-						<a href={"/deps/"+dep.get('name')+"/add-state"}><i style={{fontSize: '0.65em'}} className="plus icon"></i>Add {me.props.dep.get('name')} state...</a>
+						<a ref="addStateBtn"><i style={{fontSize: '0.65em'}} className="plus icon"></i>Add {me.props.dep.get('name')} state...</a>
+
+						<div style={{width: '700px'}} className="ui popup">
+							<form onSubmit={this.submitNewState} className="ui action input">
+							  <input style={{border: '1px solid #DFDFDF'}} ref="stateNameInput" type="text" placeholder="e.g two users, no users"/>
+							  <button type="submit" className="ui icon button">
+							    <i className="save icon"></i>
+							  </button>
+							</form>
+						</div>
+
 					</div>
 			    </div>
 				
