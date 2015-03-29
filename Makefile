@@ -17,6 +17,7 @@ debug:
 		-debug=true server/ui/...
 	go run -tags=debug -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" main.go start 
 
+#1. build release binaries
 release:
 	rm -fr bin/*
 	mkdir -p bin/
@@ -41,6 +42,20 @@ release:
 	    -output "bin/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 	    .
 
+#2. tag git commit
+publish-tag:
+	git tag v$(shell cat VERSION)
+	git push --tags
+
+#3 create github release
+publish-release:
+	github-release release \
+    --user dockpit \
+    --repo pit \
+    --tag v$(shell cat VERSION) \
+    --pre-release
+
+#4 zip binaries
 publish-zip:
 	rm -fr bin/dist
 	mkdir -p bin/dist
@@ -53,13 +68,7 @@ publish-zip:
 		popd ; \
 	done 
 
-publish-release:
-	github-release release \
-    --user dockpit \
-    --repo pit \
-    --tag v$(shell cat VERSION) \
-    --pre-release
-
+#5 upload zip
 publish-upload:
 	for FOLDER in ./bin/*_* ; do \
 		NAME=`basename $$FOLDER`_`CAT VERSION` ; \
@@ -72,6 +81,3 @@ publish-upload:
 	    --file $$ARCHIVE ; \
 	done 
 
-publish-tag:
-	git tag v$(shell cat VERSION)
-	git push --tags
