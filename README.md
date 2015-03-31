@@ -7,21 +7,20 @@ Painless dependency handling for your (micro)service development process:
 - Build for *Docker*, written in *Go* and compiled into a single *~10mb* binary that works on **OSX, Windows and Linux**.
 
 ## Getting Started
-NOTE: You'll need to have [Docker](https://docker.com) installed and running, the official guides for setting up Docker can be found [here](https://docs.docker.com/installation/#installation). 
+1. First, [download Dockpit](https://dockpit.io/download.html) as any of the prebuild binaries or use the Go toolchain: `go get -u github.com/dockpit/pit`
 
----
-First, download any of the [prebuild binaries](https://github.com/dockpit/pit/releases/latest) or use the Go toolchain: 
+3. Make sure the `pit` binary is somewhere in your PATH and that you're in the directory of the (micro)service you're looking to isolate, then simply run the `start` command:
 
-```
-go get -u github.com/dockpit/pit
-```
-Make sure the `pit` binary is somewhere in your PATH and that you're in the directory of the (micro)service you're looking to isolate, then simply run the `start` command:
-
-```
+	```
 cd ~/my_project
 pit start
 ```
-A text-based UI becomes available in your shell and a web interface is now being served on [http://localhost:3838](http://localhost:3838), follow on-screen instructions there to setup your first dependency.
+3. A text-based UI becomes available in your shell and a web interface is now being served on [http://localhost:3838](http://localhost:3838), follow on-screen instructions there to setup your first dependency.
+
+	---
+NOTE: If something went wrong make sure [Docker](https://docker.com) is installed and running, the official guides for setting up Docker can be found [here](https://docs.docker.com/installation/#installation). 
+	
+	---
 
 ## Use Cases
 - *Quickly test alternative technologies* - RabbitMQ or ZeroMQ? Dockpit makes it simple to experiment with different dependencies so you can make more informed decisions. 
