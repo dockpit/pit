@@ -41,6 +41,16 @@ var EditorStore = assign({}, EventEmitter.prototype, {
 EditorStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
 
+    //settings changed but should not be send yet
+    case EditorActions.EDITOR_CHANGE_SETTINGS:
+      var newsettings = a.args[0]
+      var newstate = state.get('state').set('settings', newsettings)
+      state = state.set('state', newstate)
+
+      EditorStore.emit(EditorStore.STATE_CHANGED) 
+      break
+
+
     //update
     case EditorActions.UPDATE_STATE:
       var oldstate = a.args[1]
@@ -159,7 +169,13 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
             return console.error(err)
           }
 
-          state = state.set('state', Immutable.fromJS(JSON.parse(res.text)))
+          //set some default values in case server doesnt provide
+          var data = JSON.parse(res.text)
+          if(!data.settings.host_config.PortBindings) {
+              data.settings.host_config.PortBindings = {}
+          }
+
+          state = state.set('state', Immutable.fromJS(data))
           if (!state.get('activeFile') && state.get('state').get('files').size > 0) {
             state = state.set('activeFile', state.get('state').get('files').keys().next().value) 
           }

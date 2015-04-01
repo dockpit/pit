@@ -1,6 +1,7 @@
 var Dispatcher = require('../dispatcher/AppDispatcher')
 
 var EditorActions = {
+  CHANGE_SETTINGS: "EDITOR_CHANGE_SETTINGS",
   UPDATE_STATE: "EDITOR_UPDATE_STATE",
   START_BUILD: "EDITOR_START_BUILD",
   REFRESH_STATE: "EDITOR_REFRESH_ACTION",
@@ -14,6 +15,14 @@ var EditorActions = {
     Dispatcher.dispatch({
       type: EditorActions.UPDATE_STATE,
       args: [dname, oldstate, newstate]
+    });
+  },
+
+  //updated state settings without sending put
+  changeSettings: function(newsettings) {
+    Dispatcher.dispatch({
+      type: EditorActions.EDITOR_CHANGE_SETTINGS,
+      args: [newsettings]
     });
   },
 

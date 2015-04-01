@@ -60,7 +60,7 @@ type StateSettings struct {
 	ReadyTimeout    Duration                      `json:"ready_timeout"`
 	ReadyPattern    *RegexpPattern                `json:"ready_pattern"`
 	HostConfig      *dockerclient.HostConfig      `json:"host_config"`
-	ContainerConfig *dockerclient.ContainerConfig `json:"host_config"`
+	ContainerConfig *dockerclient.ContainerConfig `json:"container_config"`
 }
 
 type State struct {
@@ -97,6 +97,15 @@ func NewStateFromTemplate(name string, t *Template) (*State, error) {
 			ReadyTimeout: Duration(d),
 			ReadyPattern: &patt,
 		}
+	}
+
+	//default host config
+	if st.Settings.HostConfig == nil {
+		st.Settings.HostConfig = &dockerclient.HostConfig{}
+	}
+
+	if st.Settings.ContainerConfig == nil {
+		st.Settings.ContainerConfig = &dockerclient.ContainerConfig{}
 	}
 
 	return st, nil

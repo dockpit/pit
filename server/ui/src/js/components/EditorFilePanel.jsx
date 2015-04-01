@@ -115,6 +115,90 @@ var EditorSettingsTab = React.createClass({
 	}
 })
 
+var EditorPortTable = React.createClass({
+	componentDidMount: function() {
+		var me = this
+		$(React.findDOMNode(this.refs.form))
+			.form({
+				name: {
+			      identifier  : 'cport',
+			      rules: [
+			        {
+			          type   : 'empty',
+			          prompt : 'Please enter a container port for the state'
+			        }
+			      ]
+			    },
+			}, {
+				onSuccess: me.newPortBinding
+			})
+	},
+
+	newPortBinding: function(ev) {
+		ev.preventDefault();	
+		
+		var cport = React.findDOMNode(this.refs.newContainerPortInput).value
+		var hport = React.findDOMNode(this.refs.newHostPortInput).value
+
+		//add the binding
+		newbindings = this.props.portBindings.set(cport, Immutable.List([
+			Immutable.Map({
+				HostIp: "0.0.0.0",
+				HostPort: hport
+			})
+		]))
+
+		this.props.bindingsUpdatedFn(newbindings)
+
+		React.findDOMNode(this.refs.newContainerPortInput).value = ''
+		React.findDOMNode(this.refs.newHostPortInput).value = ''
+	},
+
+	removePortBinding: function(b, ev) {
+		ev.preventDefault()		
+		newbindings = this.props.portBindings.remove(b.cport)
+		this.props.bindingsUpdatedFn(newbindings)
+	},
+
+	onFormSubmit: function(ev) {
+		ev.preventDefault()
+		$(React.findDOMNode(this.refs.form)).form('submit')
+	},
+
+	render: function() {
+		var me = this
+		var bindings = []
+		if (this.props.portBindings) {
+			this.props.portBindings.forEach(function(bs, cport) {
+				bindings.push({
+					cport: cport,
+					hip: bs.get(0).get("HostIp"),
+					hport: bs.get(0).get("HostPort"),
+				})
+			})
+		}
+
+		return <form ref="form" onSubmit={this.onFormSubmit}><table className="ui very fluid basic table">
+		  <tbody>
+		  	{bindings.map(function(b, i){
+		  		return <tr key={i}>
+			      <td>{b.cport}</td>
+			      <td>{b.hip}:{b.hport}</td>
+			      <td><a onClick={me.removePortBinding.bind(me, b)}>remove</a></td>
+			    </tr>
+		  	})}
+
+		    <tr>
+		      <td><input name="cport" ref="newContainerPortInput" placeholder="Container (e.g 80/tcp)" /></td>
+		      <td><input ref="newHostPortInput" placeholder="Host (e.g 8000)" /></td>
+		      <td><button onClick={this.onFormSubmit}>+</button></td>
+		    </tr>
+
+		  </tbody>
+		</table></form>
+	}
+})
+
 var EditorSettings = React.createClass({
 	componentDidMount: function() {
 		var me = this
@@ -166,29 +250,48 @@ var EditorSettings = React.createClass({
 		EditorActions.updateState(this.props.depName, oldstate, newstate)
 	},
 
+	bindingsUpdated: function(newbindings) {
+		var newsettings = this.props.state.get('settings')
+		var newhostconf = newsettings.get('host_config').set('PortBindings', newbindings)
+
+		EditorActions.changeSettings(newsettings.set('host_config', newhostconf))
+	},
+	
+	validateForm: function() {
+		$(React.findDOMNode(this.refs.form)).form('submit')
+	},
+
 	render: function() {
-		return <form ref="form" className={'ui bottom attached form tab segment'+ ('__settings' == this.props.activeFile ? ' active' : '')}>
+		return <div className={'ui bottom attached tab segment '+ ('__settings' == this.props.activeFile ? ' active' : '')}>
+			<form ref="form" className="ui form">
+				<div className="ui error message"></div>
 
-			<div className="ui error message"></div>
+				  <div className="field">
+				    <label>Name</label>
+				    <input ref="nameInput" name="name" onChange={this.nameChanged} defaultValue={this.props.state.get('name')} type="text"/>
+				  </div>
 
-			  <div className="field">
-			    <label>Name</label>
-			    <input ref="nameInput" name="name" onChange={this.nameChanged} defaultValue={this.props.state.get('name')} type="text"/>
-			  </div>
+				  <div className="two fields">
+				    <div className="field">
+				      <label>Ready Pattern</label>
+				      <input ref="readyPatternInput" name="ready_pattern" onChange={this.readyPatternChanged} defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
+				    </div>
+				    <div className="field">
+				      <label>Ready Timeout</label>
+				      <input ref="readyTimeoutInput" name="ready_timeout" onChange={this.readyTimeoutChanged} defaultValue={this.props.state.get('settings').get('ready_timeout')} type="text"/>
+				    </div>
+				  </div>				  
+			</form>
+		
+			<div className="ui horizontal divider">
+			Ports
+			</div>			  
 
-			  <div className="two fields">
-			    <div className="field">
-			      <label>Ready Pattern</label>
-			      <input ref="readyPatternInput" name="ready_pattern" onChange={this.readyPatternChanged} defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
-			    </div>
-			    <div className="field">
-			      <label>Ready Timeout</label>
-			      <input ref="readyTimeoutInput" name="ready_timeout" onChange={this.readyTimeoutChanged} defaultValue={this.props.state.get('settings').get('ready_timeout')} type="text"/>
-			    </div>
-			  </div>
+			<EditorPortTable bindingsUpdatedFn={this.bindingsUpdated} portBindings={this.props.state.get('settings').get('host_config').get('PortBindings')}  />
 
-			  <div className="ui submit button">Save</div>	
-		</form>
+			<div className="ui button" onClick={this.validateForm}>Save</div>	
+
+		</div>
 	}
 })
 
