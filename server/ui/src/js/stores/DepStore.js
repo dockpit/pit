@@ -9,6 +9,7 @@ var request = require('superagent')
 // private in-memory Dep state
 var state = Immutable.Map({
   deps: Immutable.List(),
+  templates: Immutable.Map(),
 })
 
 // maintains and in-memory representation of the Deps
@@ -122,6 +123,20 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
 
           data = JSON.parse(res.text)
           state = state.set('deps', Immutable.fromJS(data))
+
+          console.log(data)
+          DepStore.emit(DepStore.CHANGED)
+        });
+
+      request
+        .get('/api/templates')
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          data = JSON.parse(res.text)
+          state = state.set('templates', Immutable.fromJS(data))
           DepStore.emit(DepStore.CHANGED)
         });
 

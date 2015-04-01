@@ -69,7 +69,7 @@ module.exports = React.createClass({
 
       <button style={{position: 'absolute', top: '10px', right: '10px'}} className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>New Dependency</button>
 
-      { this.state.showForm ? <DepForm closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
+      { this.state.showForm ? <DepForm templates={this.state.data.get('templates')} closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
 
       {list}
       {this.state.data.get('deps').size > 0 ? <div className="ui bottom attached segment"></div> : null }

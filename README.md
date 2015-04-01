@@ -2,8 +2,8 @@
 Painless dependency handling for your (micro)service development process: 
 
 - Rapidly **configure and populate** databases, message queues and service registries through a Web UI and switch between different setups from the comfort of your shell.
-- **mock the HTTP(S) services** you depend on to develop your own (micro)service in isolation, reliably.
-- **Share setups with you’re team members** by simply commiting the *Dockpit* configuration file to the project’s version control.
+- **mock the HTTP(S) services** you depend on and develop your own (micro)service in isolation, reliably.
+- **Share setups with your team members** by simply commiting the *Dockpit* configuration file to the project’s version control.
 - Build for *Docker*, written in *Go* and compiled into a single *~10mb* binary that works on **OSX, Windows and Linux**.
 
 ## Getting Started

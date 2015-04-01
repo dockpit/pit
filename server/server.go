@@ -52,6 +52,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	mux.Post("/api/isolations", s.CreateIsolation)
 	mux.Delete("/api/isolations/:id", s.RemoveIsolation)
 	mux.Put("/api/isolations/:id", s.UpdateIsolation)
+	mux.Get("/api/templates", s.ListTemplates)
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Post("/api/deps", s.CreateDep)
 	mux.Delete("/api/deps/:name", s.RemoveDep)

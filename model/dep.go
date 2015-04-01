@@ -8,18 +8,20 @@ import (
 var DepBucketName = "deps"
 
 type Dep struct {
-	Name   string   `json:"name"`
-	States []*State `json:"states"`
+	Name     string    `json:"name"`
+	States   []*State  `json:"states"`
+	Template *Template `json:"template"`
 }
 
-func NewDep(name string) (*Dep, error) {
+func NewDep(name string, t *Template) (*Dep, error) {
 	if name == "" {
 		return nil, fmt.Errorf("Dep Validation Error: Name cannot be empty")
 	}
 
 	return &Dep{
-		Name:   name,
-		States: []*State{},
+		Name:     name,
+		States:   []*State{},
+		Template: t,
 	}, nil
 }
 
