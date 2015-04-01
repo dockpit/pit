@@ -107,6 +107,92 @@ var EditorFileTab = React.createClass({
 	}
 })
 
+var EditorSettingsTab = React.createClass({
+	render: function() {
+		return <a onClick={this.props.switchFileFn} className={'item'+ ('__settings' == this.props.activeFile ? ' active' : '')}>
+			<i className="icon settings"></i>			
+		</a>
+	}
+})
+
+var EditorSettings = React.createClass({
+	componentDidMount: function() {
+		var me = this
+		$(React.findDOMNode(this.refs.form))
+			.form({
+				name: {
+			      identifier  : 'name',
+			      rules: [
+			        {
+			          type   : 'empty',
+			          prompt : 'Please enter a name for the state'
+			        }
+			      ]
+			    },
+				ready_pattern: {
+			      identifier  : 'ready_pattern',
+			      rules: [
+			        {
+			          type   : 'empty',
+			          prompt : 'Please choose specify a ready pattern for the state'
+			        }
+			      ]
+			    },
+			   ready_timeout: {
+			      identifier  : 'ready_timeout',
+			      rules: [
+			        {
+			          type   : 'empty',
+			          prompt : 'Please choose specify a ready timeout for the state'
+			        }
+			      ]
+			    },
+			}, {
+				onSuccess: me.submit
+			})
+	},
+
+	submit: function(ev) {		
+		ev.preventDefault();		
+
+		//get from inputs
+		var oldstate = this.props.state
+		var newstate = this.props.state.set('name', React.findDOMNode(this.refs.nameInput).value)
+		var newsettings = this.props.state.get('settings')
+		newsettings = newsettings.set('ready_pattern', React.findDOMNode(this.refs.readyPatternInput).value)
+		newsettings = newsettings.set('ready_timeout', React.findDOMNode(this.refs.readyTimeoutInput).value)
+		newstate = newstate.set('settings', newsettings)
+
+		EditorActions.updateState(this.props.depName, oldstate, newstate)
+	},
+
+	render: function() {
+		return <form ref="form" className={'ui bottom attached form tab segment'+ ('__settings' == this.props.activeFile ? ' active' : '')}>
+
+			<div className="ui error message"></div>
+
+			  <div className="field">
+			    <label>Name</label>
+			    <input ref="nameInput" name="name" onChange={this.nameChanged} defaultValue={this.props.state.get('name')} type="text"/>
+			  </div>
+
+			  <div className="two fields">
+			    <div className="field">
+			      <label>Ready Pattern</label>
+			      <input ref="readyPatternInput" name="ready_pattern" onChange={this.readyPatternChanged} defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
+			    </div>
+			    <div className="field">
+			      <label>Ready Timeout</label>
+			      <input ref="readyTimeoutInput" name="ready_timeout" onChange={this.readyTimeoutChanged} defaultValue={this.props.state.get('settings').get('ready_timeout')} type="text"/>
+			    </div>
+			  </div>
+
+			  <div className="ui submit button">Save</div>	
+		</form>
+	}
+})
+
+
 
 module.exports = React.createClass({
 	componentDidMount: function() {
@@ -149,6 +235,8 @@ module.exports = React.createClass({
 			}))
 		})
 
+		var settings = Immutable.Map({name: '__settings'})
+
 		return <div className="column"><div className="ui top attached tabular menu">				
 				<button ref="addBtn" style={{float: 'right'}} className="ui small basic button"><i className="plus icon"></i>Add file</button>
 				<div style={{width: '400px'}} className="ui popup">
@@ -160,10 +248,14 @@ module.exports = React.createClass({
 					</form>
 				</div>
 
+				<EditorSettingsTab activeFile={me.props.activeFile} switchFileFn={me.switchFile.bind(me, settings)}/>
 				{files.map(function(f, i){
 					return <EditorFileTab state={me.props.state} depName={me.props.depName} key={i}  activeFile={me.props.activeFile} file={f} switchFileFn={me.switchFile.bind(me, f)}/>
 				})}			  
-			</div>
+			</div>			
+
+			{me.props.activeFile == '__settings' ? <EditorSettings depName={me.props.depName} state={me.props.state} activeFile={me.props.activeFile}/> : null }
+
 			{files.map(function(f, i){				
 				return <div key={f.get('name')} className={'ui bottom attached tab segment'+ (f.get('name') == me.props.activeFile ? ' active' : '')}>
 					<EditorACE state={me.props.state} depName={me.props.depName} active={f.get('name') == me.props.activeFile ? true : false} file={f} nr={i}/>

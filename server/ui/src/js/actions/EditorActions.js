@@ -1,6 +1,7 @@
 var Dispatcher = require('../dispatcher/AppDispatcher')
 
 var EditorActions = {
+  UPDATE_STATE: "EDITOR_UPDATE_STATE",
   START_BUILD: "EDITOR_START_BUILD",
   REFRESH_STATE: "EDITOR_REFRESH_ACTION",
   SWITCH_FILE: "EDITOR_SWITCH_FILE",
@@ -8,11 +9,19 @@ var EditorActions = {
   ADD_FILE_TO_STATE: "EDITOR_ADD_FILE_TO_STATE_ACTION",
   REMOVE_FILE_FROM_STATE: "EDITOR_REMOVE_FILE_FROM_STATE_ACTION",
 
+  //simply update the whole state
+  updateState: function(dname, oldstate, newstate) {
+    Dispatcher.dispatch({
+      type: EditorActions.UPDATE_STATE,
+      args: [dname, oldstate, newstate]
+    });
+  },
+
   //simply request to refresh the edited state
-  refreshState: function(dname, sname) {
+  refreshState: function(dname, sid) {
     Dispatcher.dispatch({
       type: EditorActions.REFRESH_STATE,
-      args: [dname, sname]
+      args: [dname, sid]
     });
   },
 

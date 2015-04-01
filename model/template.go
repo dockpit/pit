@@ -10,4 +10,5 @@ type Template struct {
 	DefaultName   string                   `json:"default_name"`
 	Category      string                   `json:"category"`
 	TemplateFiles map[string]*TemplateFile `json:"template_files"`
+	StateSettings *StateSettings           `json:"state_settings"`
 }

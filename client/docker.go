@@ -143,6 +143,18 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 	return nil
 }
 
+func (d *Docker) Run(b *model.State) (string, error) {
+
+	//@todo implement
+	//require:
+	//	- imagename
+	//	- ready
+	//		- exp
+	//		- timeout
+
+	return "", nil
+}
+
 func (d *Docker) Build(b *model.Build) (string, error) {
 	dep := b.Dep
 	state := b.State

@@ -65,19 +65,20 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	mux.Post("/api/isolations", s.CreateIsolation)
 	mux.Delete("/api/isolations/:id", s.RemoveIsolation)
 	mux.Put("/api/isolations/:id", s.UpdateIsolation)
+
 	mux.Get("/api/templates", s.ListTemplates)
+	mux.Get("/api/builds/:id", s.OneBuild)
+
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Post("/api/deps", s.CreateDep)
 	mux.Delete("/api/deps/:name", s.RemoveDep)
 
 	mux.Post("/api/deps/:name/states", s.CreateState)
-	mux.Put("/api/deps/:name/states/:state_name", s.UpdateDepState)
-	mux.Get("/api/deps/:name/states/:state_name", s.OneDepState)
-	mux.Delete("/api/deps/:name/states/:state_name", s.RemoveDepState)
-	mux.Post("/api/deps/:name/states/:state_name/builds", s.BuildDepState)
-	mux.Post("/api/deps/:name/states/:state_name/runs", s.RunDepState)
-
-	mux.Get("/api/builds/:id", s.OneBuild)
+	mux.Put("/api/deps/:name/states/:state_id", s.UpdateDepState)
+	mux.Get("/api/deps/:name/states/:state_id", s.OneDepState)
+	mux.Delete("/api/deps/:name/states/:state_id", s.RemoveDepState)
+	mux.Post("/api/deps/:name/states/:state_id/builds", s.BuildDepState)
+	mux.Post("/api/deps/:name/states/:state_id/runs", s.RunDepState)
 
 	//dashboard
 	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -97,7 +98,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	})
 
 	//editor
-	mux.Get("/deps/:name/states/:state_name", func(c web.C, w http.ResponseWriter, r *http.Request) {
+	mux.Get("/deps/:name/states/:state_id", func(c web.C, w http.ResponseWriter, r *http.Request) {
 		name := c.URLParams["name"]
 		dep, err := s.model.FindDepByName(name)
 		if err != nil {
@@ -110,8 +111,8 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 			return
 		}
 
-		sname := c.URLParams["state_name"]
-		state := dep.GetState(sname)
+		sid := c.URLParams["state_id"]
+		state := dep.GetState(sid)
 		if state == nil {
 			http.NotFound(w, r)
 			return

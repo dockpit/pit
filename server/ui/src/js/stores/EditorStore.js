@@ -8,7 +8,7 @@ var EditorActions = require('../actions/EditorActions')
 // private in-memory isolation state
 var state = Immutable.Map({
   build: Immutable.Map(),
-  state: Immutable.Map({files: Immutable.Map()}),
+  state: Immutable.Map({files: Immutable.Map(), settings: Immutable.Map()}),
   activeFile: '',
 })
 
@@ -21,10 +21,10 @@ var EditorStore = assign({}, EventEmitter.prototype, {
     return state
   },
 
-  sendUpdateReq: function(dname, sname, newstate, cb) {
+  sendUpdateReq: function(dname, sid, newstate, cb) {
 
     request
-        .put('/api/deps/'+dname+'/states/'+sname)
+        .put('/api/deps/'+dname+'/states/'+sid)
         .send(newstate)
         .end(function(err, res){
           if(err) {
@@ -41,11 +41,23 @@ var EditorStore = assign({}, EventEmitter.prototype, {
 EditorStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
 
+    //update
+    case EditorActions.UPDATE_STATE:
+      var oldstate = a.args[1]
+      var newstate = a.args[2]
+
+      EditorStore.sendUpdateReq(a.args[0], oldstate.get('id'), newstate, function() {
+          state = state.set('state', newstate)
+          EditorStore.emit(EditorStore.STATE_CHANGED)  
+      })
+
+      break
+
     //start build
     case EditorActions.START_BUILD:
 
       request
-        .post('/api/deps/'+a.args[0]+'/states/'+a.args[1].get('name')+'/builds')
+        .post('/api/deps/'+a.args[0]+'/states/'+a.args[1].get('id')+'/builds')
         .end(function(err, res){
           if(err) {
             return console.error(err)
@@ -76,7 +88,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
                   //update state with newly created image
                   newstate = state.get('state').set('image_name', status.image_name)
-                  EditorStore.sendUpdateReq(a.args[0], a.args[1].get('name'), newstate, function() {
+                  EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
                       state = state.set('state', newstate)
                       EditorStore.emit(EditorStore.STATE_CHANGED)  
                   })                  
@@ -99,7 +111,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       var newfiles = state.get('state').get('files').set(a.args[2], a.args[3])
       var newstate = state.get('state').set('files', newfiles)
       
-      EditorStore.sendUpdateReq(a.args[0], a.args[1].get('name'), newstate, function() {
+      EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
           state = state.set('state', newstate)
           EditorStore.emit(EditorStore.STATE_CHANGED)  
       })
@@ -111,7 +123,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       var newfiles = state.get('state').get('files').delete(a.args[2])
       var newstate = state.get('state').set('files', newfiles)
 
-      EditorStore.sendUpdateReq(a.args[0], a.args[1].get('name'), newstate, function() {
+      EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
           state = state.set('state', newstate)
           state = state.set('activeFile', state.get('state').get('files').keys().next().value)
           EditorStore.emit(EditorStore.STATE_CHANGED)  
@@ -131,7 +143,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       var newfiles = state.get('state').get('files').set(a.args[2], '')
       var newstate = state.get('state').set('files', newfiles)
 
-      EditorStore.sendUpdateReq(a.args[0], a.args[1].get('name'), newstate, function() {
+      EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
           state = state.set('state', newstate)
           EditorStore.emit(EditorStore.STATE_CHANGED)  
       })

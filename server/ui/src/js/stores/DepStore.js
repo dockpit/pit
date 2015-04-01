@@ -64,13 +64,13 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
         return console.error("Dep name is empty")
       }
 
-      var sname = a.args[1].get('name')
-      if(!sname) {
-        return console.error("State name is empty")
+      var sid = a.args[1].get('id')
+      if(!sid) {
+        return console.error("State id is empty")
       }
 
       request
-        .del('/api/deps/'+dname+'/states/'+sname)
+        .del('/api/deps/'+dname+'/states/'+sid)
         .end(function(err, res){
           if(err) {
             return console.error(err)
@@ -79,7 +79,7 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
           state = state.set('deps', state.get('deps').map(function(dep){
             if (dep.get('name') == dname) {
               dep = dep.set('states', dep.get('states').filterNot(function(st){
-                return st.get('name') == sname
+                return st.get('id') == sid
               }))
             }
 

@@ -14,7 +14,7 @@
 		"category": "Data Stores",
 		"default_name": "postgres",
 		"template_files": {
-			"Dockerfile": {"content": "FROM scratch"}
+			"Dockerfile": {"content": "FROM postgres"}
 		}
 	},
 	"mysql": {
@@ -23,7 +23,7 @@
 		"category": "Data Stores",
 		"default_name": "mysql",
 		"template_files": {
-			"Dockerfile": {"content": "FROM scratch"}
+			"Dockerfile": {"content": "FROM mysql"}
 		}
 	},
 	"etcd": {
@@ -31,6 +31,15 @@
 		"name": "etcd",
 		"category": "Service Discovery",
 		"default_name": "etcd",
+		"template_files": {
+			"Dockerfile": {"content": "FROM scratch"}
+		}
+	},
+	"consul": {
+		"id": "consul", 
+		"name": "Consul",
+		"category": "Service Discovery",
+		"default_name": "consul",
 		"template_files": {
 			"Dockerfile": {"content": "FROM scratch"}
 		}

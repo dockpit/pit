@@ -214,18 +214,18 @@ func (m *Model) FindIsolationByName(name string) (*Isolation, error) {
 	})
 }
 
-func (m *Model) RemoveDepStateByName(dep *Dep, sname string) error {
+func (m *Model) RemoveDepStateByID(dep *Dep, sid string) error {
 	for i, state := range dep.States {
-		if state.Name == sname {
+		if state.ID == sid {
 
 			//remove any deps from iso
 			isos, err := m.GetAllIsolations()
 			if err != nil {
-				return errwrap.Wrapf(fmt.Sprintf("Failed to get all isolations while removing dep state with name '%s::%s': {{err}}", dep.Name, sname), err)
+				return errwrap.Wrapf(fmt.Sprintf("Failed to get all isolations while removing dep state with id '%s::%s': {{err}}", dep.Name, sid), err)
 			}
 
 			for _, iso := range isos {
-				if iso.HasDepState(dep, sname) {
+				if iso.HasDepState(dep, sid) {
 					iso.RemoveDep(dep)
 					err = m.UpdateIsolation(iso)
 					if err != nil {
@@ -240,7 +240,7 @@ func (m *Model) RemoveDepStateByName(dep *Dep, sname string) error {
 
 	err := m.UpdateDep(dep)
 	if err != nil {
-		return errwrap.Wrapf(fmt.Sprintf("Failed update dep with name '%s': {{err}}", sname), err)
+		return errwrap.Wrapf(fmt.Sprintf("Failed update dep with id '%s': {{err}}", sid), err)
 	}
 
 	return nil

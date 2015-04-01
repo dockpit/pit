@@ -40,19 +40,19 @@ func (d *Dep) AddState(s *State) {
 	d.States = append(d.States, s)
 }
 
-func (d *Dep) GetState(sname string) *State {
+func (d *Dep) GetState(sid string) *State {
 	for _, state := range d.States {
-		if state.Name == sname {
+		if state.ID == sid {
 			return state
 		}
 	}
 	return nil
 }
 
-func (d *Dep) UpdateState(newstate *State) {
+func (d *Dep) UpdateState(oldstate *State, newstate *State) {
 	newstates := []*State{}
 	for _, state := range d.States {
-		if state.Name == newstate.Name {
+		if state.Name == oldstate.Name {
 			newstates = append(newstates, newstate)
 			continue
 		}

@@ -39,8 +39,8 @@ func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	sname := c.URLParams["state_name"]
-	state := dep.GetState(sname)
+	sid := c.URLParams["state_id"]
+	state := dep.GetState(sid)
 	if state == nil {
 		http.NotFound(w, r)
 		return
@@ -83,8 +83,8 @@ func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sname := c.URLParams["state_name"]
-	state := dep.GetState(sname)
+	sid := c.URLParams["state_id"]
+	state := dep.GetState(sid)
 	if state == nil {
 		http.NotFound(w, r)
 		return
@@ -117,7 +117,7 @@ func (s *Server) CreateState(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	state, err := model.NewState(newstate.Name, "bogus")
+	state, err := model.NewStateFromTemplate(newstate.Name, dep.Template)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to create state: %s", err), http.StatusBadRequest)
 		return
@@ -144,8 +144,8 @@ func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sname := c.URLParams["state_name"]
-	state := dep.GetState(sname)
+	sid := c.URLParams["state_id"]
+	state := dep.GetState(sid)
 	if state == nil {
 		http.NotFound(w, r)
 		return
@@ -171,8 +171,8 @@ func (s *Server) UpdateDepState(c web.C, w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	sname := c.URLParams["state_name"]
-	state := dep.GetState(sname)
+	sid := c.URLParams["state_id"]
+	state := dep.GetState(sid)
 	if state == nil {
 		http.NotFound(w, r)
 		return
@@ -184,11 +184,11 @@ func (s *Server) UpdateDepState(c web.C, w http.ResponseWriter, r *http.Request)
 	var newstate *model.State
 	err = dec.Decode(&newstate)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed decode state for updating '%s': %s", sname, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed decode state for updating '%s': %s", sid, err), http.StatusBadRequest)
 		return
 	}
 
-	dep.UpdateState(newstate)
+	dep.UpdateState(state, newstate)
 
 	err = s.model.UpdateDep(dep)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Server) RemoveDepState(c web.C, w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	sname := c.URLParams["state_name"]
-	err = s.model.RemoveDepStateByName(dep, sname)
+	sid := c.URLParams["state_id"]
+	err = s.model.RemoveDepStateByID(dep, sid)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to remove state from dep: %s", err), http.StatusInternalServerError)
 	}

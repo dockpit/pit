@@ -46,11 +46,11 @@ func (i *Isolation) RemoveDep(dep *Dep) {
 	delete(i.States, dep.Name)
 }
 
-func (i *Isolation) HasDepState(dep *Dep, sname string) bool {
-	if name, ok := i.States[dep.Name]; !ok {
+func (i *Isolation) HasDepState(dep *Dep, sid string) bool {
+	if id, ok := i.States[dep.Name]; !ok {
 		return false
 	} else {
-		if sname != name {
+		if id != sid {
 			return false
 		}
 	}

@@ -38,7 +38,7 @@ var DepStateItem = React.createClass({
 			{this.state.hover ? <button style={{margin: '5px 5px 0 0'}} className="right floated circular compact ui red icon mini button" onClick={this.removeDepState}><i className="trash icon"></i></button> : null }
 			<i className="angle right icon"></i>
 			<div className="content">
-				<a className="header" href={"/deps/"+dep.get('name')+"/states/"+st.get('name')}>
+				<a className="header" href={"/deps/"+dep.get('name')+"/states/"+st.get('id')}>
 					{st.get('name')}
 					{imageName ? <span> (image: {imageName})</span> : null}
 				</a>
