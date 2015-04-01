@@ -26,9 +26,9 @@ var DepStore = assign({}, EventEmitter.prototype, {
 //register with all actions in the dispatcher
 DepStore.dispatchToken = Dispatcher.register(function(a){
   switch (a.type) {
-      
+    
+    //add a state to a dependency
     case DepActions.ADD_DEP_STATE:
-
       request
         .post('/api/deps/'+a.args[0].get('name')+'/states')
         .send(a.args[1])

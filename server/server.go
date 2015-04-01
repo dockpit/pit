@@ -1,7 +1,7 @@
 package server
 
 import (
-	// "bytes"
+	"encoding/json"
 	"fmt"
 	"mime"
 	"net"
@@ -19,12 +19,13 @@ import (
 )
 
 type Server struct {
-	view     *View
-	client   *client.Docker
-	model    *model.Model
-	bind     string
-	done     chan interface{}
-	listener net.Listener
+	view      *View
+	client    *client.Docker
+	model     *model.Model
+	bind      string
+	done      chan interface{}
+	listener  net.Listener
+	templates map[string]*model.Template
 
 	*http.Server
 }
@@ -37,14 +38,26 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	}
 
 	s := &Server{
-		view:     NewView(dbmeta, m.DBPath, v),
-		client:   client,
-		model:    m,
-		bind:     baddr,
-		done:     make(chan interface{}),
-		listener: bind.Socket(baddr),
+		view:      NewView(dbmeta, m.DBPath, v),
+		client:    client,
+		model:     m,
+		bind:      baddr,
+		done:      make(chan interface{}),
+		listener:  bind.Socket(baddr),
+		templates: map[string]*model.Template{},
 
 		Server: &http.Server{Handler: mux},
+	}
+
+	//load templates from json assets
+	tmpldata, err := uibin.Asset(filepath.Join(TemplateDir, "templates.json"))
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed to load Dep templates: {{err}}", err)
+	}
+
+	err = json.Unmarshal(tmpldata, &s.templates)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed to decode Dep templates: {{err}}", err)
 	}
 
 	//api endpoints

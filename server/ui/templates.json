@@ -1,0 +1,38 @@
+{
+	"custom": {
+		"id": "custom", 
+		"name": "Custom",
+		"category": "",
+		"default_name": "",
+		"template_files": {
+			"Dockerfile": {"content": "FROM scratch"}
+		}
+	},
+	"postgres": {
+		"id": "postgres", 
+		"name": "PostgreSQL",
+		"category": "Data Stores",
+		"default_name": "postgres",
+		"template_files": {
+			"Dockerfile": {"content": "FROM scratch"}
+		}
+	},
+	"mysql": {
+		"id": "mysql", 
+		"name": "MySQL",
+		"category": "Data Stores",
+		"default_name": "mysql",
+		"template_files": {
+			"Dockerfile": {"content": "FROM scratch"}
+		}
+	},
+	"etcd": {
+		"id": "etcd", 
+		"name": "etcd",
+		"category": "Service Discovery",
+		"default_name": "etcd",
+		"template_files": {
+			"Dockerfile": {"content": "FROM scratch"}
+		}
+	}
+}

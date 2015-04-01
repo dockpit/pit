@@ -583,6 +583,24 @@ func server_ui_src_less_main_less() (*asset, error) {
 	return a, err
 }
 
+// server_ui_templates_json reads file data from disk. It returns an error on failure.
+func server_ui_templates_json() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/templates.json"
+	name := "server/ui/templates.json"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_vendor_ds_store reads file data from disk. It returns an error on failure.
 func server_ui_vendor_ds_store() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/vendor/.DS_Store"
@@ -9054,6 +9072,7 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/src/js/stores/EditorStore.js": server_ui_src_js_stores_editorstore_js,
 	"server/ui/src/js/stores/IsolationStore.js": server_ui_src_js_stores_isolationstore_js,
 	"server/ui/src/less/main.less": server_ui_src_less_main_less,
+	"server/ui/templates.json": server_ui_templates_json,
 	"server/ui/vendor/.DS_Store": server_ui_vendor_ds_store,
 	"server/ui/vendor/ace-1.1.8/ChangeLog.txt": server_ui_vendor_ace_1_1_8_changelog_txt,
 	"server/ui/vendor/ace-1.1.8/LICENSE": server_ui_vendor_ace_1_1_8_license,
@@ -9641,6 +9660,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 					"main.less": &_bintree_t{server_ui_src_less_main_less, map[string]*_bintree_t{
 					}},
 				}},
+			}},
+			"templates.json": &_bintree_t{server_ui_templates_json, map[string]*_bintree_t{
 			}},
 			"vendor": &_bintree_t{nil, map[string]*_bintree_t{
 				".DS_Store": &_bintree_t{server_ui_vendor_ds_store, map[string]*_bintree_t{

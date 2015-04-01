@@ -25,56 +25,8 @@ func (s *Server) ListDeps(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) ListTemplates(c web.C, w http.ResponseWriter, r *http.Request) {
-	tmpls := map[string]*model.Template{}
-
-	//@todo in the future retrieve  this list of templates solely from GitHub
-	tmplCustom := &model.Template{
-		ID:          "custom",
-		Name:        "Custom",
-		Category:    "",
-		DefaultName: "",
-		TemplateFiles: map[string]*model.TemplateFile{
-			"Dockerfile": &model.TemplateFile{"FROM scratch"},
-		},
-	}
-
-	tmplMySQL := &model.Template{
-		ID:          "mysql",
-		Name:        "MySQL",
-		DefaultName: "mysql",
-		Category:    "Data Stores",
-		TemplateFiles: map[string]*model.TemplateFile{
-			"Dockerfile": &model.TemplateFile{"FROM scratch"},
-		},
-	}
-
-	tmplPostgres := &model.Template{
-		ID:          "postgres",
-		Name:        "PostgreSQL",
-		Category:    "Data Stores",
-		DefaultName: "postgres",
-		TemplateFiles: map[string]*model.TemplateFile{
-			"Dockerfile": &model.TemplateFile{"FROM scratch"},
-		},
-	}
-
-	tmplEtcd := &model.Template{
-		ID:          "etcd",
-		Name:        "etcd",
-		Category:    "Service Discovery",
-		DefaultName: "etcd",
-		TemplateFiles: map[string]*model.TemplateFile{
-			"Dockerfile": &model.TemplateFile{"FROM scratch"},
-		},
-	}
-
-	tmpls[tmplCustom.ID] = tmplCustom
-	tmpls[tmplMySQL.ID] = tmplMySQL
-	tmpls[tmplPostgres.ID] = tmplPostgres
-	tmpls[tmplEtcd.ID] = tmplEtcd
-
 	enc := json.NewEncoder(w)
-	err := enc.Encode(tmpls)
+	err := enc.Encode(s.templates)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to encode: {{err}}", err), http.StatusInternalServerError)
 	}
