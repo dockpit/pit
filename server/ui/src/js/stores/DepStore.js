@@ -123,8 +123,6 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
 
           data = JSON.parse(res.text)
           state = state.set('deps', Immutable.fromJS(data))
-
-          console.log(data)
           DepStore.emit(DepStore.CHANGED)
         });
 

@@ -58,9 +58,20 @@ func (s *Server) ListTemplates(c web.C, w http.ResponseWriter, r *http.Request) 
 		},
 	}
 
+	tmplEtcd := &model.Template{
+		ID:          "etcd",
+		Name:        "etcd",
+		Category:    "Service Discovery",
+		DefaultName: "etcd",
+		TemplateFiles: map[string]*model.TemplateFile{
+			"Dockerfile": &model.TemplateFile{"FROM scratch"},
+		},
+	}
+
 	tmpls[tmplCustom.ID] = tmplCustom
 	tmpls[tmplMySQL.ID] = tmplMySQL
 	tmpls[tmplPostgres.ID] = tmplPostgres
+	tmpls[tmplEtcd.ID] = tmplEtcd
 
 	enc := json.NewEncoder(w)
 	err := enc.Encode(tmpls)

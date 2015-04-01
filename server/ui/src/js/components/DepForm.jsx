@@ -11,6 +11,10 @@ var TemplateSelector = React.createClass({
 		}
 	},
 
+	componentDidMount: function() {
+		$(React.findDOMNode(this.refs.accordion)).accordion()
+	},
+
 	selectTemplate: function(t, cat) {
 		this.setState({
 			selected: t.get('id'),
@@ -52,10 +56,10 @@ var TemplateSelector = React.createClass({
 				items.push(<div key={k} className={'item' + (me.state.selectedCat == v.get('name') ? ' blue active' : '')}>
       				<a className="title">
       					<i className="dropdown icon"></i>
-        				{v.get('name')}
+        				<em>{v.get('name')}</em>
       				</a>
-      				<div className="active content">
-      					<div className="menu">
+      				<div className="content">
+      					<div className="menu transition hidden">
       						{v.get('templates').map(function(t){
       							return <a 
       							onClick={me.selectTemplate.bind(me, t, v.get('name'))} 
@@ -70,7 +74,7 @@ var TemplateSelector = React.createClass({
 			}
 		})
 
-		return 	<div className="ui fluid vertical blue accordion menu">
+		return 	<div ref="accordion" className="ui fluid accordion vertical blue menu">
 			{items}
 
 			<input ref="templateInput" name="template" type="hidden" />
@@ -118,10 +122,6 @@ module.exports = React.createClass({
 
 		var name = t.get('default_name')
 		React.findDOMNode(this.refs.nameInput).value = name
-
-		if (name != "") {
-			$(React.findDOMNode(this.refs.form)).form('validate form')
-		}
 	},
 
 	submitForm: function() {
