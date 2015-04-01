@@ -125,7 +125,7 @@ var EditorPortTable = React.createClass({
 			      rules: [
 			        {
 			          type   : 'empty',
-			          prompt : 'Please enter a container port for the state'
+			          prompt : 'Please enter the container port to expose'
 			        }
 			      ]
 			    },
@@ -136,7 +136,7 @@ var EditorPortTable = React.createClass({
 
 	newPortBinding: function(ev) {
 		ev.preventDefault();	
-		
+
 		var cport = React.findDOMNode(this.refs.newContainerPortInput).value
 		var hport = React.findDOMNode(this.refs.newHostPortInput).value
 
@@ -178,24 +178,38 @@ var EditorPortTable = React.createClass({
 			})
 		}
 
-		return <form ref="form" onSubmit={this.onFormSubmit}><table className="ui very fluid basic table">
-		  <tbody>
-		  	{bindings.map(function(b, i){
-		  		return <tr key={i}>
-			      <td>{b.cport}</td>
-			      <td>{b.hip}:{b.hport}</td>
-			      <td><a onClick={me.removePortBinding.bind(me, b)}>remove</a></td>
+		return <form ref="form" className="ui form" onSubmit={this.onFormSubmit}>
+			<div className="ui error message"></div>
+			<table className="ui very basic table">
+			  <tbody>
+			  	{bindings.map(function(b, i){
+			  		return <tr key={i}>
+				      <td>{b.cport}</td>
+				      <td>{b.hip}:{b.hport}</td>
+				      <td>
+				      	<a className="ui icon button" onClick={me.removePortBinding.bind(me, b)}>
+				      		<i className="minus icon"></i>
+				      	</a>
+				      </td>
+				    </tr>
+			  	})}
+
+			    <tr>
+			      <td className="field">
+			      	<input name="cport" ref="newContainerPortInput" placeholder="Container (e.g 80/tcp)" />
+			      </td>
+			      <td className="field">
+			      	<input ref="newHostPortInput" placeholder="Host (e.g 8000)" />
+			      </td>
+			      <td>
+			      <button className="ui icon button" onClick={this.onFormSubmit}>
+			      	<i className="plus icon"></i></button>
+			      </td>
 			    </tr>
-		  	})}
 
-		    <tr>
-		      <td><input name="cport" ref="newContainerPortInput" placeholder="Container (e.g 80/tcp)" /></td>
-		      <td><input ref="newHostPortInput" placeholder="Host (e.g 8000)" /></td>
-		      <td><button onClick={this.onFormSubmit}>+</button></td>
-		    </tr>
-
-		  </tbody>
-		</table></form>
+			  </tbody>
+			</table>
+		</form>
 	}
 })
 
@@ -283,13 +297,15 @@ var EditorSettings = React.createClass({
 				  </div>				  
 			</form>
 		
-			<div className="ui horizontal divider">
-			Ports
-			</div>			  
+			<div className="ui horizontal divider">Ports</div>			  
 
 			<EditorPortTable bindingsUpdatedFn={this.bindingsUpdated} portBindings={this.props.state.get('settings').get('host_config').get('PortBindings')}  />
 
-			<div className="ui button" onClick={this.validateForm}>Save</div>	
+			<div className="ui divider"></div>
+			<div className="ui positive button" onClick={this.validateForm}>
+				  <i className="checkmark icon"></i>
+				  Save
+			</div>	
 
 		</div>
 	}
