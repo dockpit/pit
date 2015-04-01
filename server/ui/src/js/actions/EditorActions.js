@@ -4,6 +4,7 @@ var EditorActions = {
   CHANGE_SETTINGS: "EDITOR_CHANGE_SETTINGS",
   UPDATE_STATE: "EDITOR_UPDATE_STATE",
   START_BUILD: "EDITOR_START_BUILD",
+  START_RUN: "EDITOR_START_RUN",
   REFRESH_STATE: "EDITOR_REFRESH_ACTION",
   SWITCH_FILE: "EDITOR_SWITCH_FILE",
   UPDATE_FILE_IN_STATE: "EDITOR_UPDATE_FILE_IN_STATE_ACTION",
@@ -62,6 +63,14 @@ var EditorActions = {
   startBuild: function(dname, state) {
     Dispatcher.dispatch({
       type: EditorActions.START_BUILD,
+      args: [dname, state]
+    });
+  },
+
+  //start running the current state
+  startRun: function(dname, state) {
+    Dispatcher.dispatch({
+      type: EditorActions.START_RUN,
       args: [dname, state]
     });
   },

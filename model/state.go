@@ -3,58 +3,11 @@ package model
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/samalba/dockerclient"
 )
-
-type RegexpPattern regexp.Regexp
-
-func (r RegexpPattern) MarshalJSON() ([]byte, error) {
-	exp := regexp.Regexp(r)
-
-	return []byte(strconv.Quote(exp.String())), nil
-}
-
-func (r *RegexpPattern) UnmarshalJSON(data []byte) error {
-	patt, err := strconv.Unquote(string(data))
-	if err != nil {
-		return err
-	}
-
-	exp, err := regexp.Compile(patt)
-	if err != nil {
-		return err
-	}
-
-	*r = RegexpPattern(*exp)
-	return nil
-}
-
-type Duration time.Duration
-
-func (d *Duration) UnmarshalJSON(data []byte) error {
-	s, err := strconv.Unquote(string(data))
-	if err != nil {
-		return err
-	}
-
-	nd, err := time.ParseDuration(s)
-	if err != nil {
-		return err
-	}
-
-	*d = Duration(nd)
-	return nil
-}
-
-func (d Duration) MarshalJSON() ([]byte, error) {
-	duration := time.Duration(d)
-
-	return []byte(strconv.Quote(duration.String())), nil
-}
 
 type StateSettings struct {
 	ReadyTimeout    Duration                      `json:"ready_timeout"`

@@ -68,6 +68,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 
 	mux.Get("/api/templates", s.ListTemplates)
 	mux.Get("/api/builds/:id", s.OneBuild)
+	mux.Get("/api/runs/:id", s.OneRun)
 
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Post("/api/deps", s.CreateDep)

@@ -11,6 +11,7 @@ import (
 )
 
 var Builds = map[string]*model.Build{}
+var Runs = map[string]*model.Run{}
 
 func (s *Server) OneBuild(c web.C, w http.ResponseWriter, r *http.Request) {
 	id := c.URLParams["id"]
@@ -56,7 +57,6 @@ func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) 
 	go func() {
 		iname, err := s.client.Build(b)
 		if err != nil {
-			fmt.Println(err)
 			b.Error = err
 			return
 		}
@@ -67,6 +67,20 @@ func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) 
 	err = enc.Encode(b)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to encode: %s", err), http.StatusInternalServerError)
+	}
+}
+
+func (s *Server) OneRun(c web.C, w http.ResponseWriter, r *http.Request) {
+	id := c.URLParams["id"]
+	if run, ok := Runs[id]; !ok {
+		http.NotFound(w, r)
+		return
+	} else {
+		enc := json.NewEncoder(w)
+		err := enc.Encode(run)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to encode: %s", err), http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -90,7 +104,32 @@ func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//@todo implement
+	run, err := model.NewRun(*state)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to create build from state '%s': %s", state.Name, err), http.StatusInternalServerError)
+	}
+
+	//remove any state containers that are still running
+	err = s.client.Remove(state)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to remove running container for state '%s': %s", state.Name, err), http.StatusInternalServerError)
+	}
+
+	//runs are started in the background
+	Runs[run.ID] = run
+	go func() {
+		_, err = s.client.Start(run)
+		if err != nil {
+			run.Error = err
+			return
+		}
+	}()
+
+	enc := json.NewEncoder(w)
+	err = enc.Encode(run)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to encode: %s", err), http.StatusInternalServerError)
+	}
 
 }
 

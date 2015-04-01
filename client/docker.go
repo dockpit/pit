@@ -143,16 +143,69 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 	return nil
 }
 
-func (d *Docker) Run(b *model.State) (string, error) {
+func (d *Docker) Start(run *model.Run) (string, error) {
+	var err error
 
-	//@todo implement
-	//require:
-	//	- imagename
-	//	- ready
-	//		- exp
-	//		- timeout
+	//container config
+	cconfig := run.State.Settings.ContainerConfig
+	cconfig.Image = run.State.ImageName
 
-	return "", nil
+	run.ContainerID, err = d.client.CreateContainer(cconfig, run.State.ImageName)
+	if err != nil {
+		return "", errwrap.Wrapf(fmt.Sprintf("Failed to create state container with image '%s': {{err}}, is the state build?", run.State.ImageName), err)
+	}
+
+	//hostconfig
+	hconfig := run.State.Settings.HostConfig
+
+	err = d.client.StartContainer(run.ContainerID, hconfig)
+	if err != nil {
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to start state container with image '%s': {{err}}, are your states build?", run.State.ImageName), err)
+	}
+
+	rc, err := d.client.ContainerLogs(run.ContainerID, &dockerclient.LogOptions{Follow: true, Stdout: true, Stderr: true})
+	if err != nil {
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}, are your states build?", run.ContainerID), err)
+	}
+	defer rc.Close()
+
+	tr := io.TeeReader(rc, run.Output.Buffer)
+
+	// wait for ready pattern or error
+	readypatt := regexp.Regexp(*run.State.Settings.ReadyPattern)
+	readyto := time.Duration(run.State.Settings.ReadyTimeout)
+
+	err = iowait.WaitForRegexp(tr, &readypatt, readyto)
+	if err != nil {
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to wait for state container %s: {{err}}", run.ContainerID), err)
+	}
+
+	run.IsReady = true
+
+	return run.ContainerID, nil
+}
+
+func (d *Docker) Remove(s *model.State) error {
+	cs, err := d.client.ListContainers(true, false, "")
+	if err != nil {
+		return err
+	}
+
+	//get container that matches the name
+	var container dockerclient.Container
+	for _, c := range cs {
+		for _, n := range c.Names {
+			if n[1:] == s.ImageName {
+				container = c
+			}
+		}
+	}
+
+	if container.Id == "" {
+		return nil
+	}
+
+	return d.client.RemoveContainer(container.Id, true)
 }
 
 func (d *Docker) Build(b *model.Build) (string, error) {

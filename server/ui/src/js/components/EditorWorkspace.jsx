@@ -26,7 +26,12 @@ module.exports = React.createClass({
 		return <div className="ui padded grid">
 		    <div className="two column row">		    	
 		      	<EditorFilePanel activeFile={this.state.data.get('activeFile')} depName={this.props.depName} state={this.state.data.get('state')} files={this.state.data.get('state').get('files')}/>
-				<EditorRunPanel depName={this.props.depName} build={this.state.data.get('build')} state={this.state.data.get('state')}/>		      
+				
+				<EditorRunPanel 
+					depName={this.props.depName} 
+					output={this.state.data.get('output')}
+					build={this.state.data.get('build')} 
+					state={this.state.data.get('state')} />		      
 		    </div>
 		</div>
 	}

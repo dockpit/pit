@@ -8,7 +8,9 @@ var EditorActions = require('../actions/EditorActions')
 // private in-memory isolation state
 var state = Immutable.Map({
   build: Immutable.Map(),
+  run: Immutable.Map(),
   state: Immutable.Map({files: Immutable.Map(), settings: Immutable.Map()}),
+  output: '',
   activeFile: '',
 })
 
@@ -63,6 +65,45 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
       break
 
+
+    //start build
+    case EditorActions.START_RUN:
+
+      request
+        .post('/api/deps/'+a.args[0]+'/states/'+a.args[1].get('id')+'/runs')
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          var run = JSON.parse(res.text)
+          var polli = setInterval(function(){
+              request.get('/api/runs/'+run.id).end(function(err, res){
+                if(err) {
+                  clearInterval(polli)
+                  return console.error(err)
+                }
+
+                var status = JSON.parse(res.text)
+                state = state.set('run', Immutable.Map(status))
+                state = state.set('output', status.output)
+                EditorStore.emit(EditorStore.STATE_CHANGED)  
+
+                if(status.error != null) {
+                  clearInterval(polli)
+                  return console.error('Run failed:', status.error) 
+                }
+
+                if(status.is_ready === true) {
+                  clearInterval(polli)  
+                }
+              })
+          }, 100)
+
+        })
+
+      break
+
     //start build
     case EditorActions.START_BUILD:
 
@@ -84,12 +125,12 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
                 var status = JSON.parse(res.text)
                 state = state.set('build', Immutable.Map(status))
+                state = state.set('output', status.output)
                 EditorStore.emit(EditorStore.STATE_CHANGED)  
 
                 if(status.error != null) {
                   clearInterval(polli)
-                  //@todo provide some better feedback to user
-                  return console.error('build failed:', status.error) 
+                  return console.error('Build failed:', status.error) 
                 }
 
                 //consider done when image name is not empty
