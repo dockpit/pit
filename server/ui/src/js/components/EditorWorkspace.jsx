@@ -15,7 +15,7 @@ module.exports = React.createClass({
 
 	componentDidMount: function() {
 		EditorStore.on(EditorStore.STATE_CHANGED, this.onStoreChange)
-		EditorActions.refreshState(this.props.depName, this.props.stateId)
+		EditorActions.refreshState(this.props.depId, this.props.stateId)
 	},
 
 	onStoreChange: function() {
@@ -25,10 +25,10 @@ module.exports = React.createClass({
 	render: function(){
 		return <div className="ui padded grid">
 		    <div className="two column row">		    	
-		      	<EditorFilePanel activeFile={this.state.data.get('activeFile')} depName={this.props.depName} state={this.state.data.get('state')} files={this.state.data.get('state').get('files')}/>
+		      	<EditorFilePanel activeFile={this.state.data.get('activeFile')} depId={this.props.depId} state={this.state.data.get('state')} files={this.state.data.get('state').get('files')}/>
 				
 				<EditorRunPanel 
-					depName={this.props.depName} 
+					depId={this.props.depId} 
 					output={this.state.data.get('output')}
 					error={this.state.data.get('error')}
 					build={this.state.data.get('build')} 

@@ -57,10 +57,10 @@ func (s *Server) CreateDep(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RemoveDep(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 
@@ -71,7 +71,7 @@ func (s *Server) RemoveDep(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	err = s.model.RemoveDep(dep)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed remove dep with name '%s': %s", name, err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed remove dep with id '%s': %s", id, err), http.StatusInternalServerError)
 		return
 	}
 }

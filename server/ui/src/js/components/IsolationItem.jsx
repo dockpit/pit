@@ -63,7 +63,7 @@ var DependencySelector = React.createClass({
 		this.props.deps.forEach(function(dep){
 			items = items.push(Immutable.Map({classes: "header", text: dep.get('name'), key: dep.get('name')}))
 			dep.get('states').forEach(function(st){
-				items = items.push(Immutable.Map({classes: "item", value: dep.get('name')+'::'+st.get('id'), text: "  "+st.get('name'), key: dep.get('name')+st.get('name')}))
+				items = items.push(Immutable.Map({classes: "item", value: dep.get('id')+'::'+st.get('id'), text: "  "+st.get('name'), key: dep.get('id')+st.get('id')}))
 			})
 		})
 

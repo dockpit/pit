@@ -30,7 +30,7 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
     //add a state to a dependency
     case DepActions.ADD_DEP_STATE:
       request
-        .post('/api/deps/'+a.args[0].get('name')+'/states')
+        .post('/api/deps/'+a.args[0].get('id')+'/states')
         .send(a.args[1])
         .end(function(err, res){
           if(err) {
@@ -59,9 +59,9 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
 
     //remove a state from the dep
     case DepActions.REMOVE_DEP_STATE:
-      var dname = a.args[0].get('name')
-      if(!dname) {
-        return console.error("Dep name is empty")
+      var depid = a.args[0].get('id')
+      if(!depid) {
+        return console.error("Dep id is empty")
       }
 
       var sid = a.args[1].get('id')
@@ -70,14 +70,14 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
       }
 
       request
-        .del('/api/deps/'+dname+'/states/'+sid)
+        .del('/api/deps/'+depid+'/states/'+sid)
         .end(function(err, res){
           if(err) {
             return console.error(err)
           }
 
           state = state.set('deps', state.get('deps').map(function(dep){
-            if (dep.get('name') == dname) {
+            if (dep.get('id') == depid) {
               dep = dep.set('states', dep.get('states').filterNot(function(st){
                 return st.get('id') == sid
               }))
@@ -92,20 +92,20 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
 
     //remove dependency
     case DepActions.REMOVE_DEP:
-      var name = a.args[0].get('name')
-      if(!name) {
+      var id = a.args[0].get('id')
+      if(!id) {
         return console.error("Name is empty")
       }
 
       request
-        .del('/api/deps/'+name)        
+        .del('/api/deps/'+id)        
         .end(function(err, res){
           if(err) {
             return console.error(err)
           }
 
           state = state.set('deps', state.get('deps').filterNot(function(dep){
-            return dep.get('name') == name
+            return dep.get('id') == id
           }))
 
           IsolationActions.refresh()

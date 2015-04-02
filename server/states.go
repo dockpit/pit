@@ -28,10 +28,10 @@ func (s *Server) OneBuild(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 
@@ -85,10 +85,10 @@ func (s *Server) OneRun(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 
@@ -134,10 +134,10 @@ func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) CreateState(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 
@@ -165,16 +165,16 @@ func (s *Server) CreateState(c web.C, w http.ResponseWriter, r *http.Request) {
 	dep.AddState(state)
 	err = s.model.UpdateDep(dep)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed update dep with name '%s': %s", name, err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed update dep with id '%s': %s", id, err), http.StatusInternalServerError)
 		return
 	}
 }
 
 func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 
@@ -198,10 +198,10 @@ func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) UpdateDepState(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 
@@ -237,10 +237,10 @@ func (s *Server) UpdateDepState(c web.C, w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) RemoveDepState(c web.C, w http.ResponseWriter, r *http.Request) {
-	name := c.URLParams["name"]
-	dep, err := s.model.FindDepByName(name)
+	id := c.URLParams["dep_id"]
+	dep, err := s.model.FindDepByID(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 		return
 	}
 

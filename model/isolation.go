@@ -39,15 +39,15 @@ func (i *Isolation) Serialize() ([]byte, error) {
 }
 
 func (i *Isolation) AddDep(dep *Dep, state string) {
-	i.States[dep.Name] = state
+	i.States[dep.ID] = state
 }
 
 func (i *Isolation) RemoveDep(dep *Dep) {
-	delete(i.States, dep.Name)
+	delete(i.States, dep.ID)
 }
 
 func (i *Isolation) HasDepState(dep *Dep, sid string) bool {
-	if id, ok := i.States[dep.Name]; !ok {
+	if id, ok := i.States[dep.ID]; !ok {
 		return false
 	} else {
 		if id != sid {
@@ -59,7 +59,7 @@ func (i *Isolation) HasDepState(dep *Dep, sid string) bool {
 }
 
 func (i *Isolation) HasDep(dep *Dep) bool {
-	if _, ok := i.States[dep.Name]; !ok {
+	if _, ok := i.States[dep.ID]; !ok {
 		return false
 	}
 

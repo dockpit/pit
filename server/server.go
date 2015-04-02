@@ -72,14 +72,14 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Post("/api/deps", s.CreateDep)
-	mux.Delete("/api/deps/:name", s.RemoveDep)
+	mux.Delete("/api/deps/:dep_id", s.RemoveDep)
 
-	mux.Post("/api/deps/:name/states", s.CreateState)
-	mux.Put("/api/deps/:name/states/:state_id", s.UpdateDepState)
-	mux.Get("/api/deps/:name/states/:state_id", s.OneDepState)
-	mux.Delete("/api/deps/:name/states/:state_id", s.RemoveDepState)
-	mux.Post("/api/deps/:name/states/:state_id/builds", s.BuildDepState)
-	mux.Post("/api/deps/:name/states/:state_id/runs", s.RunDepState)
+	mux.Post("/api/deps/:dep_id/states", s.CreateState)
+	mux.Put("/api/deps/:dep_id/states/:state_id", s.UpdateDepState)
+	mux.Get("/api/deps/:dep_id/states/:state_id", s.OneDepState)
+	mux.Delete("/api/deps/:dep_id/states/:state_id", s.RemoveDepState)
+	mux.Post("/api/deps/:dep_id/states/:state_id/builds", s.BuildDepState)
+	mux.Post("/api/deps/:dep_id/states/:state_id/runs", s.RunDepState)
 
 	//dashboard
 	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -99,11 +99,11 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	})
 
 	//editor
-	mux.Get("/deps/:name/states/:state_id", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		name := c.URLParams["name"]
-		dep, err := s.model.FindDepByName(name)
+	mux.Get("/deps/:dep_id/states/:state_id", func(c web.C, w http.ResponseWriter, r *http.Request) {
+		id := c.URLParams["dep_id"]
+		dep, err := s.model.FindDepByID(id)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find dep with name '%s': %s", name, err), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("Failed to find dep with id '%s': %s", id, err), http.StatusBadRequest)
 			return
 		}
 

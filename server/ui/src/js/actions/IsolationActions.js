@@ -33,10 +33,10 @@ var IsolationActions = {
   },
 
   //remove a single isolation
-  addState: function(isolation, dname, sid) {
+  addState: function(isolation, depid, sid) {
     Dispatcher.dispatch({
       type: IsolationActions.ADD_STATE,
-      args: [isolation, dname, sid],
+      args: [isolation, depid, sid],
     });
   },
 

@@ -7,11 +7,11 @@ var EditorStore = require('../stores/EditorStore')
 var EditorRunPanel = React.createClass({
 
 	startBuild: function() {
-		EditorActions.startBuild(this.props.depName, this.props.state)
+		EditorActions.startBuild(this.props.depId, this.props.state)
 	},
 
 	startRun: function() {
-		EditorActions.startRun(this.props.depName, this.props.state)
+		EditorActions.startRun(this.props.depId, this.props.state)
 	},
 
 	render: function(){

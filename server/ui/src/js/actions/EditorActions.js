@@ -12,10 +12,10 @@ var EditorActions = {
   REMOVE_FILE_FROM_STATE: "EDITOR_REMOVE_FILE_FROM_STATE_ACTION",
 
   //simply update the whole state
-  updateState: function(dname, oldstate, newstate) {
+  updateState: function(depid, oldstate, newstate) {
     Dispatcher.dispatch({
       type: EditorActions.UPDATE_STATE,
-      args: [dname, oldstate, newstate]
+      args: [depid, oldstate, newstate]
     });
   },
 
@@ -28,50 +28,50 @@ var EditorActions = {
   },
 
   //simply request to refresh the edited state
-  refreshState: function(dname, sid) {
+  refreshState: function(depid, sid) {
     Dispatcher.dispatch({
       type: EditorActions.REFRESH_STATE,
-      args: [dname, sid]
+      args: [depid, sid]
     });
   },
 
   //remove an file to the given state
-  addFileToState: function(dname, state, fname) {
+  addFileToState: function(depid, state, fname) {
     Dispatcher.dispatch({
       type: EditorActions.ADD_FILE_TO_STATE,
-      args: [dname, state, fname]
+      args: [depid, state, fname]
     });
   },
 
   //adds an file to the given state
-  removeFileFromState: function(dname, state, fname) {
+  removeFileFromState: function(depid, state, fname) {
     Dispatcher.dispatch({
       type: EditorActions.REMOVE_FILE_FROM_STATE,
-      args: [dname, state, fname]
+      args: [depid, state, fname]
     });
   },
 
   //save the current file
-  saveFile: function(dname, state, fname, fcontent) {
+  saveFile: function(depid, state, fname, fcontent) {
     Dispatcher.dispatch({
       type: EditorActions.UPDATE_FILE_IN_STATE,
-      args: [dname, state, fname, fcontent]
+      args: [depid, state, fname, fcontent]
     });
   },
 
   //start building the current state
-  startBuild: function(dname, state) {
+  startBuild: function(depid, state) {
     Dispatcher.dispatch({
       type: EditorActions.START_BUILD,
-      args: [dname, state]
+      args: [depid, state]
     });
   },
 
   //start running the current state
-  startRun: function(dname, state) {
+  startRun: function(depid, state) {
     Dispatcher.dispatch({
       type: EditorActions.START_RUN,
-      args: [dname, state]
+      args: [depid, state]
     });
   },
 

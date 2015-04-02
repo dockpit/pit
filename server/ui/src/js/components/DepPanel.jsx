@@ -42,7 +42,7 @@ module.exports = React.createClass({
   render: function() {
     var me = this
     var list = this.state.data.get('deps').map(function(dep){
-      return <DepItem isolations={me.state.isoData.get('isolations')} key={dep.get('name')} dep={dep}/> 
+      return <DepItem isolations={me.state.isoData.get('isolations')} key={dep.get('id')} dep={dep}/> 
     })
     
     if (this.state.data.get('deps').size < 1) {
@@ -50,11 +50,10 @@ module.exports = React.createClass({
           <i className="database icon"></i>
           <div className="content">
             <div className="header">
-              You don't have any dependencies configured
+              {"You don't have any dependencies configured"}
             </div>
             <p>
               A dependency represents another service you depend on: databases, HTTP APIs, message queues, etc.
-
             </p>
           </div>
         </div></div>

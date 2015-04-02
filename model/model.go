@@ -134,24 +134,24 @@ func (m *Model) GetAllDeps() ([]*Dep, error) {
 func (m *Model) GetIsolationDepsAndStates(iso *Isolation) (map[*Dep]*State, error) {
 	res := map[*Dep]*State{}
 
-	for dname, sname := range iso.States {
-		dep, err := m.FindDepByName(dname)
+	for depid, stid := range iso.States {
+		dep, err := m.FindDepByID(depid)
 		if err != nil {
-			return res, errwrap.Wrapf(fmt.Sprintf("Failed to find dep with name '%s': {{err}}", dname), err)
+			return res, errwrap.Wrapf(fmt.Sprintf("Failed to find dep with id '%s': {{err}}", depid), err)
 		}
 
-		s := dep.GetState(sname)
+		s := dep.GetState(stid)
 		if s == nil {
-			return res, fmt.Errorf("Dependency '%s' doesn't have a state with name '%s'", dep.Name, sname)
+			return res, fmt.Errorf("Dependency '%s' doesn't have a state with name '%s'", dep.Name, stid)
 		}
 
-		res[dep] = dep.GetState(sname)
+		res[dep] = dep.GetState(stid)
 	}
 
 	return res, nil
 }
 
-func (m *Model) FindDepByName(name string) (*Dep, error) {
+func (m *Model) FindDepByID(id string) (*Dep, error) {
 	var dep *Dep
 	return dep, m.db.View(func(tx *bolt.Tx) error {
 		var err error
@@ -160,7 +160,7 @@ func (m *Model) FindDepByName(name string) (*Dep, error) {
 			return fmt.Errorf("Failed to open dep bucket")
 		}
 
-		data := b.Get([]byte(name))
+		data := b.Get([]byte(id))
 		if data != nil {
 			dep, err = NewDepFromSerialized(data)
 			if err != nil {
@@ -271,7 +271,7 @@ func (m *Model) RemoveDep(dep *Dep) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create dep bucket: {{err}}"), err)
 		}
 
-		err = b.Delete([]byte(dep.Name))
+		err = b.Delete([]byte(dep.ID))
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to remove dep with name '%s': {{err}}", dep.Name), err)
 		}
@@ -317,17 +317,12 @@ func (m *Model) InsertDep(dep *Dep) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create dep bucket: {{err}}"), err)
 		}
 
-		existing := b.Get([]byte(dep.Name))
-		if existing != nil {
-			return fmt.Errorf("A dependency with name '%s' already exists", dep.Name)
-		}
-
 		data, err := dep.Serialize()
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize dep '%s': {{err}}", dep.Name), err)
 		}
 
-		err = b.Put([]byte(dep.Name), data)
+		err = b.Put([]byte(dep.ID), data)
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to insert serialized isolation '%s': {{err}}", dep.Name), err)
 		}
@@ -355,7 +350,7 @@ func (m *Model) UpdateDep(dep *Dep) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize Dep '%s': {{err}}", dep.Name), err)
 		}
 
-		err = b.Put([]byte(dep.Name), data)
+		err = b.Put([]byte(dep.ID), data)
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to update serialized Dep '%s': {{err}}", dep.Name), err)
 		}
