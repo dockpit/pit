@@ -60,32 +60,6 @@ var EditorACE = React.createClass({
 			}
 		});
 
-		//add build command
-		this.editor.commands.addCommand({
-				name: 'buildImage',
-				bindKey: {
-				win: 'Ctrl-B',
-				mac: 'Command-B',
-				sender: 'editor|cli'
-			},
-			exec: function(env, args, request) {
-				EditorActions.startBuild(me.props.depName, me.props.state)
-			}
-		});
-
-		//add test
-		this.editor.commands.addCommand({
-				name: 'testImage',
-				bindKey: {
-				win: 'Ctrl-E',
-				mac: 'Command-E',
-				sender: 'editor|cli'
-			},
-			exec: function(env, args, request) {
-				EditorActions.startRun(me.props.depName, me.props.state)
-			}
-		});
-
 		this.editor.setValue(this.props.file.get('content'))
 		window.addEventListener("resize", this.updateDimensions);
 	},
