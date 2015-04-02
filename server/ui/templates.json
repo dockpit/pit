@@ -23,7 +23,9 @@
 			}
 		},
 		"template_files": {
-			"Dockerfile": {"content": "FROM postgres"}
+			"Dockerfile": {"content": "FROM dockpit/pit-postgres\nADD ./insert-data.sh /\nRUN chmod +x /insert-data.sh\nADD ./data.sql /\nRUN /pit-start.sh && /insert-data.sh /"},
+			"data.sql": {"content": "CREATE DATABASE foo;\nCREATE TABLE bar();"},
+			"insert-data.sh": {"content": "#!/bin/sh\npsql -U postgres -f /data.sql"}
 		}
 	},
 
