@@ -120,7 +120,7 @@ func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 	go func() {
 		_, err = s.client.Start(run)
 		if err != nil {
-			run.Error = err
+			run.Error = err.Error()
 			return
 		}
 	}()

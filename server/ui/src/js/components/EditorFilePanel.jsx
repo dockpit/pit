@@ -200,13 +200,18 @@ var EditorPortTable = React.createClass({
 	render: function() {
 		var me = this
 		var bindings = []
-		if (this.props.portBindings) {
+		if (this.props.portBindings) {			
+
 			this.props.portBindings.forEach(function(bs, cport) {
-				bindings.push({
+				var b = {
 					cport: cport,
-					hip: bs.get(0).get("HostIp"),
-					hport: bs.get(0).get("HostPort"),
-				})
+				}
+				if(bs.size > 0) {
+					b["hip"] = bs.get(0).get("HostIp")
+					b["hport"] = bs.get(0).get("HostPort")
+				}
+				
+				bindings.push(b)
 			})
 		}
 

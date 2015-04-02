@@ -30,6 +30,7 @@ module.exports = React.createClass({
 				<EditorRunPanel 
 					depName={this.props.depName} 
 					output={this.state.data.get('output')}
+					error={this.state.data.get('error')}
 					build={this.state.data.get('build')} 
 					run={this.state.data.get('run')} 
 					state={this.state.data.get('state')} />		      

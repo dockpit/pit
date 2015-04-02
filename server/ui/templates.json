@@ -13,35 +13,17 @@
 		"name": "PostgreSQL",
 		"category": "Data Stores",
 		"default_name": "postgres",
+		"state_settings": {
+			"ready_pattern": "ready to accept connections",
+			"ready_timeout": "20s",
+			"host_config": {
+				"PortBindings": {
+					"5432/tcp": [{"HostPort": ":0"}]
+				}
+			}
+		},
 		"template_files": {
 			"Dockerfile": {"content": "FROM postgres"}
-		}
-	},
-	"mysql": {
-		"id": "mysql", 
-		"name": "MySQL",
-		"category": "Data Stores",
-		"default_name": "mysql",
-		"template_files": {
-			"Dockerfile": {"content": "FROM mysql"}
-		}
-	},
-	"etcd": {
-		"id": "etcd", 
-		"name": "etcd",
-		"category": "Service Discovery",
-		"default_name": "etcd",
-		"template_files": {
-			"Dockerfile": {"content": "FROM scratch"}
-		}
-	},
-	"consul": {
-		"id": "consul", 
-		"name": "Consul",
-		"category": "Service Discovery",
-		"default_name": "consul",
-		"template_files": {
-			"Dockerfile": {"content": "FROM scratch"}
 		}
 	}
 }

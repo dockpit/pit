@@ -11,6 +11,7 @@ var state = Immutable.Map({
   run: Immutable.Map(),
   state: Immutable.Map({files: Immutable.Map(), settings: Immutable.Map()}),
   output: '',
+  error: '',
   activeFile: '',
 })
 
@@ -86,13 +87,14 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
                 var status = JSON.parse(res.text)
                 state = state.set('run', Immutable.Map(status))
-                state = state.set('output', status.output)
+                state = state.set('output', status.output)              
+                state = state.set('error', status.error)
                 EditorStore.emit(EditorStore.STATE_CHANGED)  
 
-                if(status.error != null) {
+                if(status.error != "") {
                   clearInterval(polli)
-                  return console.error('Run failed:', status.error) 
-                }
+                  console.error('Run failed:', status.error) 
+                }                
 
                 if(status.is_ready === true) {
                   clearInterval(polli)  
@@ -128,12 +130,13 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 var status = JSON.parse(res.text)
                 state = state.set('build', Immutable.Map(status))
                 state = state.set('output', status.output)
+                state = state.set('error', status.error)
                 EditorStore.emit(EditorStore.STATE_CHANGED)  
 
                 if(status.error != null) {
-                  clearInterval(polli)
-                  return console.error('Build failed:', status.error) 
-                }
+                  clearInterval(polli)                  
+                  console.error('Build failed:', status.error) 
+                }                
 
                 //consider done when image name is not empty
                 if(status.image_name != '') {

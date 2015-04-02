@@ -8,7 +8,7 @@ type Run struct {
 	ID          string  `json:"id"`
 	State       State   `json:"state"`
 	ContainerID string  `json:"container_id"`
-	Error       error   `json:"error"`
+	Error       string  `json:"error"`
 	IsReady     bool    `json:"is_ready"`
 	Output      *Output `json:"output"`
 }

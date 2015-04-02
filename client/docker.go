@@ -160,12 +160,12 @@ func (d *Docker) Start(run *model.Run) (string, error) {
 
 	err = d.client.StartContainer(run.ContainerID, hconfig)
 	if err != nil {
-		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to start state container with image '%s': {{err}}, are your states build?", run.State.ImageName), err)
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to start state container with image '%s': {{err}}", run.State.ImageName), err)
 	}
 
 	rc, err := d.client.ContainerLogs(run.ContainerID, &dockerclient.LogOptions{Follow: true, Stdout: true, Stderr: true})
 	if err != nil {
-		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}, are your states build?", run.ContainerID), err)
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}", run.ContainerID), err)
 	}
 	defer rc.Close()
 

@@ -15,11 +15,12 @@ var EditorRunPanel = React.createClass({
 	},
 
 	render: function(){
-		var output = this.props.output
-		
+		var output = this.props.output		
 		if(output) {
 			output = window.atob(output)
 		}		
+
+		var runRunning = (this.props.run.get('id') && !this.props.run.get('is_ready') && !this.props.run.get('error'))
 
 		return <div className="column">
 
@@ -32,8 +33,8 @@ var EditorRunPanel = React.createClass({
 			      <div className="description">Create a Docker Image</div>
 			    </div>
 			  </a>
-			  <a onClick={this.startRun} className={'step' + (!this.props.build.get('image_name') || (this.props.run.get('id') && !this.props.run.get('is_ready')) ? ' disabled' : '')}>
-			  	{this.props.run.get('id') && !this.props.run.get('is_ready') ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="terminal icon"></i>} 
+			  <a onClick={this.startRun} className={'step' + (!this.props.build.get('image_name') || runRunning  ? ' disabled' : '')}>
+			  	{runRunning ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="terminal icon"></i>} 
 			
 			    <div className="content">
 			      <div className="title">Test</div>
@@ -43,6 +44,9 @@ var EditorRunPanel = React.createClass({
 			</div>
 
 			<div className="ui attached bottom segment">			
+
+				{this.props.error ? <div className="ui negative message"><p>{this.props.error}</p></div> : null }
+
 				<pre>
 					{output}
 				</pre>
