@@ -27,6 +27,27 @@
 		}
 	},
 
+	"etcd": {
+		"id": "etcd", 
+		"name": "etcd",
+		"category": "Service Discovery",
+		"default_name": "etcd",
+		"state_settings": {
+			"ready_pattern": "listening for client requests",
+			"ready_timeout": "5s",
+			"host_config": {
+				"PortBindings": {
+					"2379/tcp": [{"HostPort": ":0"}],
+					"4001/tcp": [{"HostPort": ":0"}]
+				}
+			}
+		},
+		"template_files": {
+			"Dockerfile": {"content": "FROM dockpit/pit-etcd\nADD ./services.sh /\nRUN chmod +x /services.sh\nRUN /pit-start.sh && /services.sh"},
+			"services.sh": {"content": "etcdctl set /foo/bar 'Hello world'"}
+		}
+	},
+
 	"api-blueprint": {
 		"id": "api-blueprint", 
 		"name": "API Blueprint",
