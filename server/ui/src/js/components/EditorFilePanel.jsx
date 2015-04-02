@@ -22,7 +22,10 @@ var EditorACE = React.createClass({
 	mode: '',
 
 	getInitialState: function(){
-		return {height: 500}
+		return {
+			height: 500,
+			lastSavedContent: this.props.file.get('content')
+		}
 	},
 	
 	componentDidMount: function() {
@@ -36,14 +39,7 @@ var EditorACE = React.createClass({
 	    this.editor.setTheme("ace/theme/github");
     	this.editor.getSession().setMode(this.mode)
 
-		this.editor.getSession().on('change', debounce(function(e) {
-		    EditorActions.saveFile(
-		    	me.props.depName, 
-		    	me.props.state, 
-		    	me.props.file.get('name'),
-		    	me.editor.getValue()
-		    )
-		},250));		
+		this.editor.getSession().on('change', me.onDirtyChanged);		
 
 		//initial focus
 		if(me.props.active) {
@@ -56,7 +52,20 @@ var EditorACE = React.createClass({
 		window.addEventListener("resize", this.updateDimensions);
 	},
 
+	onDirtyChanged: function() {
+			if(this.editor.getValue() == this.state.lastSavedContent) {
+				this.props.setDirtyFn(this.props.file, false)
+			} else {
+				this.props.setDirtyFn(this.props.file, true)
+			}
+	},
+
 	onStoreChange: function() {		
+		this.setState({
+			lastSavedContent: this.props.file.get('content')
+		})
+
+		this.onDirtyChanged()
 		if (EditorStore.state().get('activeFile') == this.props.file.get('name')) {
 			this.editor.focus()
 			this.updateDimensions()
@@ -65,7 +74,7 @@ var EditorACE = React.createClass({
 
     updateDimensions: function() {    	
         this.setState({        
-        	height: $(window).height() - 140
+        	height: $(window).height() - 190
         });
     },
 
@@ -73,10 +82,21 @@ var EditorACE = React.createClass({
         window.removeEventListener("resize", this.updateDimensions);
     },
 
+    saveFile: function() {
+	    EditorActions.saveFile(
+	    	this.props.depName, 
+	    	this.props.state, 
+	    	this.props.file.get('name'),
+	    	this.editor.getValue()
+	    )
+    },
+
 	render: function(){
 		return <div>
 			<div style={{float: 'right', zIndex: 100}} className="ui top right attached label">{this.mode.split('/')[2]}</div>
 			<div style={{float: 'left', width: '100%', marginTop: '0px !important', height: this.state.height + 'px'}} id={'editor-'+this.props.nr} ref="editor"></div>
+			
+			<button style={{marginTop: '10px'}} onClick={this.saveFile} className="ui button basic">Save</button>
 		</div>
 	}
 })
@@ -101,7 +121,7 @@ var EditorFileTab = React.createClass({
 	render: function() {
 		return <a onMouseEnter={this.enter} onMouseLeave={this.leave} onClick={this.props.switchFileFn} className={'item'+ (this.props.file.get('name') == this.props.activeFile ? ' active' : '')}>
 			{this.props.file.get('name')}
-			
+			{this.props.isDirty ? '*' : null}			
 			{this.state.hover ? <i style={{position: 'absolute'}} onClick={this.removeFile} className="icon trash"></i> : null }
 		</a>
 	}
@@ -314,6 +334,12 @@ var EditorSettings = React.createClass({
 
 
 module.exports = React.createClass({
+	getInitialState: function() {
+		return {
+			dirtyFiles: {}			
+		}
+	},
+
 	componentDidMount: function() {
 		var me = this
 		$(React.findDOMNode(this.refs.addBtn))
@@ -344,6 +370,12 @@ module.exports = React.createClass({
 		$(React.findDOMNode(this.refs.addBtn)).popup('hide')
 	},
 
+	setDirty: function(f, isDirty) {
+		var df = this.state.dirtyFiles
+		df[f.get('name')] = isDirty
+		this.setState({dirtyFiles: df})
+	},
+
 	render: function(){
 		var me = this
 		var files = Immutable.List()
@@ -369,7 +401,14 @@ module.exports = React.createClass({
 
 				<EditorSettingsTab activeFile={me.props.activeFile} switchFileFn={me.switchFile.bind(me, settings)}/>
 				{files.map(function(f, i){
-					return <EditorFileTab state={me.props.state} depName={me.props.depName} key={i}  activeFile={me.props.activeFile} file={f} switchFileFn={me.switchFile.bind(me, f)}/>
+					return <EditorFileTab 
+						isDirty={me.state.dirtyFiles[f.get('name')]}
+						state={me.props.state} 
+						depName={me.props.depName} 
+						key={i}  
+						activeFile={me.props.activeFile} 
+						file={f} 
+						switchFileFn={me.switchFile.bind(me, f)}/>
 				})}			  
 			</div>			
 
@@ -377,7 +416,13 @@ module.exports = React.createClass({
 
 			{files.map(function(f, i){				
 				return <div key={f.get('name')} className={'ui bottom attached tab segment'+ (f.get('name') == me.props.activeFile ? ' active' : '')}>
-					<EditorACE state={me.props.state} depName={me.props.depName} active={f.get('name') == me.props.activeFile ? true : false} file={f} nr={i}/>
+					<EditorACE 
+						state={me.props.state} 
+						setDirtyFn={me.setDirty}
+						depName={me.props.depName} 
+						active={f.get('name') == me.props.activeFile ? true : false} 
+						file={f} 
+						nr={i}/>
 				</div>
 			})}
 		</div>
