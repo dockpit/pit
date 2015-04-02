@@ -99,7 +99,9 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 }
               })
           }, 100)
-
+        
+          state = state.set('run', Immutable.Map(run))
+          EditorStore.emit(EditorStore.STATE_CHANGED)  
         })
 
       break
@@ -150,7 +152,6 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
           //optimistically assume build will be running soon        
           build.is_running = true
-
           state = state.set('build', Immutable.Map(build))
           EditorStore.emit(EditorStore.STATE_CHANGED)  
         });

@@ -31,6 +31,7 @@ module.exports = React.createClass({
 					depName={this.props.depName} 
 					output={this.state.data.get('output')}
 					build={this.state.data.get('build')} 
+					run={this.state.data.get('run')} 
 					state={this.state.data.get('state')} />		      
 		    </div>
 		</div>

@@ -32,8 +32,9 @@ var EditorRunPanel = React.createClass({
 			      <div className="description">Create a Docker Image</div>
 			    </div>
 			  </a>
-			  <a onClick={this.startRun} className={'step' + (this.props.build.get('image_name') ? '' : ' disabled')}>
-			    <i className="terminal icon"></i>
+			  <a onClick={this.startRun} className={'step' + (!this.props.build.get('image_name') || (this.props.run.get('id') && !this.props.run.get('is_ready')) ? ' disabled' : '')}>
+			  	{this.props.run.get('id') && !this.props.run.get('is_ready') ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="terminal icon"></i>} 
+			
 			    <div className="content">
 			      <div className="title">Test</div>
 			      <div className="description">Run the Image</div>
