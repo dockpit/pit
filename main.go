@@ -31,6 +31,7 @@ func main() {
 
 	cmds := []Command{
 		command.NewStart(Version),
+		command.NewClean(),
 	}
 
 	for _, c := range cmds {
