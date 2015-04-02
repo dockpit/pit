@@ -162,6 +162,9 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       var newfiles = state.get('state').get('files').set(a.args[2], a.args[3])
       var newstate = state.get('state').set('files', newfiles)
       
+      //some files where resave, rendering the last build out-of-date
+      state = state.set('build', Immutable.Map())
+
       EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
           state = state.set('state', newstate)
           EditorStore.emit(EditorStore.STATE_CHANGED)  

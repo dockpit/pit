@@ -22,14 +22,25 @@ var EditorRunPanel = React.createClass({
 		}		
 
 		return <div className="column">
-			<div className="ui two top attached buttons">
-			  <button onClick={this.startBuild} className={'ui button' + (this.props.build.get('is_running') ? ' loading disabled': '')}>
-				<i className="repeat icon"></i>Build
-			  </button>
-			  <button onClick={this.startRun} className={'ui button' + (this.props.state.get('image_name') ? '' : ' disabled')}>
-				<i className="play icon"></i>Run
-			  </button>
+
+			<div className="ui two steps attached top">
+			  <a onClick={this.startBuild} className={'step' + (this.props.build.get('is_running') ? ' disabled': '')}>
+			    {this.props.build.get('is_running') ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="repeat icon"></i>} 
+
+			    <div className="content">
+			      <div className="title">Build</div>
+			      <div className="description">Create a Docker Image</div>
+			    </div>
+			  </a>
+			  <a onClick={this.startRun} className={'step' + (this.props.build.get('image_name') ? '' : ' disabled')}>
+			    <i className="terminal icon"></i>
+			    <div className="content">
+			      <div className="title">Test</div>
+			      <div className="description">Run the Image</div>
+			    </div>
+			  </a>
 			</div>
+
 			<div className="ui attached bottom segment">			
 				<pre>
 					{output}
