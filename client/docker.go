@@ -167,7 +167,6 @@ func (d *Docker) Start(run *model.Run) (string, error) {
 	if err != nil {
 		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}", run.ContainerID), err)
 	}
-	defer rc.Close()
 
 	tr := io.TeeReader(rc, run.Output.Buffer)
 

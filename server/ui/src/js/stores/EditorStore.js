@@ -19,6 +19,9 @@ var state = Immutable.Map({
 var EditorStore = assign({}, EventEmitter.prototype, {
   STATE_CHANGED: "EDITOR_STATE_CHANGED",
   
+  //polls
+  interval: null,
+
   //return the most up-to-date isolation state
   state: function() {
     return state
@@ -78,10 +81,12 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
           }
 
           var run = JSON.parse(res.text)
-          var polli = setInterval(function(){
+
+          if(EditorStore.interval) { clearInterval(EditorStore.interval) }
+          EditorStore.interval = setInterval(function(){
               request.get('/api/runs/'+run.id).end(function(err, res){
                 if(err) {
-                  clearInterval(polli)
+                  clearInterval(EditorStore.interval)
                   return console.error(err)
                 }
 
@@ -92,15 +97,15 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 EditorStore.emit(EditorStore.STATE_CHANGED)  
 
                 if(status.error != "") {
-                  clearInterval(polli)
+                  clearInterval(EditorStore.interval)
                   console.error('Run failed:', status.error) 
                 }                
 
                 if(status.is_ready === true) {
-                  clearInterval(polli)  
+                  //@todo manually stop polling?
                 }
               })
-          }, 100)
+          }, 1000)
         
           state = state.set('run', Immutable.Map(run))
           EditorStore.emit(EditorStore.STATE_CHANGED)  
@@ -120,10 +125,12 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
           //build was started, continue polling for updates
           var build = JSON.parse(res.text)
-          var polli = setInterval(function(){
+          
+          if(EditorStore.interval) { clearInterval(EditorStore.interval) }
+          EditorStore.interval = setInterval(function(){
               request.get('/api/builds/'+build.id).end(function(err, res){
                 if(err) {
-                  clearInterval(polli)
+                  clearInterval(EditorStore.interval)
                   return console.error(err)
                 }
 
@@ -134,13 +141,13 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 EditorStore.emit(EditorStore.STATE_CHANGED)  
 
                 if(status.error != null) {
-                  clearInterval(polli)                  
+                  clearInterval(EditorStore.interval)                  
                   console.error('Build failed:', status.error) 
                 }                
 
                 //consider done when image name is not empty
                 if(status.image_name != '') {
-                  clearInterval(polli)  
+                  clearInterval(EditorStore.interval)  
 
                   //update state with newly created image
                   newstate = state.get('state').set('image_name', status.image_name)

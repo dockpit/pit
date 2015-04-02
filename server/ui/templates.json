@@ -25,5 +25,25 @@
 		"template_files": {
 			"Dockerfile": {"content": "FROM postgres"}
 		}
+	},
+
+	"api-blueprint": {
+		"id": "api-blueprint", 
+		"name": "API Blueprint",
+		"category": "API Mocking",
+		"default_name": "",
+		"state_settings": {
+			"ready_pattern": "DRAKOV STARTED",
+			"ready_timeout": "5s",
+			"host_config": {
+				"PortBindings": {
+					"3000/tcp": [{"HostPort": ":0"}]
+				}
+			}
+		},
+		"template_files": {
+			"Dockerfile": {"content": "FROM dockpit/pit-api-blueprint\nADD ./blueprint.md /"},
+			"blueprint.md": {"content": "# GET /\n+ Response 200 (text/plain)\n\n    Hello World!"}
+		}
 	}
 }
