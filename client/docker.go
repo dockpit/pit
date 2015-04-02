@@ -76,7 +76,7 @@ func (d *Docker) RemoveAll() error {
 	for _, c := range cs {
 		remove := false
 		for _, n := range c.Names {
-			if strings.HasPrefix(n[1:], "dockpit_") {
+			if strings.HasPrefix(n[1:], "dockpit-") {
 				remove = true
 			}
 		}
@@ -95,7 +95,7 @@ func (d *Docker) RemoveAll() error {
 func (d *Docker) Switch(iso *model.Isolation) error {
 	err := d.RemoveAll()
 	if err != nil {
-		return err
+		return errwrap.Wrapf("Failed to remove all running dockpit containers before switching isolation: {{err}}", err)
 	}
 
 	//start all for the current isolation
@@ -105,39 +105,20 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 	}
 
 	for dep, state := range depst {
-
-		id, err := d.client.CreateContainer(&dockerclient.ContainerConfig{Image: state.ImageName}, state.ImageName)
+		run, err := model.NewRun(*state)
 		if err != nil {
-			return errwrap.Wrapf(fmt.Sprintf("Failed to create state container with image '%s': {{err}}, are your states build?", state.ImageName), err)
+			return errwrap.Wrapf(fmt.Sprintf("Failed to create run from state '%s': {{err}}", state.Name), err)
 		}
 
-		_ = dep
-
-		bindings := map[string][]dockerclient.PortBinding{}
-		// @todo add port bindings config
-		// for _, p := range spconf.Ports() {
-		// 	bindings[p.Container+"/tcp"] = []dockerclient.PortBinding{
-		// 		dockerclient.PortBinding{"0.0.0.0", p.Host},
-		// 	}
-		// }
-
-		err = d.client.StartContainer(id, &dockerclient.HostConfig{PortBindings: bindings})
+		cid, err := d.Start(run)
 		if err != nil {
-			return errwrap.Wrapf(fmt.Sprintf("Failed to start state container with image '%s': {{err}}, are your states build?", state.ImageName), err)
+			return errwrap.Wrapf(fmt.Sprintf("Failed to start state '%s': {{err}}", state.Name), err)
 		}
 
-		rc, err := d.client.ContainerLogs(id, &dockerclient.LogOptions{Follow: true, Stdout: true, Stderr: true})
-		if err != nil {
-			return errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}, are your states build?", id), err)
-		}
-		defer rc.Close()
-
-		//@todo fetch timeout from data
-		//@todo fetch regexp from data
-		err = iowait.WaitForRegexp(rc, regexp.MustCompile(`.*`), time.Second*5)
-		if err != nil {
-			return fmt.Errorf("Failed to wait for state container %s: %s", id, err)
-		}
+		//@todo probalby wanna store this somewhere
+		_ = run //run instance
+		_ = dep //dependency
+		_ = cid //container id
 	}
 
 	return nil
