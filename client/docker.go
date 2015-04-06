@@ -149,6 +149,11 @@ func (d *Docker) Start(run *model.Run) (string, error) {
 		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}", run.ContainerID), err)
 	}
 
+	run.ContainerInfo, err = d.client.InspectContainer(run.ContainerID)
+	if err != nil {
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to get container info for %s: {{err}}", run.ContainerID), err)
+	}
+
 	tr := io.TeeReader(rc, run.Output.Buffer)
 
 	// wait for ready pattern or error
@@ -196,9 +201,9 @@ func (d *Docker) Build(b *model.Build) (string, error) {
 	in := bytes.NewBuffer(nil)
 	tw := tar.NewWriter(in)
 
-	for fname, fcontent := range state.Files {
+	for fname, f := range state.Files {
 		//create writer for tar data
-		f := bytes.NewReader([]byte(fcontent))
+		f := bytes.NewReader([]byte(f.Content))
 
 		hdr := &tar.Header{
 			Name: fname,

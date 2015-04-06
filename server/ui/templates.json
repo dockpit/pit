@@ -4,7 +4,7 @@
 		"name": "Custom",
 		"category": "",
 		"default_name": "",
-		"template_files": {
+		"files": {
 			"Dockerfile": {"content": "FROM scratch"}
 		}
 	},
@@ -22,8 +22,8 @@
 				}
 			}
 		},
-		"template_files": {
-			"Dockerfile": {"content": "FROM dockpit/pit-postgres\nADD ./insert-data.sh /\nRUN chmod +x /insert-data.sh\nADD ./data.sql /\nRUN /pit-start.sh && /insert-data.sh /"},
+		"files": {
+			"Dockerfile": {"is_locked": true, "content": "FROM dockpit/pit-postgres\nADD ./insert-data.sh /\nRUN chmod +x /insert-data.sh\nADD ./data.sql /\nRUN /pit-start.sh && /insert-data.sh /"},
 			"data.sql": {"content": "CREATE DATABASE foo;\nCREATE TABLE bar();"},
 			"insert-data.sh": {"content": "#!/bin/sh\npsql -U postgres -f /data.sql"}
 		}
@@ -44,8 +44,8 @@
 				}
 			}
 		},
-		"template_files": {
-			"Dockerfile": {"content": "FROM dockpit/pit-etcd\nADD ./services.sh /\nRUN chmod +x /services.sh\nRUN /pit-start.sh && /services.sh"},
+		"files": {
+			"Dockerfile": {"is_locked": true, "content": "FROM dockpit/pit-etcd\nADD ./services.sh /\nRUN chmod +x /services.sh\nRUN /pit-start.sh && /services.sh"},
 			"services.sh": {"content": "etcdctl set /foo/bar 'Hello world'"}
 		}
 	},
@@ -64,8 +64,8 @@
 				}
 			}
 		},
-		"template_files": {
-			"Dockerfile": {"content": "FROM dockpit/pit-api-blueprint\nADD ./blueprint.md /"},
+		"files": {
+			"Dockerfile": {"is_locked": true, "content": "FROM dockpit/pit-api-blueprint\nADD ./blueprint.md /"},
 			"blueprint.md": {"content": "# GET /\n+ Response 200 (text/plain)\n\n    Hello World!"}
 		}
 	}

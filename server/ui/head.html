@@ -9,6 +9,8 @@
       
       analytics.load("8bvqeS1FiRo3sVVW9mZBoyzSrAmmCLXD");
       analytics.identify({{ DATABASE_ID }}, {});
+
+      window.DOCKER_HOST_IP = {{ .DockerHostIP}}
     }}();
   </script>
 

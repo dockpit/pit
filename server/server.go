@@ -38,7 +38,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	}
 
 	s := &Server{
-		view:      NewView(dbmeta, m.DBPath, v),
+		view:      NewView(dbmeta, m.DBPath, v, client.Host),
 		client:    client,
 		model:     m,
 		bind:      baddr,
@@ -69,6 +69,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	mux.Get("/api/templates", s.ListTemplates)
 	mux.Get("/api/builds/:id", s.OneBuild)
 	mux.Get("/api/runs/:id", s.OneRun)
+	mux.Delete("/api/runs/:id", s.StopRun)
 
 	mux.Get("/api/deps", s.ListDeps)
 	mux.Post("/api/deps", s.CreateDep)

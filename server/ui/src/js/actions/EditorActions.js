@@ -5,6 +5,7 @@ var EditorActions = {
   UPDATE_STATE: "EDITOR_UPDATE_STATE",
   START_BUILD: "EDITOR_START_BUILD",
   START_RUN: "EDITOR_START_RUN",
+  STOP_RUN: "EDITOR_STOP_RUN",
   REFRESH_STATE: "EDITOR_REFRESH_ACTION",
   SWITCH_FILE: "EDITOR_SWITCH_FILE",
   UPDATE_FILE_IN_STATE: "EDITOR_UPDATE_FILE_IN_STATE_ACTION",
@@ -56,6 +57,14 @@ var EditorActions = {
     Dispatcher.dispatch({
       type: EditorActions.UPDATE_FILE_IN_STATE,
       args: [depid, state, fname, fcontent]
+    });
+  },
+
+  //Stop any running test containers
+  stopRun: function(runId) {
+    Dispatcher.dispatch({
+      type: EditorActions.STOP_RUN,
+      args: [runId]
     });
   },
 

@@ -26,7 +26,7 @@ if (ds) {
 var ew = document.getElementById("dp-editor-workspace")
 if (ew) {
   var parts = window.location.pathname.split('/')
-  React.render(<EditorWorkspace depId={parts[2]} stateId={parts[4]}/>, ew)
+  React.render(<EditorWorkspace dockerHostIp={DOCKER_HOST_IP} depId={parts[2]} stateId={parts[4]}/>, ew)
 }
 
 // track certain action

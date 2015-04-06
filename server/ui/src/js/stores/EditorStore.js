@@ -18,6 +18,7 @@ var state = Immutable.Map({
 // maintains various in-memory model representations during editing
 var EditorStore = assign({}, EventEmitter.prototype, {
   STATE_CHANGED: "EDITOR_STATE_CHANGED",
+  DEFAULT_STATE_NAME: "default",
   
   //polls
   interval: null,
@@ -56,7 +57,6 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       EditorStore.emit(EditorStore.STATE_CHANGED) 
       break
 
-
     //update
     case EditorActions.UPDATE_STATE:
       var oldstate = a.args[1]
@@ -69,6 +69,20 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
       break
 
+    //start build
+    case EditorActions.STOP_RUN:
+      request
+        .del('/api/runs/'+a.args[0])
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          state = state.set('run', Immutable.Map())
+          EditorStore.emit(EditorStore.STATE_CHANGED)
+        })
+
+      break
 
     //start build
     case EditorActions.START_RUN:
@@ -91,7 +105,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 }
 
                 var status = JSON.parse(res.text)
-                state = state.set('run', Immutable.Map(status))
+                state = state.set('run', Immutable.fromJS(status))
                 state = state.set('output', status.output)              
                 state = state.set('error', status.error)
                 EditorStore.emit(EditorStore.STATE_CHANGED)  
@@ -102,7 +116,11 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 }                
 
                 if(status.is_ready === true) {
-                  //@todo manually stop polling?
+                  //@todo we might want to continue polling after ready
+                  //string is found, this has two complications
+                  // - doesn't always seem to work (reaso unknown)
+                  // - state.run is reset on which the complete button depends
+                  clearInterval(EditorStore.interval)
                 }
               })
           }, 1000)
@@ -170,11 +188,15 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
     //save updated file
     case EditorActions.UPDATE_FILE_IN_STATE:
-      var newfiles = state.get('state').get('files').set(a.args[2], a.args[3])
+      var oldfile = state.get('state').get('files').get(a.args[2])
+      var newfile = oldfile.set('content', a.args[3])
+
+      var newfiles = state.get('state').get('files').set(a.args[2], newfile)
       var newstate = state.get('state').set('files', newfiles)
       
-      //some files where resave, rendering the last build out-of-date
+      //some files where resave, rendering the last build and run out-of-date
       state = state.set('build', Immutable.Map())
+      state = state.set('run', Immutable.Map())
 
       EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
           state = state.set('state', newstate)
@@ -205,7 +227,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
     
     //new file was added to this state
     case EditorActions.ADD_FILE_TO_STATE:
-      var newfiles = state.get('state').get('files').set(a.args[2], '')
+      var newfiles = state.get('state').get('files').set(a.args[2], Immutable.Map({is_locked: false, content: ''}))
       var newstate = state.get('state').set('files', newfiles)
 
       EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
@@ -230,9 +252,14 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
               data.settings.host_config.PortBindings = {}
           }
 
+          //set active file to first unlocked file
           state = state.set('state', Immutable.fromJS(data))
           if (!state.get('activeFile') && state.get('state').get('files').size > 0) {
-            state = state.set('activeFile', state.get('state').get('files').keys().next().value) 
+            state.get('state').get('files').forEach(function(f, fname) {
+              if (!f.get('is_locked')) {
+                state = state.set('activeFile', fname) 
+              }
+            })
           }
 
           EditorStore.emit(EditorStore.STATE_CHANGED)  

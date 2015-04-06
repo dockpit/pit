@@ -24,7 +24,7 @@ var EditorACE = React.createClass({
 	getInitialState: function(){
 		return {
 			height: 500,
-			lastSavedContent: this.props.file.get('content')
+			lastSavedContent: this.props.file.get('file').get('content')
 		}
 	},
 	
@@ -38,6 +38,7 @@ var EditorACE = React.createClass({
 	    this.editor = ace.edit(React.findDOMNode(this.refs.editor).id);
 	    this.editor.setTheme("ace/theme/github");
     	this.editor.getSession().setMode(this.mode)
+    	this.editor.setReadOnly(this.props.file.get('file').get('is_locked'))
 
 		this.editor.getSession().on('change', me.onDirtyChanged);		
 
@@ -60,7 +61,7 @@ var EditorACE = React.createClass({
 			}
 		});
 
-		this.editor.setValue(this.props.file.get('content'))
+		this.editor.setValue(this.props.file.get('file').get('content'))
 		window.addEventListener("resize", this.updateDimensions);
 	},
 
@@ -74,7 +75,7 @@ var EditorACE = React.createClass({
 
 	onStoreChange: function() {		
 		this.setState({
-			lastSavedContent: this.props.file.get('content')
+			lastSavedContent: this.props.file.get('file').get('content')
 		})
 
 		this.onDirtyChanged()
@@ -108,7 +109,7 @@ var EditorACE = React.createClass({
 			<div style={{float: 'right', zIndex: 100}} className="ui top right attached label">{this.mode.split('/')[2]}</div>
 			<div style={{float: 'left', width: '100%', marginTop: '0px !important', height: this.state.height + 'px'}} id={'editor-'+this.props.nr} ref="editor"></div>
 			
-			<button style={{marginTop: '10px'}} onClick={this.saveFile} className="ui button basic">Save</button>
+			{!this.props.file.get('file').get('is_locked') ? <button style={{marginTop: '10px'}} onClick={this.saveFile} className="ui button basic">Save</button> : null}
 		</div>
 	}
 })
@@ -131,6 +132,14 @@ var EditorFileTab = React.createClass({
 	leave: function() { this.setState({hover: false})},
 
 	render: function() {
+
+		if(this.props.file.get('file').get('is_locked')) {
+			return <a style={{opacity: 0.5}} onClick={this.props.switchFileFn}  className={'item'+ (this.props.file.get('name') == this.props.activeFile ? ' active' : '')}>
+				{this.props.file.get('name')}
+				<i style={{position: 'absolute'}} className="icon lock"></i>
+			</a>
+		}
+
 		return <a onMouseEnter={this.enter} onMouseLeave={this.leave} onClick={this.props.switchFileFn} className={'item'+ (this.props.file.get('name') == this.props.activeFile ? ' active' : '')}>
 			{this.props.file.get('name')}
 			{this.props.isDirty ? '*' : null}			
@@ -319,13 +328,13 @@ var EditorSettings = React.createClass({
 
 				  <div className="field">
 				    <label>Name</label>
-				    <input ref="nameInput" name="name" onChange={this.nameChanged} defaultValue={this.props.state.get('name')} type="text"/>
+				    <input ref="nameInput" name="name" defaultValue={this.props.state.get('name')} type="text"/>
 				  </div>
 
 				  <div className="two fields">
 				    <div className="field">
 				      <label>Ready Pattern</label>
-				      <input ref="readyPatternInput" name="ready_pattern" onChange={this.readyPatternChanged} defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
+				      <input ref="readyPatternInput" name="ready_pattern" defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
 				    </div>
 				    <div className="field">
 				      <label>Ready Timeout</label>
@@ -396,10 +405,10 @@ module.exports = React.createClass({
 	render: function(){
 		var me = this
 		var files = Immutable.List()
-		this.props.files.forEach(function(content, name){
+		this.props.files.forEach(function(f, name){
 			files = files.push(Immutable.Map({
 				name: name,
-				content: content,
+				file: f,
 			}))
 		})
 
