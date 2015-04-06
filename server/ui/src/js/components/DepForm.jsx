@@ -48,7 +48,7 @@ var TemplateSelector = React.createClass({
 
 		var items = []
 		categories.forEach(function(v, k){
-			if (v.get('template_files')) {
+			if (v.get('files')) {
 				items.push(<a key={k} onClick={me.selectTemplate.bind(me, v, v.get('id'))} className={'item' + (me.state.selectedCat == v.get('id') ? ' blue active' : '')}>
         				{v.get('name')}
       				</a>)

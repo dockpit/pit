@@ -17,11 +17,11 @@ type StateSettings struct {
 }
 
 type State struct {
-	ID        string            `json:"id"`
-	Name      string            `json:"name"`
-	Files     map[string]string `json:"files"`
-	Settings  *StateSettings    `json:"settings"`
-	ImageName string            `json:"image_name"`
+	ID        string          `json:"id"`
+	Name      string          `json:"name"`
+	Files     map[string]File `json:"files"`
+	Settings  *StateSettings  `json:"settings"`
+	ImageName string          `json:"image_name"`
 }
 
 func NewStateFromTemplate(name string, t *Template) (*State, error) {
@@ -29,9 +29,9 @@ func NewStateFromTemplate(name string, t *Template) (*State, error) {
 		return nil, fmt.Errorf("State Validation Error: Name and Type cannot be empty")
 	}
 
-	files := map[string]string{}
-	for name, tf := range t.TemplateFiles {
-		files[name] = tf.Content
+	files := map[string]File{}
+	for name, f := range t.Files {
+		files[name] = *f
 	}
 
 	st := &State{

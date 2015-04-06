@@ -196,9 +196,9 @@ func (d *Docker) Build(b *model.Build) (string, error) {
 	in := bytes.NewBuffer(nil)
 	tw := tar.NewWriter(in)
 
-	for fname, fcontent := range state.Files {
+	for fname, f := range state.Files {
 		//create writer for tar data
-		f := bytes.NewReader([]byte(fcontent))
+		f := bytes.NewReader([]byte(f.Content))
 
 		hdr := &tar.Header{
 			Name: fname,
