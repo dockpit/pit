@@ -29,7 +29,7 @@ var EditorRunPanel = React.createClass({
 			    {this.props.build.get('is_running') ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="repeat icon"></i>} 
 
 			    <div className="content">
-			      <div className="title">Build</div>
+			      <div className="title">1. Build</div>
 			      <div className="description">Create a Docker Image</div>
 			    </div>
 			  </a>
@@ -37,20 +37,24 @@ var EditorRunPanel = React.createClass({
 			  	{runRunning ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="terminal icon"></i>} 
 			
 			    <div className="content">
-			      <div className="title">Test</div>
+			      <div className="title">2. Test</div>
 			      <div className="description">Run the Image</div>
 			    </div>
 			  </a>
 			</div>
 
 			<div className="ui attached bottom segment">			
-
 				{this.props.error ? <div className="ui negative message"><p>{this.props.error}</p></div> : null }
 
 				<pre>
 					{output}
 				</pre>
-			</div>		      	
+			</div>		
+
+			<div className="ui divider"></div>
+			<div onClick={this.props.completedFn} className={'ui fluid icon positive button'+ (this.props.run.get('is_ready') ? '' : ' disabled')}>
+				3. Complete State <i className="right checkmark icon"></i>
+			</div>      	
 		</div>
 }})
 

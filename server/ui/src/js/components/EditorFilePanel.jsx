@@ -328,13 +328,13 @@ var EditorSettings = React.createClass({
 
 				  <div className="field">
 				    <label>Name</label>
-				    <input ref="nameInput" name="name" onChange={this.nameChanged} defaultValue={this.props.state.get('name')} type="text"/>
+				    <input ref="nameInput" name="name" defaultValue={this.props.state.get('name')} type="text"/>
 				  </div>
 
 				  <div className="two fields">
 				    <div className="field">
 				      <label>Ready Pattern</label>
-				      <input ref="readyPatternInput" name="ready_pattern" onChange={this.readyPatternChanged} defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
+				      <input ref="readyPatternInput" name="ready_pattern" defaultValue={this.props.state.get('settings').get('ready_pattern')} type="text"/>
 				    </div>
 				    <div className="field">
 				      <label>Ready Timeout</label>

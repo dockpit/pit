@@ -18,6 +18,7 @@ var state = Immutable.Map({
 // maintains various in-memory model representations during editing
 var EditorStore = assign({}, EventEmitter.prototype, {
   STATE_CHANGED: "EDITOR_STATE_CHANGED",
+  DEFAULT_STATE_NAME: "default",
   
   //polls
   interval: null,
@@ -102,7 +103,11 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 }                
 
                 if(status.is_ready === true) {
-                  //@todo manually stop polling?
+                  //@todo we might want to continue polling after ready
+                  //string is found, this has two complications
+                  // - doesn't always seem to work (reaso unknown)
+                  // - state.run is reset on which the complete button depends
+                  clearInterval(EditorStore.interval)
                 }
               })
           }, 1000)
@@ -176,8 +181,9 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       var newfiles = state.get('state').get('files').set(a.args[2], newfile)
       var newstate = state.get('state').set('files', newfiles)
       
-      //some files where resave, rendering the last build out-of-date
+      //some files where resave, rendering the last build and run out-of-date
       state = state.set('build', Immutable.Map())
+      state = state.set('run', Immutable.Map())
 
       EditorStore.sendUpdateReq(a.args[0], a.args[1].get('id'), newstate, function() {
           state = state.set('state', newstate)
