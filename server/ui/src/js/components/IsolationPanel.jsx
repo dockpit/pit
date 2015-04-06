@@ -51,7 +51,7 @@ module.exports = React.createClass({
           <i className="cube icon"></i>
           <div className="content">
             <div className="header">
-              You don't have any isolations yet
+              {"You don't have any isolations yet"}
             </div>
             <p>An isolation groupa a set of dependencies in certain states</p>
           </div>

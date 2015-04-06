@@ -63,7 +63,7 @@ var DependencySelector = React.createClass({
 		this.props.deps.forEach(function(dep){
 			items = items.push(Immutable.Map({classes: "header", text: dep.get('name'), key: dep.get('name')}))
 			dep.get('states').forEach(function(st){
-				items = items.push(Immutable.Map({classes: "item", value: dep.get('name')+'::'+st.get('id'), text: "  "+st.get('name'), key: dep.get('name')+st.get('name')}))
+				items = items.push(Immutable.Map({classes: "item", value: dep.get('id')+'::'+st.get('id'), text: "  "+st.get('name'), key: dep.get('id')+st.get('id')}))
 			})
 		})
 
@@ -121,8 +121,8 @@ module.exports = React.createClass({
 
 		return <div className={classes} onClick={this.selectIsolation}>
 			<div className="content">
-				{this.props.isSelected && !this.state.showNameEdit ? <button style={{position: 'absolute', top: '10px', right: '10px'}} onClick={this.removeIsolation} className="circular ui basic icon button mini"><i className="trash icon"></i></button> : null }
-				{this.props.isSelected && !this.state.showNameEdit ? <button style={{position: 'absolute', top: '10px', right: '40px'}} onClick={this.startIsolationNameEdit} className="circular ui basic icon button mini"><i className="edit icon"></i></button> : null }
+				{this.props.isSelected && !this.state.showNameEdit && this.props.isolation.get('id') !== 'default' ? <button style={{position: 'absolute', top: '10px', right: '10px'}} onClick={this.removeIsolation} className="circular ui basic icon button mini"><i className="trash icon"></i></button> : null }
+				{this.props.isSelected && !this.state.showNameEdit && this.props.isolation.get('id') !== 'default' ? <button style={{position: 'absolute', top: '10px', right: '40px'}} onClick={this.startIsolationNameEdit} className="circular ui basic icon button mini"><i className="edit icon"></i></button> : null }
 				<h3 className="header">
 					{this.state.showNameEdit && this.props.isSelected ? <IsolationNameEditForm stopEditFn={this.stopIsolationNameEdit} isolation={this.props.isolation}/> : <span>{this.props.isolation.get('name')}</span> }	
 				</h3>

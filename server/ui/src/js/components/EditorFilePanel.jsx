@@ -96,7 +96,7 @@ var EditorACE = React.createClass({
 
     saveFile: function() {
 	    EditorActions.saveFile(
-	    	this.props.depName, 
+	    	this.props.depId, 
 	    	this.props.state, 
 	    	this.props.file.get('name'),
 	    	this.editor.getValue()
@@ -122,7 +122,7 @@ var EditorFileTab = React.createClass({
 
 	removeFile: function(ev) {
 		if(confirm("Are you sure you want to remove file '"+this.props.file.get('name')+"'?")) {
-			EditorActions.removeFileFromState(this.props.depName, this.props.state, this.props.file.get('name'))
+			EditorActions.removeFileFromState(this.props.depId, this.props.state, this.props.file.get('name'))
 		}
 		ev.stopPropagation()
 	},
@@ -298,7 +298,7 @@ var EditorSettings = React.createClass({
 		newsettings = newsettings.set('ready_timeout', React.findDOMNode(this.refs.readyTimeoutInput).value)
 		newstate = newstate.set('settings', newsettings)
 
-		EditorActions.updateState(this.props.depName, oldstate, newstate)
+		EditorActions.updateState(this.props.depId, oldstate, newstate)
 	},
 
 	bindingsUpdated: function(newbindings) {
@@ -379,7 +379,7 @@ module.exports = React.createClass({
 		ev.preventDefault()
 		var fname = React.findDOMNode(this.refs.fileNameInput).value
 		if (fname) {
-			EditorActions.addFileToState(this.props.depName, this.props.state, fname)
+			EditorActions.addFileToState(this.props.depId, this.props.state, fname)
 		}
 
 		EditorActions.switchFile(fname)
@@ -421,7 +421,7 @@ module.exports = React.createClass({
 					return <EditorFileTab 
 						isDirty={me.state.dirtyFiles[f.get('name')]}
 						state={me.props.state} 
-						depName={me.props.depName} 
+						depId={me.props.depId} 
 						key={i}  
 						activeFile={me.props.activeFile} 
 						file={f} 
@@ -429,14 +429,14 @@ module.exports = React.createClass({
 				})}			  
 			</div>			
 
-			{me.props.activeFile == '__settings' ? <EditorSettings depName={me.props.depName} state={me.props.state} activeFile={me.props.activeFile}/> : null }
+			{me.props.activeFile == '__settings' ? <EditorSettings depId={me.props.depId} state={me.props.state} activeFile={me.props.activeFile}/> : null }
 
 			{files.map(function(f, i){				
 				return <div key={f.get('name')} className={'ui bottom attached tab segment'+ (f.get('name') == me.props.activeFile ? ' active' : '')}>
 					<EditorACE 
 						state={me.props.state} 
 						setDirtyFn={me.setDirty}
-						depName={me.props.depName} 
+						depId={me.props.depId} 
 						active={f.get('name') == me.props.activeFile ? true : false} 
 						file={f} 
 						nr={i}/>

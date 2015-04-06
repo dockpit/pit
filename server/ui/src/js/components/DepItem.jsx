@@ -26,7 +26,7 @@ var DepStateItem = React.createClass({
 		var isolations = this.props.isolations.filter(function(iso){
 			var res = false
 			iso.get('states').forEach(function(sname, dname){
-				if(dname === dep.get('name') && sname === st.get('name')) {
+				if(dname === dep.get('id') && sname === st.get('id')) {
 					res = true
 					return
 				}
@@ -38,7 +38,7 @@ var DepStateItem = React.createClass({
 			{this.state.hover ? <button style={{margin: '5px 5px 0 0'}} className="right floated circular compact ui red icon mini button" onClick={this.removeDepState}><i className="trash icon"></i></button> : null }
 			<i className="angle right icon"></i>
 			<div className="content">
-				<a className="header" href={"/deps/"+dep.get('name')+"/states/"+st.get('id')}>
+				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
 					{st.get('name')}
 					{imageName ? <span> (image: {imageName})</span> : null}
 				</a>
