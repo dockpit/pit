@@ -105,7 +105,7 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 }
 
                 var status = JSON.parse(res.text)
-                state = state.set('run', Immutable.Map(status))
+                state = state.set('run', Immutable.fromJS(status))
                 state = state.set('output', status.output)              
                 state = state.set('error', status.error)
                 EditorStore.emit(EditorStore.STATE_CHANGED)  

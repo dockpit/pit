@@ -38,7 +38,7 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	}
 
 	s := &Server{
-		view:      NewView(dbmeta, m.DBPath, v),
+		view:      NewView(dbmeta, m.DBPath, v, client.Host),
 		client:    client,
 		model:     m,
 		bind:      baddr,

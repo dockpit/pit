@@ -4,6 +4,47 @@ var Immutable = require('immutable')
 var EditorActions  = require('../actions/EditorActions')
 var EditorStore = require('../stores/EditorStore')
 
+var EditorRunContainerInfo = React.createClass({
+	render: function() {
+		var me = this
+
+		var bindings = []
+		this.props.info.get('NetworkSettings').get("Ports").forEach(function(hconfs, cport){
+			if(!hconfs) {
+				return
+			} 
+
+			bindings.push({
+				hconfs: hconfs,
+				cport: cport,
+			})
+		})
+
+		if (bindings.length == 0) {
+			return <div className="ui horizontal divider">no exposed ports</div>
+		}
+
+		return <div>
+			<div className="ui horizontal divider">exposed:</div>
+
+			<table className="ui very basic two column table">
+			  <tbody>
+				{bindings.map(function(conf, i) {
+					return <tr key={i}>
+				      <td className="center aligned">Container port {conf.cport}</td>				     
+				      <td className="center aligned">Bound to {conf.hconfs.map(function(hconf, i){
+				      	return <a key={i} target="_blank" href={'http://'+ me.props.dockerHostIp+':'+hconf.get('HostPort')}>{hconf.get('HostIp')}:{hconf.get('HostPort')}</a>
+				      })}</td>
+				    </tr>
+				})}
+			  </tbody>
+			</table>
+
+			<div className="ui divider"></div>
+		</div>
+	}
+})
+
 var EditorRunPanel = React.createClass({
 
 	startBuild: function() {
@@ -51,7 +92,10 @@ var EditorRunPanel = React.createClass({
 				</pre>
 			</div>		
 
-			<div className="ui divider"></div>
+
+			{this.props.run.get('container_info') ? <EditorRunContainerInfo dockerHostIp={this.props.dockerHostIp} info={this.props.run.get('container_info')}/> : <div className="ui divider"></div>}
+
+
 			<div onClick={this.props.completedFn} className={'ui fluid icon positive button'+ (this.props.run.get('is_ready') ? '' : ' disabled')}>
 				3. Complete State <i className="right checkmark icon"></i>
 			</div>      	

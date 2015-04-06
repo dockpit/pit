@@ -149,6 +149,11 @@ func (d *Docker) Start(run *model.Run) (string, error) {
 		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to follow logs of state container '%s': {{err}}", run.ContainerID), err)
 	}
 
+	run.ContainerInfo, err = d.client.InspectContainer(run.ContainerID)
+	if err != nil {
+		return run.ContainerID, errwrap.Wrapf(fmt.Sprintf("Failed to get container info for %s: {{err}}", run.ContainerID), err)
+	}
+
 	tr := io.TeeReader(rc, run.Output.Buffer)
 
 	// wait for ready pattern or error

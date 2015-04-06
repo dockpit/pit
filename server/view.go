@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/dockpit/pit/model"
 	"github.com/dockpit/pit/server/ui/bin"
@@ -14,16 +16,20 @@ import (
 var TemplateDir = filepath.Join("server", "ui")
 
 type View struct {
-	dbMeta  *model.Meta
-	dbPath  string
-	version string
+	dbMeta       *model.Meta
+	dbPath       string
+	dockerHostIP string
+	version      string
 }
 
-func NewView(dbmeta *model.Meta, dbpath, version string) *View {
+func NewView(dbmeta *model.Meta, dbpath, version, dockerHost string) *View {
+	loc, _ := url.Parse(dockerHost)
+
 	return &View{
-		dbMeta:  dbmeta,
-		dbPath:  dbpath,
-		version: version,
+		dbMeta:       dbmeta,
+		dbPath:       dbpath,
+		version:      version,
+		dockerHostIP: strings.SplitN(loc.Host, ":", 2)[0],
 	}
 }
 
@@ -85,6 +91,7 @@ func (v *View) Render(w http.ResponseWriter, name string, data map[string]interf
 
 	data["Meta"] = v.dbMeta
 	data["Version"] = v.version
+	data["DockerHostIP"] = v.dockerHostIP
 	data["DBPath"] = filepath.Join(cwd, v.dbPath)
 
 	err = tmpl.Execute(w, data)

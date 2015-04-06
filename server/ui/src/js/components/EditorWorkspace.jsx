@@ -113,6 +113,7 @@ module.exports = React.createClass({
 					error={this.state.data.get('error')}
 					build={this.state.data.get('build')} 
 					completedFn={this.onCompletedState}
+					dockerHostIp={this.props.dockerHostIp}
 					run={this.state.data.get('run')} 
 					state={this.state.data.get('state')} />		      
 		    </div>
