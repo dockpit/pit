@@ -25,7 +25,7 @@ var EditorRunContainerInfo = React.createClass({
 		}
 
 		return <div>
-			<div className="ui horizontal divider">exposed:</div>
+			<div className="ui horizontal divider">exposed ports:</div>
 
 			<table className="ui very basic two column table">
 			  <tbody>
