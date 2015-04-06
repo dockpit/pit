@@ -38,6 +38,7 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
           }
 
           DepActions.refresh()
+          IsolationActions.refresh()
         });
 
       break;

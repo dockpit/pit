@@ -24,9 +24,15 @@ func NewModel(dbpath string) (*Model, error) {
 	}
 
 	m := &Model{db: db, DBPath: dbpath, Events: make(chan Event)}
-	err = m.UpsertMetaData()
+
+	err = m.UpsertMetadataIfNotExists()
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize metadata for '%s': {{err}}", dbpath), err)
+	}
+
+	err = m.UpsertDefaultIsolationIfNotExists()
+	if err != nil {
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize default isolation for db '%s': {{err}}", dbpath), err)
 	}
 
 	return m, nil
@@ -54,7 +60,7 @@ func (m *Model) GetDBMetaData() (*Meta, error) {
 	})
 }
 
-func (m *Model) UpsertMetaData() error {
+func (m *Model) UpsertMetadataIfNotExists() error {
 	return m.db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(MetaBucketName))
 		if err != nil {
@@ -81,6 +87,38 @@ func (m *Model) UpsertMetaData() error {
 		}
 
 		b.Put([]byte(DatabaseMetaKey), data)
+		return nil
+	})
+}
+
+func (m *Model) UpsertDefaultIsolationIfNotExists() error {
+	return m.db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(IsolationBucketName))
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to create isolation bucket: {{err}}"), err)
+		}
+
+		data := b.Get([]byte(DefaultIsolationID))
+		var iso *Isolation
+		if data == nil {
+			iso, err = NewIsolation(DefaultIsolationID)
+			iso.ID = DefaultIsolationID
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to create default iso: {{err}}"), err)
+			}
+		} else {
+			iso, err = NewIsolationFromSerialized(data)
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to deserialize iso '%s': {{err}}", string(data)), err)
+			}
+		}
+
+		data, err = iso.Serialize()
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize iso '%s': {{err}}", iso.ID), err)
+		}
+
+		b.Put([]byte(DefaultIsolationID), data)
 		return nil
 	})
 }

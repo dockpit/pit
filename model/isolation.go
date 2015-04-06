@@ -8,6 +8,7 @@ import (
 )
 
 var IsolationBucketName = "isolations"
+var DefaultIsolationID = "default"
 
 type Isolation struct {
 	ID     string            `json:"id"`
@@ -38,8 +39,8 @@ func (i *Isolation) Serialize() ([]byte, error) {
 	return json.Marshal(i)
 }
 
-func (i *Isolation) AddDep(dep *Dep, state string) {
-	i.States[dep.ID] = state
+func (i *Isolation) AddDep(dep *Dep, sid string) {
+	i.States[dep.ID] = sid
 }
 
 func (i *Isolation) RemoveDep(dep *Dep) {

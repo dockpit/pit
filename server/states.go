@@ -168,6 +168,22 @@ func (s *Server) CreateState(c web.C, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Failed update dep with id '%s': %s", id, err), http.StatusInternalServerError)
 		return
 	}
+
+	//if this is the first state of a dep - add it to the default isolation
+	if len(dep.States) == 1 {
+		defiso, err := s.model.FindIsolationByID(model.DefaultIsolationID)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to find default isolation for new stae for dep '%s': %s", id, err), http.StatusInternalServerError)
+			return
+		}
+
+		defiso.AddDep(dep, state.ID)
+		err = s.model.UpdateIsolation(defiso)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed update default isolation with new stae for dep '%s': %s", id, err), http.StatusInternalServerError)
+			return
+		}
+	}
 }
 
 func (s *Server) OneDepState(c web.C, w http.ResponseWriter, r *http.Request) {
