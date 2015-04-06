@@ -57,7 +57,6 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
       EditorStore.emit(EditorStore.STATE_CHANGED) 
       break
 
-
     //update
     case EditorActions.UPDATE_STATE:
       var oldstate = a.args[1]
@@ -70,6 +69,20 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
 
       break
 
+    //start build
+    case EditorActions.STOP_RUN:
+      request
+        .del('/api/runs/'+a.args[0])
+        .end(function(err, res){
+          if(err) {
+            return console.error(err)
+          }
+
+          state = state.set('run', Immutable.Map())
+          EditorStore.emit(EditorStore.STATE_CHANGED)
+        })
+
+      break
 
     //start build
     case EditorActions.START_RUN:

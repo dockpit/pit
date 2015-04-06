@@ -70,6 +70,19 @@ func (s *Server) BuildDepState(c web.C, w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+func (s *Server) StopRun(c web.C, w http.ResponseWriter, r *http.Request) {
+	id := c.URLParams["id"]
+	if run, ok := Runs[id]; !ok {
+		http.NotFound(w, r)
+		return
+	} else {
+		err := s.client.Remove(&run.State)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to remove running container for state '%s': %s", run.State.Name, err), http.StatusInternalServerError)
+		}
+	}
+}
+
 func (s *Server) OneRun(c web.C, w http.ResponseWriter, r *http.Request) {
 	id := c.URLParams["id"]
 	if run, ok := Runs[id]; !ok {

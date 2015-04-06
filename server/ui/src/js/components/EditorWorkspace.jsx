@@ -87,7 +87,10 @@ module.exports = React.createClass({
 	},
 
 	onCompletedState: function() {
-		//@todo: stop test containers
+		var runid = this.state.data.get('run').get('id')
+		if (runid) {
+			EditorActions.stopRun(runid)
+		}
 
 		if(this.state.data.get('state').get('name') == EditorStore.DEFAULT_STATE_NAME) {
 			this.setState({showCompleteForm: true})
