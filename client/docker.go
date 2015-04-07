@@ -21,6 +21,7 @@ import (
 	"github.com/dockpit/pit/model"
 )
 
+var DockpitPrefix = "dp"
 var ConnectionTimeout = time.Millisecond * 500
 
 type Docker struct {
@@ -81,7 +82,7 @@ func (d *Docker) RemoveAll() error {
 	for _, c := range cs {
 		remove := false
 		for _, n := range c.Names {
-			if strings.HasPrefix(n[1:], "dockpit-") {
+			if strings.HasPrefix(n[1:], DockpitPrefix) {
 				remove = true
 			}
 		}
@@ -106,12 +107,9 @@ func (d *Docker) Containers() ([]dockerclient.Container, error) {
 	res := []dockerclient.Container{}
 	for _, c := range all {
 		for _, n := range c.Names {
-			_ = n
-			_ = c
-
-			// if n[1:] == s.ImageName {
-			// 	container = c
-			// }
+			if strings.HasPrefix(n[1:], DockpitPrefix) {
+				res = append(res, c)
+			}
 		}
 	}
 
@@ -136,7 +134,7 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create run from state '%s': {{err}}", state.Name), err)
 		}
 
-		cid, err := d.Start(run)
+		cid, err := d.Start(run, fmt.Sprintf("%s.%s.", DockpitPrefix, iso.ID))
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to start state '%s': {{err}}", state.Name), err)
 		}
@@ -150,14 +148,14 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 	return nil
 }
 
-func (d *Docker) Start(run *model.Run) (string, error) {
+func (d *Docker) Start(run *model.Run, prefix string) (string, error) {
 	var err error
 
 	//container config
 	cconfig := run.State.Settings.ContainerConfig
 	cconfig.Image = run.State.ImageName
 
-	run.ContainerID, err = d.client.CreateContainer(cconfig, run.State.ImageName)
+	run.ContainerID, err = d.client.CreateContainer(cconfig, prefix+run.State.ImageName)
 	if err != nil {
 		return "", errwrap.Wrapf(fmt.Sprintf("Failed to create state container with image '%s': {{err}}, is the state build?", run.State.ImageName), err)
 	}
@@ -247,7 +245,7 @@ func (d *Docker) Build(b *model.Build) (string, error) {
 	}
 
 	// generate an unique image name based on the provider name and path to the state folder
-	iname := fmt.Sprintf("dockpit_%s_%s", dep.Name, state.Name)
+	iname := fmt.Sprintf("%s-%s-%s", DockpitPrefix, dep.Name, state.Name)
 	iname = slug.SlugAscii(iname)
 
 	// fall back to streaming ourselves for building the image, samalba has yet to

@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strings"
+
 	"github.com/dockpit/pit/client"
 	"github.com/dockpit/pit/model"
 
@@ -68,15 +70,15 @@ func (s *Store) SwitchTo(iso *model.Isolation) {
 	if err != nil {
 		s.State.CurrentIsolationStatus = "Error"
 		s.State.Errors = append(s.State.Errors, err)
-	} else {
-		s.State.CurrentIsolationStatus = "OK"
+		return
 	}
 
-	s.Syncs <- struct{}{}
+	s.Sync()
 }
 
 func (s *Store) Sync() {
 	var err error
+	s.State.Errors = []error{}
 
 	//get isolations
 	s.State.Isolations, err = s.model.GetAllIsolations()
@@ -106,8 +108,28 @@ func (s *Store) Sync() {
 			s.State.Errors = append(s.State.Errors, err)
 		}
 
-		//@todo determine current isolation
-		//from container names
+		running := []string{}
+		for _, c := range s.State.Containers {
+			for _, n := range c.Names {
+				isoid := strings.Split(n, ".")[1]
+
+				for _, iso := range s.State.Isolations {
+					if iso.ID == isoid {
+						running = append(running, iso.Name)
+					}
+				}
+			}
+		}
+
+		if len(running) > 0 {
+			s.State.CurrentIsolationName = strings.Join(running, ",")
+
+			//@todo determine status though something more sophisticated
+			s.State.CurrentIsolationStatus = "OK"
+		} else {
+			s.State.CurrentIsolationName = "<none>"
+			s.State.CurrentIsolationStatus = ""
+		}
 
 	}
 
