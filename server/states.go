@@ -131,7 +131,7 @@ func (s *Server) RunDepState(c web.C, w http.ResponseWriter, r *http.Request) {
 	//runs are started in the background
 	Runs[run.ID] = run
 	go func() {
-		_, err = s.client.Start(run)
+		_, err = s.client.Start(run, ``)
 		if err != nil {
 			run.Error = err.Error()
 			return
