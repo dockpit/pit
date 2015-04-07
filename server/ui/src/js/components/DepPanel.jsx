@@ -18,16 +18,24 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
   	DepStore.on(DepStore.CHANGED, this.onStoreChange)
-    IsolationStore.on(IsolationStore.CHANGED, this.onStoreChange)
+    DepStore.on(DepStore.DEP_WAS_CREATED, this.onDepWasCreated)
+
+    IsolationStore.on(IsolationStore.CHANGED, this.onStoreChange)    
     DepActions.refresh()
   },
 
   componentDidUnmount: function() {
   	DepStore.removeListener(DepStore.CHANGED, this.onStoreChange)
+    DepStore.removeListener(DepStore.DEP_WAS_CREATED, this.onDepWasCreated)
   },
 
   onStoreChange: function() {
   	this.setState({data: DepStore.state(), isoData: IsolationStore.state()})
+  },
+
+  onDepWasCreated: function(newdep) {
+    var depid = newdep.id
+    window.location.pathname = "/deps/"+depid+"/states/"+newdep.states[0].id
   },
 
   openDepForm: function() {

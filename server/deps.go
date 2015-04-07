@@ -61,6 +61,12 @@ func (s *Server) CreateDep(c web.C, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Failed to insert dep: %s", err), http.StatusBadRequest)
 		return
 	}
+
+	enc := json.NewEncoder(w)
+	err = enc.Encode(dep)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to encode: {{err}}", err), http.StatusInternalServerError)
+	}
 }
 
 func (s *Server) RemoveDep(c web.C, w http.ResponseWriter, r *http.Request) {

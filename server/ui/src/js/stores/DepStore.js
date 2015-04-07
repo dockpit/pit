@@ -16,6 +16,7 @@ var state = Immutable.Map({
 // and accompanying states
 var DepStore = assign({}, EventEmitter.prototype, {
   CHANGED: "DEPS_CHANGED",
+  DEP_WAS_CREATED: "DEP_WAS_CREATED",
 
   //return the most up-to-date Dep state
   state: function() {
@@ -53,6 +54,8 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
             return console.error(err)
           }
 
+          DepStore.emit(DepStore.DEP_WAS_CREATED, JSON.parse(res.text))
+          
           DepActions.refresh()
         });
 
@@ -123,7 +126,8 @@ DepStore.dispatchToken = Dispatcher.register(function(a){
           }
 
           data = JSON.parse(res.text)
-          state = state.set('deps', Immutable.fromJS(data))
+          state = state.set('deps', Immutable.fromJS(data))        
+
           DepStore.emit(DepStore.CHANGED)
         });
 
