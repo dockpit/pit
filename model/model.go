@@ -9,9 +9,10 @@ import (
 )
 
 type Model struct {
-	db     *bolt.DB
-	DBPath string
+	db *bolt.DB
 
+	DBPath string
+	Stats  *Stats
 	Events chan Event
 }
 
@@ -30,12 +31,71 @@ func NewModel(dbpath string) (*Model, error) {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize metadata for '%s': {{err}}", dbpath), err)
 	}
 
+	m.Stats, err = m.CreateStatsIfNotExists()
+	if err != nil {
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize stats for '%s': {{err}}", dbpath), err)
+	}
+
+	//start tracking events
+	go func() {
+		for ev := range m.Events {
+			if m.Stats.Handle(ev) {
+				err := m.PersistStats()
+				if err != nil {
+					//@todo throw this in some sort of error channel
+					fmt.Printf("Error: failed to persist new stats: %s", err)
+				}
+			}
+		}
+	}()
+
 	err = m.UpsertDefaultIsolationIfNotExists()
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize default isolation for db '%s': {{err}}", dbpath), err)
 	}
 
 	return m, nil
+}
+
+func (m *Model) PersistStats() error {
+	return m.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(MetaBucketName))
+
+		data, err := m.Stats.Serialize()
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to serialize stats '%s': {{err}}", m.Stats), err)
+		}
+
+		b.Put([]byte(StatsMetaKey), data)
+		return nil
+	})
+}
+
+func (m *Model) CreateStatsIfNotExists() (*Stats, error) {
+	var stats *Stats
+	err := m.db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(MetaBucketName))
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to create meta bucket: {{err}}"), err)
+		}
+
+		data := b.Get([]byte(StatsMetaKey))
+		if data == nil {
+			stats, err = NewStats()
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to create new stats: {{err}}"), err)
+			}
+		} else {
+			stats, err = NewStatsFromSerialized(data)
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to deserialize stats data '%s': {{err}}", string(data)), err)
+			}
+		}
+
+		return nil
+	})
+
+	return stats, err
 }
 
 func (m *Model) GetDBMetaData() (*Meta, error) {
@@ -250,6 +310,35 @@ func (m *Model) FindIsolationByName(name string) (*Isolation, error) {
 
 		return nil
 	})
+}
+
+func (m *Model) UpdateDepWithNewState(dep *Dep, sname string) error {
+	state, err := NewStateFromTemplate(sname, dep.Template)
+	if err != nil {
+		return err
+	}
+
+	dep.AddState(state)
+	err = m.UpdateDep(dep)
+	if err != nil {
+		return err
+	}
+
+	//if this is the first state of a dep - add it to the default isolation
+	if len(dep.States) == 1 {
+		defiso, err := m.FindIsolationByID(DefaultIsolationID)
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to find default isolation for new stae for dep '%s': {{err}}", dep.ID), err)
+		}
+
+		defiso.AddDep(dep, state.ID)
+		err = m.UpdateIsolation(defiso)
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed update default isolation with new stae for dep '%s': {{err}}", dep.ID), err)
+		}
+	}
+
+	return nil
 }
 
 func (m *Model) RemoveDepStateByID(dep *Dep, sid string) error {

@@ -169,33 +169,10 @@ func (s *Server) CreateState(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	state, err := model.NewStateFromTemplate(newstate.Name, dep.Template)
+	err = s.model.UpdateDepWithNewState(dep, newstate.Name)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to create state: %s", err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Failed update dep '%s' with new state: %s", dep.ID, err), http.StatusInternalServerError)
 		return
-	}
-
-	dep.AddState(state)
-	err = s.model.UpdateDep(dep)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed update dep with id '%s': %s", id, err), http.StatusInternalServerError)
-		return
-	}
-
-	//if this is the first state of a dep - add it to the default isolation
-	if len(dep.States) == 1 {
-		defiso, err := s.model.FindIsolationByID(model.DefaultIsolationID)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to find default isolation for new stae for dep '%s': %s", id, err), http.StatusInternalServerError)
-			return
-		}
-
-		defiso.AddDep(dep, state.ID)
-		err = s.model.UpdateIsolation(defiso)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed update default isolation with new stae for dep '%s': %s", id, err), http.StatusInternalServerError)
-			return
-		}
 	}
 }
 
