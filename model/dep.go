@@ -8,6 +8,7 @@ import (
 )
 
 var DepBucketName = "deps"
+var DefaultStateID = "default"
 
 type Dep struct {
 	ID       string    `json:"id"`

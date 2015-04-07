@@ -252,6 +252,35 @@ func (m *Model) FindIsolationByName(name string) (*Isolation, error) {
 	})
 }
 
+func (m *Model) UpdateDepWithNewState(dep *Dep, sname string) error {
+	state, err := NewStateFromTemplate(sname, dep.Template)
+	if err != nil {
+		return err
+	}
+
+	dep.AddState(state)
+	err = m.UpdateDep(dep)
+	if err != nil {
+		return err
+	}
+
+	//if this is the first state of a dep - add it to the default isolation
+	if len(dep.States) == 1 {
+		defiso, err := m.FindIsolationByID(DefaultIsolationID)
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to find default isolation for new stae for dep '%s': {{err}}", dep.ID), err)
+		}
+
+		defiso.AddDep(dep, state.ID)
+		err = m.UpdateIsolation(defiso)
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed update default isolation with new stae for dep '%s': {{err}}", dep.ID), err)
+		}
+	}
+
+	return nil
+}
+
 func (m *Model) RemoveDepStateByID(dep *Dep, sid string) error {
 	for i, state := range dep.States {
 		if state.ID == sid {
