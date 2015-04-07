@@ -21,9 +21,10 @@ import (
 	"github.com/dockpit/pit/model"
 )
 
+var ConnectionTimeout = time.Millisecond * 500
+
 type Docker struct {
 	Host string
-	Info *dockerclient.Info
 
 	client *dockerclient.DockerClient
 	model  *model.Model
@@ -54,17 +55,21 @@ func NewDocker(m *model.Model, host, cert string) (*Docker, error) {
 	}
 
 	//create docker client
-	d.client, err = dockerclient.NewDockerClient(hurl.String(), &tlsc)
+	d.client, err = dockerclient.NewDockerClientTimeout(hurl.String(), &tlsc, ConnectionTimeout)
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to create Docker client for '%s': {{err}}", host), err)
 	}
 
-	d.Info, err = d.client.Info()
+	return d, nil
+}
+
+func (d *Docker) Info() (*dockerclient.Info, error) {
+	info, err := d.client.Info()
 	if err != nil {
-		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to retrieve Docker host info for '%s': {{err}}", host), err)
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to retrieve Docker host info for '%s': {{err}}", d.Host), err)
 	}
 
-	return d, nil
+	return info, nil
 }
 
 func (d *Docker) RemoveAll() error {
@@ -90,6 +95,27 @@ func (d *Docker) RemoveAll() error {
 	}
 
 	return nil
+}
+
+func (d *Docker) Containers() ([]dockerclient.Container, error) {
+	all, err := d.client.ListContainers(true, false, "")
+	if err != nil {
+		return nil, err
+	}
+
+	res := []dockerclient.Container{}
+	for _, c := range all {
+		for _, n := range c.Names {
+			_ = n
+			_ = c
+
+			// if n[1:] == s.ImageName {
+			// 	container = c
+			// }
+		}
+	}
+
+	return res, nil
 }
 
 func (d *Docker) Switch(iso *model.Isolation) error {

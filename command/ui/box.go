@@ -16,25 +16,32 @@ import (
 type Box struct {
 	client *client.Docker
 	model  *model.Model
+	store  *Store
 	svr    *server.Server
 
+	currLn    int
 	input     string
-	errors    []error
 	selection int
-	current   *model.Isolation
-	isos      []*model.Isolation
 	filtered  []*Entry
+
+	//@todo depcrecated
+	current *model.Isolation
+	errors  []error
 }
 
-func NewBox(m *model.Model, svr *server.Server, client *client.Docker) *Box {
+func NewBox(m *model.Model, svr *server.Server, client *client.Docker, store *Store) *Box {
 	return &Box{
 		client: client,
 		model:  m,
+		store:  store,
 		svr:    svr,
 
-		isos:     []*model.Isolation{},
 		filtered: []*Entry{},
-		errors:   []error{},
+		currLn:   0,
+
+		//@todo remove
+		//@todo depcrecated
+		errors: []error{},
 	}
 }
 
@@ -51,15 +58,12 @@ func (b *Box) Init() error {
 func (b *Box) Run() error {
 	defer termbox.Close()
 
-	//handle redraw on model events
-	go func() {
-		for range b.model.Events {
-			b.updateData()
-		}
-	}()
+	//@todo rerender on state change
 
 	//handle redraw on user input events
-	b.updateData()
+	b.store.Sync()
+	b.updateFiltered()
+	b.Draw()
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
@@ -91,19 +95,6 @@ func (b *Box) Run() error {
 	return fmt.Errorf("main event loop ended unexpectedly")
 }
 
-func (b *Box) ThrowError(err error) {
-	b.errors = append(b.errors, err)
-	b.Draw()
-}
-
-func (b *Box) PrintLn(y int, msg string) {
-	x := 0
-	for _, c := range msg {
-		termbox.SetCell(x, y, c, termbox.ColorDefault, termbox.ColorDefault)
-		x++
-	}
-}
-
 func (b *Box) Select() {
 	if b.selection >= len(b.filtered) {
 		return
@@ -116,58 +107,85 @@ func (b *Box) Select() {
 	}
 }
 
+func (b *Box) ThrowError(err error) {
+	b.errors = append(b.errors, err)
+	b.Draw()
+}
+
+func (b *Box) Printf(format string, a ...interface{}) {
+	b.PrintLn(fmt.Sprintf(format, a...))
+}
+
+func (b *Box) PrintLn(str string) {
+	y := 0
+	for _, c := range str {
+		termbox.SetCell(y, b.currLn, c, termbox.ColorDefault, termbox.ColorDefault)
+		y++
+	}
+
+	b.currLn++
+}
+
 func (b *Box) Draw() {
+
+	//reset carriage and clear termbox
+	b.currLn = 0
 	err := termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	if err != nil {
 		b.ThrowError(errwrap.Wrapf("Draw could not clear termbox: {{err}}", err))
 		return
 	}
 
-	b.PrintLn(0, fmt.Sprintf("Dockpit Web UI Running at %s (press Esc to exit)", b.svr.URL()))
-	b.PrintLn(1, fmt.Sprintf("Docker Host: %s (%s)", b.client.Host, b.client.Info.OperatingSystem))
+	//print dockpit logo
+	b.PrintLn(`    ___           _          _ _   `)
+	b.PrintLn(`   /   \___   ___| | ___ __ (_) |_ `)
+	b.PrintLn(`  / /\ / _ \ / __| |/ / '_ \| | __|`)
+	b.PrintLn(` / /_// (_) | (__|   <| |_) | | |_ `)
+	b.PrintLn(`/___,' \___/ \___|_|\_\ .__/|_|\__|`)
+	b.Printf(`        Welcome!      |_| %s    `, b.svr.Version)
+	b.PrintLn(``)
 
-	if b.current != nil {
-		b.PrintLn(2, fmt.Sprintf("Current Isolation: %s", b.current.Name))
+	//render status lines
+	b.Printf(`Docker Host: %s (%s)`, b.store.State.DockerHostStatus, b.store.State.DockerHostAddress)
+	b.Printf(`Web Interface: Online (%s)`, b.svr.URL()) //@todo replace by hostname
+
+	//@todo render current isolation
+
+	//reander header and or input
+	b.PrintLn(``)
+	if b.input == "" {
+		b.PrintLn(`Isolations:`)
 	} else {
-		b.PrintLn(2, fmt.Sprintf("Current Isolation: none"))
+		b.Printf(`Isolation '%s':`, b.input)
 	}
 
-	if len(b.errors) > 0 {
-		b.PrintLn(3, fmt.Sprintf("Errors: %s", b.errors))
-	}
-
-	if len(b.isos) == 0 {
-		b.PrintLn(4, "[ This project currently has no isolations, use the web UI to create your first. ]")
+	//render isolation or trigger message
+	if len(b.store.State.Isolations) < 1 {
+		b.PrintLn(``)
+		b.PrintLn("\t" + ` Almost there! When you’re done you’ll be`)
+		b.PrintLn("\t" + ` able handle your dependencies with`)
+		b.PrintLn("\t" + ` ease, to configure the first:`)
+		b.PrintLn(``)
+		b.PrintLn("\t" + `  1. Open your favorite web browser`)
+		b.Printf("\t"+`  2. Browse to %s`, b.svr.URL())
 	} else {
-		b.PrintLn(4, fmt.Sprintf("Available Isolations: %s", b.input))
+		b.PrintLn(``)
 		for i, m := range b.filtered {
+			selchar := ` `
 			if i == b.selection {
-				b.PrintLn(i+5, fmt.Sprintf("* %s (%d)", m.Isolation.Name, m.Distance))
-			} else {
-				b.PrintLn(i+5, fmt.Sprintf("- %s (%d)", m.Isolation.Name, m.Distance))
+				selchar = `*`
 			}
 
+			b.Printf("\t"+`  [%s] %s`, selchar, m.Isolation.Name)
 		}
 	}
 
 	termbox.Flush()
 }
 
-func (b *Box) updateData() {
-	var err error
-	b.isos, err = b.model.GetAllIsolations()
-	if err != nil {
-		b.ThrowError(errwrap.Wrapf("Failed to update isolations: {{err}}", err))
-		return
-	}
-
-	b.updateFiltered()
-	b.Draw()
-}
-
 func (b *Box) updateFiltered() {
 	b.filtered = []*Entry{}
-	for _, iso := range b.isos {
+	for _, iso := range b.store.State.Isolations {
 		d := Levenshtein(b.input, iso.Name, DefaultCost)
 		b.filtered = append(b.filtered, &Entry{d, iso})
 	}
