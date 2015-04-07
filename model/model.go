@@ -14,6 +14,12 @@ type Model struct {
 	DBPath string
 	Stats  *Stats
 	Events chan Event
+
+	Out []chan Event
+}
+
+func (m *Model) Subscribe(ch chan Event) {
+	m.Out = append(m.Out, ch)
 }
 
 func NewModel(dbpath string) (*Model, error) {
@@ -39,6 +45,13 @@ func NewModel(dbpath string) (*Model, error) {
 	//start tracking events
 	go func() {
 		for ev := range m.Events {
+
+			//1. fan out
+			for _, c := range m.Out {
+				c <- ev
+			}
+
+			//2. handle any milestones
 			if m.Stats.Handle(ev) {
 				err := m.PersistStats()
 				if err != nil {
@@ -46,6 +59,11 @@ func NewModel(dbpath string) (*Model, error) {
 					fmt.Printf("Error: failed to persist new stats: %s", err)
 				}
 			}
+		}
+
+		//close listener
+		for _, c := range m.Out {
+			close(c)
 		}
 	}()
 

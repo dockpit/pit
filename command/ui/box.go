@@ -23,10 +23,6 @@ type Box struct {
 	input     string
 	selection int
 	filtered  []*Entry
-
-	//@todo depcrecated
-	current *model.Isolation
-	errors  []error
 }
 
 func NewBox(m *model.Model, svr *server.Server, client *client.Docker, store *Store) *Box {
@@ -38,10 +34,6 @@ func NewBox(m *model.Model, svr *server.Server, client *client.Docker, store *St
 
 		filtered: []*Entry{},
 		currLn:   0,
-
-		//@todo remove
-		//@todo depcrecated
-		errors: []error{},
 	}
 }
 
@@ -58,12 +50,16 @@ func (b *Box) Init() error {
 func (b *Box) Run() error {
 	defer termbox.Close()
 
-	//@todo rerender on state change
+	//redraw on syncs
+	go func() {
+		for range b.store.Syncs {
+			b.updateFiltered()
+			b.Draw()
+		}
+	}()
 
 	//handle redraw on user input events
 	b.store.Sync()
-	b.updateFiltered()
-	b.Draw()
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
@@ -100,16 +96,7 @@ func (b *Box) Select() {
 		return
 	}
 
-	b.current = b.filtered[b.selection].Isolation
-	err := b.client.Switch(b.current)
-	if err != nil {
-		b.ThrowError(errwrap.Wrapf("Failed to switch isolation: {{err}}", err))
-	}
-}
-
-func (b *Box) ThrowError(err error) {
-	b.errors = append(b.errors, err)
-	b.Draw()
+	b.store.SwitchTo(b.filtered[b.selection].Isolation)
 }
 
 func (b *Box) Printf(format string, a ...interface{}) {
@@ -117,8 +104,17 @@ func (b *Box) Printf(format string, a ...interface{}) {
 }
 
 func (b *Box) PrintLn(str string) {
+	w, _ := termbox.Size()
+
 	y := 0
 	for _, c := range str {
+
+		//jump to next line if message doesnt fit
+		if y == w {
+			y = 0
+			b.currLn++
+		}
+
 		termbox.SetCell(y, b.currLn, c, termbox.ColorDefault, termbox.ColorDefault)
 		y++
 	}
@@ -132,7 +128,7 @@ func (b *Box) Draw() {
 	b.currLn = 0
 	err := termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	if err != nil {
-		b.ThrowError(errwrap.Wrapf("Draw could not clear termbox: {{err}}", err))
+		b.PrintLn(errwrap.Wrapf("Draw could not clear termbox: {{err}}", err).Error())
 		return
 	}
 
@@ -147,7 +143,8 @@ func (b *Box) Draw() {
 
 	//render status lines
 	b.Printf(`Docker Host: %s (%s)`, b.store.State.DockerHostStatus, b.store.State.DockerHostAddress)
-	b.Printf(`Web Interface: Online (%s)`, b.svr.URL()) //@todo replace by hostname
+	b.Printf(`Web Interface: Ok (%s)`, b.svr.URL()) //@todo replace by hostname
+	b.Printf(`Current Isolation: %s (%s)`, b.store.State.CurrentIsolationStatus, b.store.State.CurrentIsolationName)
 
 	//@todo render current isolation
 
@@ -160,7 +157,7 @@ func (b *Box) Draw() {
 	}
 
 	//render isolation or trigger message
-	if len(b.store.State.Isolations) < 1 {
+	if len(b.store.State.Deps) < 1 {
 		b.PrintLn(``)
 		b.PrintLn("\t" + ` Almost there! When you’re done you’ll be`)
 		b.PrintLn("\t" + ` able handle your dependencies with`)
@@ -177,6 +174,15 @@ func (b *Box) Draw() {
 			}
 
 			b.Printf("\t"+`  [%s] %s`, selchar, m.Isolation.Name)
+		}
+	}
+
+	//print errors
+	b.PrintLn(``)
+	if len(b.store.State.Errors) > 0 {
+		b.PrintLn("Errors:")
+		for _, err := range b.store.State.Errors {
+			b.PrintLn("  - " + err.Error())
 		}
 	}
 
