@@ -53,8 +53,9 @@ module.exports = React.createClass({
               {"You don't have any dependencies configured"}
             </div>
             <p>
-              A dependency represents another service you depend on: databases, HTTP APIs, message queues, etc.
+              A dependency represents another service you depend on: a databases, HTTP APIs, message queues, etc.
             </p>
+            <button className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>Add your first</button>
           </div>
         </div></div>
     }
@@ -66,8 +67,7 @@ module.exports = React.createClass({
         </div>
       </h2>
 
-      <button style={{position: 'absolute', top: '10px', right: '10px'}} className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>New Dependency</button>
-
+      {this.state.data.get('deps').size > 0 ? <button style={{position: 'absolute', top: '10px', right: '10px'}} className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>New Dependency</button> : null }
       { this.state.showForm ? <DepForm templates={this.state.data.get('templates')} closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }
 
       {list}
