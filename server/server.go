@@ -82,6 +82,9 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 	mux.Post("/api/deps/:dep_id/states/:state_id/builds", s.BuildDepState)
 	mux.Post("/api/deps/:dep_id/states/:state_id/runs", s.RunDepState)
 
+	mux.Get("/api/stats", s.GetStats)
+	mux.Put("/api/stats", s.PutStats)
+
 	//dashboard
 	mux.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
 		isos, err := s.model.GetAllIsolations()

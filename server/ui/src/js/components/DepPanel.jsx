@@ -1,36 +1,49 @@
 var React = require('react');
 
 var DepActions  = require('../actions/DepActions')
+var StatActions  = require('../actions/StatActions')
 var DepStore = require('../stores/DepStore')
 var IsolationStore = require('../stores/IsolationStore')
+var StatStore = require('../stores/StatStore')
 var DepItem = require("./DepItem.jsx")
 var DepForm = require('./DepForm.jsx')
+var AchievementPopup = require('./AchievementPopup.jsx')
 
 module.exports = React.createClass({
 
   getInitialState: function() {
     return {
       data: DepStore.state(),
+      stats: StatStore.state(),
       isoData: IsolationStore.state(),
       showForm: false,
     }
   },
 
   componentDidMount: function() {
-  	DepStore.on(DepStore.CHANGED, this.onStoreChange)
+  	StatStore.on(StatStore.CHANGED, this.onStoreChange)
+    DepStore.on(DepStore.CHANGED, this.onStoreChange)
     DepStore.on(DepStore.DEP_WAS_CREATED, this.onDepWasCreated)
-
     IsolationStore.on(IsolationStore.CHANGED, this.onStoreChange)    
-    DepActions.refresh()
+    
+    DepActions.refresh()    
+    StatActions.refresh()    
   },
 
   componentDidUnmount: function() {
+    StatStore.removeListener(StatStore.CHANGED, this.onStoreChange)
   	DepStore.removeListener(DepStore.CHANGED, this.onStoreChange)
     DepStore.removeListener(DepStore.DEP_WAS_CREATED, this.onDepWasCreated)
+    IsolationStore.removeListener(IsolationStore.CHANGED, this.onStoreChange)
   },
 
   onStoreChange: function() {
-  	this.setState({data: DepStore.state(), isoData: IsolationStore.state()})
+  	this.setState({
+      data: DepStore.state(), 
+      isoData: IsolationStore.state(),
+      stats: StatStore.state(),
+    })
+
   },
 
   onDepWasCreated: function(newdep) {
@@ -71,9 +84,12 @@ module.exports = React.createClass({
     return <div style={{position: 'relative'}}>
       <h2 className="ui top attached header">
         <div className="content">
-          Dependencies          
+          Dependencies                   
         </div>
       </h2>
+
+      {this.state.stats.get('stats').get("achievements").size > 0 ? <AchievementPopup achievements={this.state.stats.get('stats').get("achievements")}/> : null}
+
 
       {this.state.data.get('deps').size > 0 ? <button style={{position: 'absolute', top: '10px', right: '10px'}} className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon"></i>New Dependency</button> : null }
       { this.state.showForm ? <DepForm templates={this.state.data.get('templates')} closeFormFn={this.closeDepForm} dep={this.state.data.get('selection')}/> : null }

@@ -1,9 +1,8 @@
 package model
 
 import (
-	"encoding/json"
-
 	"code.google.com/p/go-uuid/uuid"
+	"encoding/json"
 )
 
 var MetaBucketName = "meta"
@@ -32,13 +31,28 @@ func (m *Meta) Serialize() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-//stats contain db lifetime counters for certain actions
 type Stats struct {
-	NrOfDepsCreated int `json:"nr_of_deps_created"`
+	NrOfDepsCreated int                  `json:"nr_of_deps_created"`
+	Achievements    map[string]Milestone `json:"achievements"`
 }
 
 func NewStats() (*Stats, error) {
-	return &Stats{}, nil
+	return &Stats{
+		Achievements: map[string]Milestone{},
+	}, nil
+}
+
+func (s *Stats) UpdateAchievements() {
+	for _, ms := range Milestones() {
+		unlocked := ms.IsUnlocked(s)
+		if _, ok := s.Achievements[ms.ID]; ok && !unlocked {
+			//achievement is no longer valid
+			delete(s.Achievements, ms.ID)
+		} else if !ok && unlocked {
+			//unloacked achievement
+			s.Achievements[ms.ID] = ms
+		}
+	}
 }
 
 func (s *Stats) Handle(ev Event) bool {
@@ -47,6 +61,7 @@ func (s *Stats) Handle(ev Event) bool {
 		return true
 	}
 
+	s.UpdateAchievements()
 	return false
 }
 
@@ -54,6 +69,7 @@ func NewStatsFromSerialized(data []byte) (*Stats, error) {
 	var stats *Stats
 	err := json.Unmarshal(data, &stats)
 
+	stats.UpdateAchievements()
 	return stats, err
 }
 
