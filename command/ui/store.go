@@ -62,6 +62,18 @@ func NewStore(m *model.Model, c *client.Docker) (*Store, error) {
 }
 
 func (s *Store) SwitchTo(iso *model.Isolation) {
+
+	//nil means we got the remove all command
+	if iso == nil {
+		err := s.client.RemoveAll()
+		if err != nil {
+			s.State.Errors = append(s.State.Errors, err)
+		}
+
+		s.Sync()
+		return
+	}
+
 	s.State.CurrentIsolationName = iso.Name
 	s.State.CurrentIsolationStatus = "Starting..."
 	s.Syncs <- struct{}{}

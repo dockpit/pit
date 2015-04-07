@@ -173,7 +173,13 @@ func (b *Box) Draw() {
 				selchar = `*`
 			}
 
-			b.Printf("\t"+`  [%s] %s`, selchar, m.Isolation.Name)
+			if m.Distance == -1 {
+				b.PrintLn(``)
+				b.Printf("\t"+`  [%s] %s`, selchar, "Stop all isolations")
+			} else {
+				b.Printf("\t"+`  [%s] %s`, selchar, m.Isolation.Name)
+			}
+
 		}
 
 		b.PrintLn(``)
@@ -203,6 +209,11 @@ func (b *Box) updateFiltered() {
 	if b.input != "" {
 		sort.Sort(ByDistance(b.filtered))
 	}
+
+	b.filtered = append(b.filtered, &Entry{
+		Distance:  -1,
+		Isolation: nil,
+	})
 
 	b.selection = 0
 }
