@@ -30,12 +30,70 @@ func NewModel(dbpath string) (*Model, error) {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize metadata for '%s': {{err}}", dbpath), err)
 	}
 
+	stats, err := m.CreateStatsIfNotExists()
+	if err != nil {
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize stats for '%s': {{err}}", dbpath), err)
+	}
+
+	//start tracking events
+	go func() {
+		for ev := range m.Events {
+			if stats.Handle(ev) {
+				err := m.db.Update(func(tx *bolt.Tx) error {
+					b := tx.Bucket([]byte(MetaBucketName))
+
+					data, err := stats.Serialize()
+					if err != nil {
+						return errwrap.Wrapf(fmt.Sprintf("Failed to serialize stats '%s': {{err}}", stats), err)
+					}
+
+					b.Put([]byte(StatsMetaKey), data)
+					return nil
+				})
+
+				fmt.Println(stats.NrOfDepsCreated)
+
+				if err != nil {
+					//@todo throw this in some sort of error channel
+					fmt.Printf("Error: failed to persist new stats: %s", err)
+				}
+			}
+		}
+	}()
+
 	err = m.UpsertDefaultIsolationIfNotExists()
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to initialize default isolation for db '%s': {{err}}", dbpath), err)
 	}
 
 	return m, nil
+}
+
+func (m *Model) CreateStatsIfNotExists() (*Stats, error) {
+	var stats *Stats
+	err := m.db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(MetaBucketName))
+		if err != nil {
+			return errwrap.Wrapf(fmt.Sprintf("Failed to create meta bucket: {{err}}"), err)
+		}
+
+		data := b.Get([]byte(StatsMetaKey))
+		if data == nil {
+			stats, err = NewStats()
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to create new stats: {{err}}"), err)
+			}
+		} else {
+			stats, err = NewStatsFromSerialized(data)
+			if err != nil {
+				return errwrap.Wrapf(fmt.Sprintf("Failed to deserialize stats data '%s': {{err}}", string(data)), err)
+			}
+		}
+
+		return nil
+	})
+
+	return stats, err
 }
 
 func (m *Model) GetDBMetaData() (*Meta, error) {
