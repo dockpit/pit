@@ -175,6 +175,10 @@ func (b *Box) Draw() {
 
 			b.Printf("\t"+`  [%s] %s`, selchar, m.Isolation.Name)
 		}
+
+		b.PrintLn(``)
+		b.PrintLn(``)
+		b.PrintLn(`Use Esc or Ctrl-C to exit`)
 	}
 
 	//print errors
