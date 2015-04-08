@@ -21,9 +21,11 @@ import (
 	"github.com/dockpit/pit/model"
 )
 
+var DockpitPrefix = "dp"
+var ConnectionTimeout = time.Millisecond * 500
+
 type Docker struct {
 	Host string
-	Info *dockerclient.Info
 
 	client *dockerclient.DockerClient
 	model  *model.Model
@@ -54,17 +56,21 @@ func NewDocker(m *model.Model, host, cert string) (*Docker, error) {
 	}
 
 	//create docker client
-	d.client, err = dockerclient.NewDockerClient(hurl.String(), &tlsc)
+	d.client, err = dockerclient.NewDockerClientTimeout(hurl.String(), &tlsc, ConnectionTimeout)
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to create Docker client for '%s': {{err}}", host), err)
 	}
 
-	d.Info, err = d.client.Info()
+	return d, nil
+}
+
+func (d *Docker) Info() (*dockerclient.Info, error) {
+	info, err := d.client.Info()
 	if err != nil {
-		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to retrieve Docker host info for '%s': {{err}}", host), err)
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to retrieve Docker host info for '%s': {{err}}", d.Host), err)
 	}
 
-	return d, nil
+	return info, nil
 }
 
 func (d *Docker) RemoveAll() error {
@@ -76,7 +82,7 @@ func (d *Docker) RemoveAll() error {
 	for _, c := range cs {
 		remove := false
 		for _, n := range c.Names {
-			if strings.HasPrefix(n[1:], "dockpit-") {
+			if strings.HasPrefix(n[1:], DockpitPrefix) {
 				remove = true
 			}
 		}
@@ -90,6 +96,24 @@ func (d *Docker) RemoveAll() error {
 	}
 
 	return nil
+}
+
+func (d *Docker) Containers() ([]dockerclient.Container, error) {
+	all, err := d.client.ListContainers(true, false, "")
+	if err != nil {
+		return nil, err
+	}
+
+	res := []dockerclient.Container{}
+	for _, c := range all {
+		for _, n := range c.Names {
+			if strings.HasPrefix(n[1:], DockpitPrefix) {
+				res = append(res, c)
+			}
+		}
+	}
+
+	return res, nil
 }
 
 func (d *Docker) Switch(iso *model.Isolation) error {
@@ -110,7 +134,7 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create run from state '%s': {{err}}", state.Name), err)
 		}
 
-		cid, err := d.Start(run)
+		cid, err := d.Start(run, fmt.Sprintf("%s.%s.", DockpitPrefix, iso.ID))
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to start state '%s': {{err}}", state.Name), err)
 		}
@@ -124,14 +148,14 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 	return nil
 }
 
-func (d *Docker) Start(run *model.Run) (string, error) {
+func (d *Docker) Start(run *model.Run, prefix string) (string, error) {
 	var err error
 
 	//container config
 	cconfig := run.State.Settings.ContainerConfig
 	cconfig.Image = run.State.ImageName
 
-	run.ContainerID, err = d.client.CreateContainer(cconfig, run.State.ImageName)
+	run.ContainerID, err = d.client.CreateContainer(cconfig, prefix+run.State.ImageName)
 	if err != nil {
 		return "", errwrap.Wrapf(fmt.Sprintf("Failed to create state container with image '%s': {{err}}, is the state build?", run.State.ImageName), err)
 	}
@@ -221,7 +245,7 @@ func (d *Docker) Build(b *model.Build) (string, error) {
 	}
 
 	// generate an unique image name based on the provider name and path to the state folder
-	iname := fmt.Sprintf("dockpit_%s_%s", dep.Name, state.Name)
+	iname := fmt.Sprintf("%s-%s-%s", DockpitPrefix, dep.Name, state.Name)
 	iname = slug.SlugAscii(iname)
 
 	// fall back to streaming ourselves for building the image, samalba has yet to

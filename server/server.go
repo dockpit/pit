@@ -27,6 +27,7 @@ type Server struct {
 	listener  net.Listener
 	templates map[string]*model.Template
 
+	Version string
 	*http.Server
 }
 
@@ -46,7 +47,8 @@ func New(v, baddr string, m *model.Model, client *client.Docker) (*Server, error
 		listener:  bind.Socket(baddr),
 		templates: map[string]*model.Template{},
 
-		Server: &http.Server{Handler: mux},
+		Version: v,
+		Server:  &http.Server{Handler: mux},
 	}
 
 	//load templates from json assets

@@ -64,7 +64,12 @@ func (c *Start) Run(ctx *cli.Context) error {
 		return errwrap.Wrapf("Failed to init server: {{err}}", err)
 	}
 
-	box := ui.NewBox(m, svr, docker)
+	store, err := ui.NewStore(m, docker)
+	if err != nil {
+		return errwrap.Wrapf("Failed to create store: {{err}}", err)
+	}
+
+	box := ui.NewBox(m, svr, docker, store)
 
 	err = box.Init()
 	if err != nil {
