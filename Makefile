@@ -66,8 +66,12 @@ publish-zip:
 		popd ; \
 	done 
 
-#5 upload zip
-publish-upload:
+#5 create checksums of zip archives
+publish-checksums:
+	cd bin/dist && shasum -a256 * > ./dockpit_$(shell cat VERSION)_SHA256SUMS
+
+#6 upload zip and checksums
+publish-upload: 
 	for FOLDER in ./bin/*_* ; do \
 		NAME=`basename $$FOLDER`_`CAT VERSION` ; \
 		ARCHIVE=bin/dist/$$NAME.zip ; \
@@ -77,5 +81,11 @@ publish-upload:
 	    --tag v$(shell cat VERSION) \
 	    --name $$NAME.zip \
 	    --file $$ARCHIVE ; \
-	done 
+	done	
+	github-release upload \
+	    --user dockpit \
+	    --repo pit \
+	    --tag v$(shell cat VERSION) \
+	    --name dockpit_$(shell cat VERSION)_SHA256SUMS \
+	    --file bin/dist/dockpit_$(shell cat VERSION)_SHA256SUMS
 
