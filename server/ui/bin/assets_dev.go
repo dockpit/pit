@@ -241,6 +241,150 @@ func server_ui_src_ds_store() (*asset, error) {
 	return a, err
 }
 
+// server_ui_src_img_icon_build_image_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_build_image_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_build_image.png"
+	name := "server/ui/src/img/icon_build_image.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_build_image_1x_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_build_image_1x_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_build_image@1x.png"
+	name := "server/ui/src/img/icon_build_image@1x.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_dep_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_dep_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_dep.png"
+	name := "server/ui/src/img/icon_dep.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_dep_1x_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_dep_1x_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_dep@1x.png"
+	name := "server/ui/src/img/icon_dep@1x.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_fixture_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_fixture_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_fixture.png"
+	name := "server/ui/src/img/icon_fixture.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_fixture_1x_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_fixture_1x_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_fixture@1x.png"
+	name := "server/ui/src/img/icon_fixture@1x.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_run_image_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_run_image_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_run_image.png"
+	name := "server/ui/src/img/icon_run_image.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_run_image_1x_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_run_image_1x_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_run_image@1x.png"
+	name := "server/ui/src/img/icon_run_image@1x.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_src_img_logo_brand_png reads file data from disk. It returns an error on failure.
 func server_ui_src_img_logo_brand_png() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/logo_brand.png"
@@ -9143,6 +9287,14 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/head.html": server_ui_head_html,
 	"server/ui/package.json": server_ui_package_json,
 	"server/ui/src/.DS_Store": server_ui_src_ds_store,
+	"server/ui/src/img/icon_build_image.png": server_ui_src_img_icon_build_image_png,
+	"server/ui/src/img/icon_build_image@1x.png": server_ui_src_img_icon_build_image_1x_png,
+	"server/ui/src/img/icon_dep.png": server_ui_src_img_icon_dep_png,
+	"server/ui/src/img/icon_dep@1x.png": server_ui_src_img_icon_dep_1x_png,
+	"server/ui/src/img/icon_fixture.png": server_ui_src_img_icon_fixture_png,
+	"server/ui/src/img/icon_fixture@1x.png": server_ui_src_img_icon_fixture_1x_png,
+	"server/ui/src/img/icon_run_image.png": server_ui_src_img_icon_run_image_png,
+	"server/ui/src/img/icon_run_image@1x.png": server_ui_src_img_icon_run_image_1x_png,
 	"server/ui/src/img/logo_brand.png": server_ui_src_img_logo_brand_png,
 	"server/ui/src/img/logo_brand@2x.png": server_ui_src_img_logo_brand_2x_png,
 	"server/ui/src/js/actions/DepActions.js": server_ui_src_js_actions_depactions_js,
@@ -9706,6 +9858,22 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 				".DS_Store": &_bintree_t{server_ui_src_ds_store, map[string]*_bintree_t{
 				}},
 				"img": &_bintree_t{nil, map[string]*_bintree_t{
+					"icon_build_image.png": &_bintree_t{server_ui_src_img_icon_build_image_png, map[string]*_bintree_t{
+					}},
+					"icon_build_image@1x.png": &_bintree_t{server_ui_src_img_icon_build_image_1x_png, map[string]*_bintree_t{
+					}},
+					"icon_dep.png": &_bintree_t{server_ui_src_img_icon_dep_png, map[string]*_bintree_t{
+					}},
+					"icon_dep@1x.png": &_bintree_t{server_ui_src_img_icon_dep_1x_png, map[string]*_bintree_t{
+					}},
+					"icon_fixture.png": &_bintree_t{server_ui_src_img_icon_fixture_png, map[string]*_bintree_t{
+					}},
+					"icon_fixture@1x.png": &_bintree_t{server_ui_src_img_icon_fixture_1x_png, map[string]*_bintree_t{
+					}},
+					"icon_run_image.png": &_bintree_t{server_ui_src_img_icon_run_image_png, map[string]*_bintree_t{
+					}},
+					"icon_run_image@1x.png": &_bintree_t{server_ui_src_img_icon_run_image_1x_png, map[string]*_bintree_t{
+					}},
 					"logo_brand.png": &_bintree_t{server_ui_src_img_logo_brand_png, map[string]*_bintree_t{
 					}},
 					"logo_brand@2x.png": &_bintree_t{server_ui_src_img_logo_brand_2x_png, map[string]*_bintree_t{

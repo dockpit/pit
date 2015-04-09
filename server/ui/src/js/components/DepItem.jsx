@@ -40,11 +40,9 @@ var DepStateItem = React.createClass({
 			<div className="content">
 				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
 					{st.get('name')}
-					{imageName ? <span> (image: {imageName})</span> : null}
+					
 				</a>
-				<div className="description">In isolations: {isolations.size > 0 ? isolations.map(function(iso, i){
-					return <em key={i}>{i ? ', ' : null}'{iso.get('name')}'</em>
-				}) : <em>none</em>}</div>				
+				<div className="description">{imageName ? <span> (image: {imageName})</span> : null}</div>			
 			</div>			
 		</div>
 	}
@@ -59,16 +57,17 @@ module.exports = React.createClass({
 
 	componentDidMount: function() {
 		var me = this
-		$(React.findDOMNode(this.refs.addStateBtn))
-		  .popup({
+		var conf = {
 		    inline   : true,
 		    on    : 'click',
 		    position : 'right center',
+		    target: $(React.findDOMNode(me.refs.addStateBtn)),
 		    onVisible: function() {
 		    	React.findDOMNode(me.refs.stateNameInput).focus()
 		    }
-		  })
-		;
+		  }
+
+		$(React.findDOMNode(this.refs.addStateArea)).popup(conf);
 	},
 
 	removeDep: function() {
@@ -90,32 +89,52 @@ module.exports = React.createClass({
 		}
 
 		React.findDOMNode(this.refs.stateNameInput).value = ''
-		$(React.findDOMNode(this.refs.addStateBtn)).popup('hide')
+		$(React.findDOMNode(this.refs.addStateArea)).popup('hide')
 	},
 
 	render: function() {
 		var me = this
 		var dep = this.props.dep
+		
+		return <div>
+			<h3 onMouseEnter={this.enter} onMouseLeave={this.leave} className="ui top attached header">
+				{dep.get('name')} 
+				{this.state.hover ? <button onClick={this.removeDep} style={{margin: '0px 0px -10px 10px'}} className="circular ui compact red icon small button"><i className="trash icon"></i></button> : null }
+			</h3>
+			<div className="ui list attached segment">
+				{dep.get('states').map(function(st){
+					return <DepStateItem isolations={me.props.isolations} key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
+				})}			
+			</div>
+			<div className="ui attached bottom secondary segment">
+			  
+				<div ref="addStateArea">
+					<button ref="addStateBtn" className="basic circular ui icon button">
+					  <i className="icon plus"></i>
+					</button>
+					<div style={{width: '700px'}} className="ui popup">
+						<form onSubmit={this.submitNewState} className="ui action input">
+						  <input style={{border: '1px solid #DFDFDF'}} ref="stateNameInput" type="text" placeholder="e.g two users, no users"/>
+						  <button type="submit" className="ui icon button">
+						    <i className="save icon"></i>
+						  </button>
+						</form>
+					</div>
+
+					<a href="#" ref="addStateLink">{'Add new ' + dep.get('name') + ' image...'}</a>
+				</div>	
+
+			</div>
+
+		</div>
+
+
+
 		return <div className="ui attached segment" style={{position: 'relative'}}>		
 			<div className="content">
 				<h3 onMouseEnter={this.enter} onMouseLeave={this.leave} className="header">{dep.get('name')} {this.state.hover ? <button onClick={this.removeDep} style={{margin: '0px 0px -10px 10px'}} className="circular ui compact red icon small button"><i className="trash icon"></i></button> : null }</h3>
 				<div className="ui list">
-					{dep.get('states').map(function(st){
-						return <DepStateItem isolations={me.props.isolations} key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
-					})}
-					<div style={{paddingLeft: '20px'}} className="item dp-add-state">
-						<a ref="addStateBtn"><i style={{fontSize: '0.65em'}} className="plus icon"></i>Add {me.props.dep.get('name')} state...</a>
-
-						<div style={{width: '700px'}} className="ui popup">
-							<form onSubmit={this.submitNewState} className="ui action input">
-							  <input style={{border: '1px solid #DFDFDF'}} ref="stateNameInput" type="text" placeholder="e.g two users, no users"/>
-							  <button type="submit" className="ui icon button">
-							    <i className="save icon"></i>
-							  </button>
-							</form>
-						</div>
-
-					</div>
+					
 			    </div>
 				
 			</div>
