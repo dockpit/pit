@@ -39,10 +39,9 @@ var DepStateItem = React.createClass({
 			<i className="angle right icon"></i>
 			<div className="content">
 				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
-					{st.get('name')}
-					
+					<h4>{st.get('name')}</h4>				
 				</a>
-				<div className="description">{imageName ? <span> (image: {imageName})</span> : null}</div>			
+				<div className="description">Image: {imageName ? <span>'(image: '+{imageName}+')'</span> : '<none>'}</div>			
 			</div>			
 		</div>
 	}
@@ -96,11 +95,11 @@ module.exports = React.createClass({
 		var me = this
 		var dep = this.props.dep
 		
-		return <div>
-			<h3 onMouseEnter={this.enter} onMouseLeave={this.leave} className="ui top attached header">
-				{dep.get('name')} 
-				{this.state.hover ? <button onClick={this.removeDep} style={{margin: '0px 0px -10px 10px'}} className="circular ui compact red icon small button"><i className="trash icon"></i></button> : null }
+		return <div onMouseEnter={this.enter} onMouseLeave={this.leave} style={{position: 'relative'}}>
+			<h3 className="ui top attached header">
+				{dep.get('name')} 				
 			</h3>
+			{this.state.hover ? <button onClick={this.removeDep} style={{position: 'absolute', top: '10px', right: '10px'}} className="circular ui compact basic icon small button"><i className="trash icon"></i></button> : null }
 			<div className="ui list attached segment">
 				{dep.get('states').map(function(st){
 					return <DepStateItem isolations={me.props.isolations} key={dep.get('name')+st.get('name')} dep={dep} state={st}/>
@@ -109,7 +108,7 @@ module.exports = React.createClass({
 			<div className="ui attached bottom secondary segment">
 			  
 				<div ref="addStateArea">
-					<button ref="addStateBtn" className="basic circular ui icon button">
+					<button ref="addStateBtn" className="basic tiny circular ui icon button">
 					  <i className="icon plus"></i>
 					</button>
 					<div style={{width: '700px'}} className="ui popup">
@@ -121,23 +120,11 @@ module.exports = React.createClass({
 						</form>
 					</div>
 
-					<a href="#" ref="addStateLink">{'Add new ' + dep.get('name') + ' image...'}</a>
+					<a href="#" ref="addStateLink"> {'Add new ' + dep.get('name') + ' image...'}</a>
 				</div>	
 
 			</div>
 
 		</div>
-
-
-
-		return <div className="ui attached segment" style={{position: 'relative'}}>		
-			<div className="content">
-				<h3 onMouseEnter={this.enter} onMouseLeave={this.leave} className="header">{dep.get('name')} {this.state.hover ? <button onClick={this.removeDep} style={{margin: '0px 0px -10px 10px'}} className="circular ui compact red icon small button"><i className="trash icon"></i></button> : null }</h3>
-				<div className="ui list">
-					
-			    </div>
-				
-			</div>
-		</div>;
 	}
 });
