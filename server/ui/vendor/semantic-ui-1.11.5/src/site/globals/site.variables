@@ -1,0 +1,23 @@
+/*******************************
+     User Global Variables
+*******************************/
+
+@headerFont        : 'Roboto', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+@pageFont          : 'Roboto', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+@googleFontFamily  : 'Roboto:400,700,300';
+
+/* global colors */
+@blue             : #8CD2F4;
+@red              : #FF3751;
+
+@linkColor : @blue;
+
+/* brand */
+@primaryColor        : @blue;
+@secondaryColor      : @red;
+
+@pageBackground      : @white;
+
+/* borders (segments etc) */
+
+@solidBorderColor              : #E5E5E5;

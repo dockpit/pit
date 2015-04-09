@@ -94,6 +94,13 @@ func (v *View) Render(w http.ResponseWriter, name string, data map[string]interf
 	data["DockerHostIP"] = v.dockerHostIP
 	data["DBPath"] = filepath.Join(cwd, v.dbPath)
 
+	rel, err := filepath.Rel(filepath.Join(cwd, ".."), cwd)
+	if err != nil {
+		rel = "/"
+	}
+
+	data["RelDBPath"] = filepath.Join(rel, v.dbPath)
+
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to execute template '%s': %s", name, err), http.StatusInternalServerError)
@@ -101,9 +108,13 @@ func (v *View) Render(w http.ResponseWriter, name string, data map[string]interf
 }
 
 func (v *View) RenderDashboard(w http.ResponseWriter, isos []*model.Isolation, deps []*model.Dep) {
-	v.Render(w, filepath.Join(TemplateDir, "dashboard.html"), map[string]interface{}{"Isolations": isos, "Deps": deps})
+	v.Render(w, filepath.Join(TemplateDir, "dashboard.html"), map[string]interface{}{
+		"Isolations": isos,
+		"Deps":       deps,
+		"Title":      "Dashboard",
+	})
 }
 
 func (v *View) RenderEditor(w http.ResponseWriter, dep *model.Dep, s *model.State) {
-	v.Render(w, filepath.Join(TemplateDir, "editor.html"), map[string]interface{}{"Dep": dep, "State": s})
+	v.Render(w, filepath.Join(TemplateDir, "editor.html"), map[string]interface{}{"Dep": dep, "State": s, "Title": "Editor"})
 }

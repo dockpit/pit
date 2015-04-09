@@ -1,0 +1,31 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+
+@invertedBoxShadow:
+  0px 0px 0px 1px @black, @black
+;
+
+@invertedTextColor           : @black;
+
+@invertedBackground : #F6F6F6;
+@invertedHeaderBackground: transparent;
+
+@invertedSubMenuColor: @invertedUnselectedTextColor;
+
+@invertedHoverBackground: rgba(255, 255, 255, 0.1);
+@invertedHoverColor: lighten(@invertedTextColor, 80);
+
+@invertedMenuPressedBackground: rgba(255, 255, 255, 0.15);
+@invertedMenuPressedColor: @black;
+
+@invertedActiveBackground: rgba(255, 255, 255, 0.2);
+@invertedActiveColor: @black;
+@invertedSubMenuActiveBackground: transparent;
+@invertedSubMenuActiveColor: @black;
+
+@invertedDividerBackground: linear-gradient(
+  rgba(0, 0, 0, 0.03) 0%,
+  rgba(0, 0, 0, 0.1) 50%,
+  rgba(0, 0, 0, 0.03) 100%)
+;

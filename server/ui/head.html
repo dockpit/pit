@@ -17,15 +17,17 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=0.7, user-scalable=no">
-  <title>Dockpit {{.Version}}</title>
+  <title>Dockpit {{.Version}} | {{.Title}}</title>
 </head>
 <body>
 
-<nav class="ui menu">
+<nav class="ui inverted menu">
+  <img style="padding-left: 10px;" class="fitted item" src="/static/src/img/logo_brand.png" />  
   <div class="header item">
-    <a href="/">Dockpit {{.Version}}</a>
+    <a href="/"> Dockpit {{.Version}}</a>
   </div>
-  <a href="/" class="item">
-    {{.DBPath}}
-  </a>  
+  <div class="item">
+    <a href="/">{{.RelDBPath}}</a>/<b>{{.Title}}</b>
+  </div>
+
 </nav>
