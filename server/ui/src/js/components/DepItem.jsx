@@ -36,12 +36,12 @@ var DepStateItem = React.createClass({
 
 		return <div className="item" onMouseEnter={this.enter} onMouseLeave={this.leave}>
 			{this.state.hover ? <button style={{margin: '5px 5px 0 0'}} className="right floated circular compact ui red icon mini button" onClick={this.removeDepState}><i className="trash icon"></i></button> : null }
-			<i className="angle right icon"></i>
+			{imageName ? <img className="ui avatar image" src="/static/src/img/icon_built_image.png"/> : <img className="ui avatar image" src="/static/src/img/icon_unbuilt_image.png"/>}
 			<div className="content">
 				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
 					<h4>{st.get('name')}</h4>				
 				</a>
-				<div className="description">Image: {imageName ? <span>'(image: '+{imageName}+')'</span> : '<none>'}</div>			
+				<div className="description">Image: {imageName ? <span>'(image: '+{imageName}+')'</span> : <em>not yet build</em>}</div>			
 			</div>			
 		</div>
 	}
@@ -96,7 +96,8 @@ module.exports = React.createClass({
 		var dep = this.props.dep
 		
 		return <div onMouseEnter={this.enter} onMouseLeave={this.leave} style={{position: 'relative'}}>
-			<h3 className="ui top attached header">
+			<h3 style={{paddingLeft: "50px"}} className="ui top attached header">
+				<img style={{position: "absolute", top: "5px", left: "-10px", "zIndex": 100}} src={depIconPath(dep)} />
 				{dep.get('name')} 				
 			</h3>
 			{this.state.hover ? <button onClick={this.removeDep} style={{position: 'absolute', top: '10px', right: '10px'}} className="circular ui compact basic icon small button"><i className="trash icon"></i></button> : null }

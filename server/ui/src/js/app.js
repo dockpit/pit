@@ -29,6 +29,11 @@ if (ew) {
   React.render(<EditorWorkspace dockerHostIp={DOCKER_HOST_IP} depId={parts[2]} stateId={parts[4]}/>, ew)
 }
 
+//@todo find more elegant solution
+window.depIconPath = function(dep) {
+  return dep.get('template').get('icons')+"/icon_t_"+dep.get('template').get('id')+".png"
+}
+
 // track certain action
 Dispatcher.register(function(a){
   switch (a.type) {

@@ -10,6 +10,7 @@
 	},
 	"postgres": {
 		"id": "postgres", 
+		"icons": "/static/src/img",
 		"name": "PostgreSQL",
 		"category": "Data Stores",
 		"default_name": "postgres",
@@ -31,6 +32,7 @@
 
 	"etcd": {
 		"id": "etcd", 
+		"icons": "/static/src/img",
 		"name": "etcd",
 		"category": "Service Discovery",
 		"default_name": "etcd",
@@ -52,6 +54,7 @@
 
 	"api-blueprint": {
 		"id": "api-blueprint", 
+		"icons": "/static/src/img",
 		"name": "API Blueprint",
 		"category": "API Mocking",
 		"default_name": "",
