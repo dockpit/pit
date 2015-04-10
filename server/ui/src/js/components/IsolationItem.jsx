@@ -30,7 +30,7 @@ var IsolationStateItem = React.createClass({
 
 		return <tr>
 			<td width="20"><img style={{opacity: 0.2}} height="20" src={depIconPath(st.dep, "0,7")} /></td>
-			<td>{st.dep.get('name')} @ <em>{st.state.get('name')}</em></td>
+			<td>{st.dep.get('name')} <b>@</b> <a href={"/deps/"+st.dep.get('id')+"/states/"+st.state.get('id')}>{st.state.get('name')}</a></td>
 			{ this.props.isSelected ? <td width="50" style={{textAlign: 'right'}}><button onClick={this.removeIsolationState} className="circular ui basic icon button mini"><i className="remove icon"></i></button></td> : null }
 		</tr>	
 	}

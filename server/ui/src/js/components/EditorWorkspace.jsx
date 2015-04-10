@@ -55,7 +55,7 @@ var EditorCompleteForm = React.createClass({
 
 				<div className="actions">						
 					<button className="ui button basic" onClick={this.props.closeFormFn}>Cancel</button>		
-					<button className="ui button green" onClick={this.submitForm}>Save</button>
+					<button className="ui button primary" onClick={this.submitForm}>Save</button>
 				</div>
 			</div>
 		</div>

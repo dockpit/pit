@@ -123,8 +123,12 @@ func (s *Store) Sync() {
 		running := []string{}
 		for _, c := range s.State.Containers {
 			for _, n := range c.Names {
-				isoid := strings.Split(n, ".")[1]
+				split := strings.Split(n, ".")
+				if len(split) < 2 {
+					continue
+				}
 
+				isoid := split[1]
 				for _, iso := range s.State.Isolations {
 					if iso.ID == isoid {
 						running = append(running, iso.Name)

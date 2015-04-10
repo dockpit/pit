@@ -102,15 +102,15 @@ EditorStore.dispatchToken = Dispatcher.register(function(a){
                 if(err) {
                   clearInterval(EditorStore.interval)
                   return console.error(err)
-                }
+                }                
 
-                var status = JSON.parse(res.text)
+                var status = JSON.parse(res.text)                
                 state = state.set('run', Immutable.fromJS(status))
                 state = state.set('output', status.output)              
-                state = state.set('error', status.error)
-                EditorStore.emit(EditorStore.STATE_CHANGED)  
+                state = state.set('error', status.error)                
+                EditorStore.emit(EditorStore.STATE_CHANGED)                  
 
-                if(status.error != "") {
+                if(status.error != "") {                  
                   clearInterval(EditorStore.interval)
                   console.error('Run failed:', status.error) 
                 }                

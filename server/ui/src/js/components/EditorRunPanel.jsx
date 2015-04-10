@@ -7,8 +7,13 @@ var EditorStore = require('../stores/EditorStore')
 var EditorRunContainerInfo = React.createClass({
 	render: function() {
 		var me = this
-
+		var noports = <div className="ui horizontal divider">no exposed ports</div>
 		var bindings = []
+
+		if (!this.props.info.get('NetworkSettings').get("Ports") ){
+			return noports
+		}
+
 		this.props.info.get('NetworkSettings').get("Ports").forEach(function(hconfs, cport){
 			if(!hconfs) {
 				return
@@ -21,7 +26,7 @@ var EditorRunContainerInfo = React.createClass({
 		})
 
 		if (bindings.length == 0) {
-			return <div className="ui horizontal divider">no exposed ports</div>
+			return noports
 		}
 
 		return <div>
@@ -67,17 +72,17 @@ var EditorRunPanel = React.createClass({
 
 			<div className="ui two steps attached top">
 			  <a onClick={this.startBuild} className={'step' + (this.props.build.get('is_running') ? ' disabled': '')}>
-			    {this.props.build.get('is_running') ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="repeat icon"></i>} 
+			    {this.props.build.get('is_running') ? <div style={{fontSize: '1em', position: "absolute", top: "10px", left: "10px"}} className="ui active icon inline loader"></div> : <img style={{position: "absolute", top: 0, left: "-4px", opacity: (this.props.build.get('is_running') ? 0.3 : 1)}} src="/static/src/img/icon_build_image@1x.png"/>} 
 
-			    <div className="content">
+			    <div style={{paddingLeft: '30px'}} className="content">
 			      <div className="title">1. Build</div>
 			      <div className="description">Create a Docker Image</div>
 			    </div>
 			  </a>
 			  <a onClick={this.startRun} className={'step' + (!this.props.build.get('image_name') || runRunning  ? ' disabled' : '')}>
-			  	{runRunning ? <div style={{fontSize: '1em'}} className="ui active icon inline loader"></div> : <i className="terminal icon"></i>} 
+			  	{runRunning ? <div style={{fontSize: '1em', position: "absolute", top: "10px", left: "20px"}} className="ui active icon inline loader"></div> : <img style={{position: "absolute", top: "3px", left: "10px", zIndex: 100, opacity: (!this.props.build.get('image_name') || runRunning ? 0.3 : 1)}} src="/static/src/img/icon_run_image@1x.png"/>} 
 			
-			    <div className="content">
+			    <div style={{paddingLeft: '30px'}} className="content">
 			      <div className="title">2. Test</div>
 			      <div className="description">Run the Image</div>
 			    </div>
@@ -95,9 +100,8 @@ var EditorRunPanel = React.createClass({
 
 			{this.props.run.get('container_info') ? <EditorRunContainerInfo dockerHostIp={this.props.dockerHostIp} info={this.props.run.get('container_info')}/> : <div className="ui divider"></div>}
 
-
-			<div onClick={this.props.completedFn} className={'ui fluid icon positive button'+ (this.props.run.get('is_ready') ? '' : ' disabled')}>
-				3. Complete State <i className="right checkmark icon"></i>
+			<div onClick={this.props.completedFn} className={'ui fluid icon primary button'+ (this.props.run.get('is_ready') ? '' : ' disabled')}>
+				3. Complete Image <i className="right checkmark icon"></i>
 			</div>      	
 		</div>
 }})

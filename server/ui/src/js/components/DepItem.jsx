@@ -41,7 +41,7 @@ var DepStateItem = React.createClass({
 				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
 					<h4 style={{color: BRAND_BLUE, fontWeight: "normal"}}>{st.get('name')}</h4>				
 				</a>
-				<div className="description">Image: {imageName ? <span>'(image: '+{imageName}+')'</span> : <em>not yet build</em>}</div>			
+				<div className="description">Image: {imageName ? <span>{imageName}</span> : <em>not yet build</em>}</div>			
 			</div>			
 		</div>
 	}

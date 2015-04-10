@@ -46,17 +46,6 @@ module.exports = React.createClass({
     }
 
     var list = <IsolationList deps={this.state.depData.get('deps')} selection={this.state.data.get('selection')} isolations={this.state.data.get('isolations')}/>
-    if (this.state.data.get('isolations').size < 1) {
-      list = <div className="ui icon message">
-          <i className="cube icon"></i>
-          <div className="content">
-            <div className="header">
-              {"You don't have any isolations yet"}
-            </div>
-            <p>An isolation groupa a set of dependencies in certain states</p>
-          </div>
-        </div>
-    }
 
     return <div className="ui" style={{position: 'relative'}}>
       <h2 style={{paddingLeft: "50px"}} className={'ui top attached header ' + (disabled ? 'disabled': null)}>

@@ -87,7 +87,7 @@ var EditorACE = React.createClass({
 
     updateDimensions: function() {    	
         this.setState({        
-        	height: $(window).height() - 190
+        	height: $(window).height() - 205
         });
     },
 
@@ -105,11 +105,16 @@ var EditorACE = React.createClass({
     },
 
 	render: function(){
-		return <div>
-			<div style={{float: 'right', zIndex: 100}} className="ui top right attached label">{this.mode.split('/')[2]}</div>
-			<div style={{float: 'left', width: '100%', marginTop: '0px !important', height: this.state.height + 'px'}} id={'editor-'+this.props.nr} ref="editor"></div>
-			
-			{!this.props.file.get('file').get('is_locked') ? <button style={{marginTop: '10px'}} onClick={this.saveFile} className="ui button basic">Save</button> : null}
+		return <div className={'ui tab'+ (this.props.active ? ' active' : '')}>
+			<div style={{borderTop: "none"}} className="ui attached segment">
+				<div style={{float: 'right', zIndex: 100}} className="ui top right attached label">{this.mode.split('/')[2]}</div>
+			</div>
+			<div style={{padding: 0}} className={'ui attached segment'}>				
+				<div style={{float: 'left', width: '100%', marginTop: '0px !important', height: this.state.height + 'px'}} id={'editor-'+this.props.nr} ref="editor"></div>							
+			</div>
+			<div className="ui bottom attached secondary segment">
+				{!this.props.file.get('file').get('is_locked') ? <button onClick={this.saveFile} className="basic tiny ui button">Save</button> : null}
+			</div>
 		</div>
 	}
 })
@@ -348,7 +353,7 @@ var EditorSettings = React.createClass({
 			<EditorPortTable bindingsUpdatedFn={this.bindingsUpdated} portBindings={this.props.state.get('settings').get('host_config').get('PortBindings')}  />
 
 			<div className="ui divider"></div>
-			<div className="ui positive button" onClick={this.validateForm}>
+			<div className="ui primary button" onClick={this.validateForm}>
 				  <i className="checkmark icon"></i>
 				  Save
 			</div>	
@@ -441,15 +446,14 @@ module.exports = React.createClass({
 			{me.props.activeFile == '__settings' ? <EditorSettings depId={me.props.depId} state={me.props.state} activeFile={me.props.activeFile}/> : null }
 
 			{files.map(function(f, i){				
-				return <div key={f.get('name')} className={'ui bottom attached tab segment'+ (f.get('name') == me.props.activeFile ? ' active' : '')}>
-					<EditorACE 
+				return <EditorACE 
+						 key={f.get('name')}
 						state={me.props.state} 
 						setDirtyFn={me.setDirty}
 						depId={me.props.depId} 
 						active={f.get('name') == me.props.activeFile ? true : false} 
 						file={f} 
 						nr={i}/>
-				</div>
 			})}
 		</div>
 	}

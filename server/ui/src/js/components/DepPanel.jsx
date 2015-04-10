@@ -90,13 +90,12 @@ module.exports = React.createClass({
     //empty list? no grid but a message
     if (this.state.data.get('deps').size < 1) {
       list = <div className="ui attached bottom segment"><div className="ui icon message">
-          <i className="database icon"></i>
           <div className="content">
             <div className="header">
-              {"You don't have any dependencies configured"}
+              {"You don't have any dependencies configured yet!"}
             </div>
             <p>
-              A dependency represents another service you depend on: a databases, HTTP APIs, message queues, etc.
+              A dependency represents another service you depend on: a <b>databases</b>, <b>HTTP APIs</b>, <b>message queues</b>, etc.
             </p>
             <button className="ui labeled icon button primary" onClick={this.openDepForm}><i className="plus icon">
               </i>Add your first
