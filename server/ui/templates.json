@@ -1,6 +1,7 @@
 {
 	"custom": {
 		"id": "custom", 
+		"icons": "/static/src/img",
 		"name": "Custom",
 		"category": "",
 		"default_name": "",

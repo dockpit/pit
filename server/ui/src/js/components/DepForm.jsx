@@ -3,6 +3,15 @@ var Immutable = require('immutable')
 
 var DepActions  = require('../actions/DepActions')
 
+var TemplateItem = React.createClass({
+	render: function() {
+		return <a style={{position: 'relative'}} onClick={this.props.selectTemplateFn} className={'item' + (this.props.selected ? ' blue active' : '')}>
+			<img style={{position: 'absolute', left: "0.5em", top: "0.5em"}} height="20" src={tmplIconPath(this.props.template)}/>
+			<span style={{paddingLeft: "20px", color: BRAND_BLUE}}>{this.props.template.get('name')}</span>
+		</a>
+	}
+})
+
 var TemplateSelector = React.createClass({
 	getInitialState: function(){
 		return {
@@ -13,6 +22,7 @@ var TemplateSelector = React.createClass({
 
 	componentDidMount: function() {
 		$(React.findDOMNode(this.refs.accordion)).accordion()
+		$(React.findDOMNode(this.refs.accordion)).accordion("open", 0)
 	},
 
 	selectTemplate: function(t, cat) {
@@ -46,27 +56,27 @@ var TemplateSelector = React.createClass({
 			}
 		})
 
+
+
+
 		var items = []
 		categories.forEach(function(v, k){
 			if (v.get('files')) {
-				items.push(<a key={k} onClick={me.selectTemplate.bind(me, v, v.get('id'))} className={'item' + (me.state.selectedCat == v.get('id') ? ' blue active' : '')}>
-        				{v.get('name')}
-      				</a>)
+				items.unshift(<TemplateItem template={v} key={k} selected={me.state.selectedCat == v.get('id')} selectTemplateFn={me.selectTemplate.bind(me, v, v.get('id'))} />)
 			} else {
 				items.push(<div key={k} className={'item' + (me.state.selectedCat == v.get('name') ? ' blue active' : '')}>
       				<a className="title">
-      					<i className="dropdown icon"></i>
+      					<i style={{left: 0}} className="dropdown icon"></i>
         				<em>{v.get('name')}</em>
       				</a>
       				<div className="content">
       					<div className="menu transition hidden">
       						{v.get('templates').map(function(t){
-      							return <a 
-      							onClick={me.selectTemplate.bind(me, t, v.get('name'))} 
+      							return <TemplateItem 
+      							template={t} 
       							key={t.get('id')} 
-      							className={'item'+ (me.state.selected == t.get('id') ? ' active' : '')}>
-      								{t.get('name')}
-      							</a>
+      							selected={me.state.selected == t.get('id')} 
+      							selectTemplateFn={me.selectTemplate.bind(me, t, v.get('name'))} />
       						})}
       					</div>
       				</div>
@@ -151,19 +161,18 @@ module.exports = React.createClass({
 	},
 
 	render: function(){
-
-
 		return <div onClick={this.props.closeFormFn} className="ui dimmer modals page transition visible active">
-			<div onClick={this.preventClickPropagation} style={{top: '150px'}} className="ui modal transition small visible active">
-				<div className="header">
+			<div onClick={this.preventClickPropagation} style={{top: '0px'}} className="ui modal transition small visible active">
+				<div style={{paddingLeft: '60px'}} className="header">
+				  <img style={{position: 'absolute', top: '5px', left: '5px'}} src="/static/src/img/icon_dep@1x.png"/>
 			      Create a new Dependency
 			    </div>
 
 			    <div className="content">
 					<form ref="form" className="ui form">
+						<div className="ui error message"></div>
 
 						<div className="required field">
-							<label>Type</label>
 							<TemplateSelector selectTemplateFn={this.selectTemplate} templates={this.props.templates}/>
     					</div>
 
@@ -175,8 +184,8 @@ module.exports = React.createClass({
 				</div>
 
 				<div className="actions">						
-					<button className="ui button" onClick={this.props.closeFormFn}>Cancel</button>		
-					<button className="ui button green" onClick={this.submitForm}>Create Dependency</button>
+					<button className="ui basic button" onClick={this.props.closeFormFn}>Cancel</button>		
+					<button className="ui button primary" onClick={this.submitForm}>Create Dependency</button>
 				</div>
 			</div>
 		</div>

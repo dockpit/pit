@@ -439,6 +439,42 @@ func server_ui_src_img_icon_t_api_blueprint_0_7x_png() (*asset, error) {
 	return a, err
 }
 
+// server_ui_src_img_icon_t_custom_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_t_custom_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_t_custom.png"
+	name := "server/ui/src/img/icon_t_custom.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_src_img_icon_t_custom_0_7x_png reads file data from disk. It returns an error on failure.
+func server_ui_src_img_icon_t_custom_0_7x_png() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_t_custom@0,7x.png"
+	name := "server/ui/src/img/icon_t_custom@0,7x.png"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_src_img_icon_t_etcd_png reads file data from disk. It returns an error on failure.
 func server_ui_src_img_icon_t_etcd_png() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/src/img/icon_t_etcd.png"
@@ -9442,6 +9478,8 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/src/img/icon_run_image@1x.png": server_ui_src_img_icon_run_image_1x_png,
 	"server/ui/src/img/icon_t_api-blueprint.png": server_ui_src_img_icon_t_api_blueprint_png,
 	"server/ui/src/img/icon_t_api-blueprint@0,7x.png": server_ui_src_img_icon_t_api_blueprint_0_7x_png,
+	"server/ui/src/img/icon_t_custom.png": server_ui_src_img_icon_t_custom_png,
+	"server/ui/src/img/icon_t_custom@0,7x.png": server_ui_src_img_icon_t_custom_0_7x_png,
 	"server/ui/src/img/icon_t_etcd.png": server_ui_src_img_icon_t_etcd_png,
 	"server/ui/src/img/icon_t_etcd@0,7x.png": server_ui_src_img_icon_t_etcd_0_7x_png,
 	"server/ui/src/img/icon_t_postgres.png": server_ui_src_img_icon_t_postgres_png,
@@ -10031,6 +10069,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 					"icon_t_api-blueprint.png": &_bintree_t{server_ui_src_img_icon_t_api_blueprint_png, map[string]*_bintree_t{
 					}},
 					"icon_t_api-blueprint@0,7x.png": &_bintree_t{server_ui_src_img_icon_t_api_blueprint_0_7x_png, map[string]*_bintree_t{
+					}},
+					"icon_t_custom.png": &_bintree_t{server_ui_src_img_icon_t_custom_png, map[string]*_bintree_t{
+					}},
+					"icon_t_custom@0,7x.png": &_bintree_t{server_ui_src_img_icon_t_custom_0_7x_png, map[string]*_bintree_t{
 					}},
 					"icon_t_etcd.png": &_bintree_t{server_ui_src_img_icon_t_etcd_png, map[string]*_bintree_t{
 					}},

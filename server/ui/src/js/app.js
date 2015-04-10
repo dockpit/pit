@@ -31,7 +31,11 @@ if (ew) {
 
 //@todo find more elegant solution
 window.depIconPath = function(dep, scale) {
-  return dep.get('template').get('icons')+"/icon_t_"+dep.get('template').get('id') + (scale ? "@"+scale+"x" : "") + ".png"
+  return tmplIconPath(dep.get('template'), scale)
+}
+
+window.tmplIconPath = function(tmpl, scale) {
+ return tmpl.get('icons')+"/icon_t_"+tmpl.get('id') + (scale ? "@"+scale+"x" : "") + ".png" 
 }
 
 window.BRAND_BLUE = "#8CD2F4"

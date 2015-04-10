@@ -1,3 +1,9 @@
 /*******************************
          Site Overrides
 *******************************/
+
+@borderRadius: 0;
+
+@headerBackground: @white;
+
+@actionBackground: #FdFdFd;
