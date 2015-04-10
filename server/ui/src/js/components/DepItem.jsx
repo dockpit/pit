@@ -39,7 +39,7 @@ var DepStateItem = React.createClass({
 			{imageName ? <img className="ui avatar image" src="/static/src/img/icon_built_image.png"/> : <img className="ui avatar image" src="/static/src/img/icon_unbuilt_image.png"/>}
 			<div className="content">
 				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
-					<h4>{st.get('name')}</h4>				
+					<h4 style={{color: BRAND_BLUE, fontWeight: "normal"}}>{st.get('name')}</h4>				
 				</a>
 				<div className="description">Image: {imageName ? <span>'(image: '+{imageName}+')'</span> : <em>not yet build</em>}</div>			
 			</div>			
@@ -121,7 +121,7 @@ module.exports = React.createClass({
 						</form>
 					</div>
 
-					<a href="#" style={{color: "black"}} ref="addStateLink"> {'Add new ' + dep.get('name') + ' image...'}</a>
+					<em><a href="#" style={{color: "black", fontWeight: "100"}} ref="addStateLink"> {'Add new ' + dep.get('name') + ' image...'}</a></em>
 				</div>	
 
 			</div>

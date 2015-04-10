@@ -34,6 +34,8 @@ window.depIconPath = function(dep, scale) {
   return dep.get('template').get('icons')+"/icon_t_"+dep.get('template').get('id') + (scale ? "@"+scale+"x" : "") + ".png"
 }
 
+window.BRAND_BLUE = "#8CD2F4"
+
 // track certain action
 Dispatcher.register(function(a){
   switch (a.type) {
