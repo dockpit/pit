@@ -75,7 +75,7 @@ module.exports = React.createClass({
     })
 
     var list = <div className="ui two column grid doubling row">
-      <div className="column">
+      <div className="column" style={{paddingBottom: 0}}>
         {left.map(function(dep){
           return <DepItem isolations={me.state.isoData.get('isolations')} key={dep.get('id')} dep={dep}/> 
         })}

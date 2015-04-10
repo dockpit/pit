@@ -59,16 +59,15 @@ module.exports = React.createClass({
     }
 
     return <div className="ui" style={{position: 'relative'}}>
-      <h2 className={'ui top attached header ' + (disabled ? 'disabled': null)}>
-        <div className="content">
-          Isolations          
-        </div>
+      <h2 style={{paddingLeft: "50px"}} className={'ui top attached header ' + (disabled ? 'disabled': null)}>
+        <img style={{position: "absolute", top: "-15px", left: "-10px", "zIndex": 100}} src="/static/src/img/icon_fixture@1x.png" />
+        Isolations          
       </h2>
 
-      <button style={{position: 'absolute', top: '10px', right: '10px'}} className={'ui secondary labeled icon button '+ (disabled ? 'disabled': null)} onClick={this.openIsolationForm}><i className="plus icon"></i>New Isolation</button>      
+      <button style={{position: 'absolute', top: '10px', right: '10px'}} className={'ui icon button '+ (disabled ? 'disabled': null)} onClick={this.openIsolationForm}><i className="plus icon"></i></button>      
       { this.state.showForm ? <IsolationForm closeFormFn={this.closeIsolationForm} isolation={this.state.data.get('selection')}/> : null }
 
-      <div className={'ui bottom attached segment '+ (disabled ? 'disabled': null)}>
+      <div style={{borderTop: "none", paddingTop: "3px"}} className={'ui bottom attached segment '+ (disabled ? 'disabled': null)}>
         {list}        
       </div>
     </div>;

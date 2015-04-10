@@ -30,8 +30,8 @@ if (ew) {
 }
 
 //@todo find more elegant solution
-window.depIconPath = function(dep) {
-  return dep.get('template').get('icons')+"/icon_t_"+dep.get('template').get('id')+".png"
+window.depIconPath = function(dep, scale) {
+  return dep.get('template').get('icons')+"/icon_t_"+dep.get('template').get('id') + (scale ? "@"+scale+"x" : "") + ".png"
 }
 
 // track certain action

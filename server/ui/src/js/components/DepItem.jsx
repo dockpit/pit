@@ -95,7 +95,7 @@ module.exports = React.createClass({
 		var me = this
 		var dep = this.props.dep
 		
-		return <div onMouseEnter={this.enter} onMouseLeave={this.leave} style={{position: 'relative'}}>
+		return <div onMouseEnter={this.enter} onMouseLeave={this.leave} style={{position: 'relative', "marginBottom": "20px"}}>
 			<h3 style={{paddingLeft: "50px"}} className="ui top attached header">
 				<img style={{position: "absolute", top: "5px", left: "-10px", "zIndex": 100}} src={depIconPath(dep)} />
 				{dep.get('name')} 				
@@ -121,7 +121,7 @@ module.exports = React.createClass({
 						</form>
 					</div>
 
-					<a href="#" ref="addStateLink"> {'Add new ' + dep.get('name') + ' image...'}</a>
+					<a href="#" style={{color: "black"}} ref="addStateLink"> {'Add new ' + dep.get('name') + ' image...'}</a>
 				</div>	
 
 			</div>

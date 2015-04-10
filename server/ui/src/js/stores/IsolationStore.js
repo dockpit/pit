@@ -77,7 +77,7 @@ IsolationStore.dispatchToken = Dispatcher.register(function(a){
       var oldiso = a.args[0]
       var id = oldiso.get('id')
       newiso = oldiso.set('states', oldiso.get('states').filterNot(function(v, k){
-        return (k == a.args[1].dname && v == a.args[1].sname)       
+        return (k == a.args[1].depid && v == a.args[1].stateid)       
       }))
 
       IsolationStore.sendUpdateReq(newiso, oldiso, function(){
