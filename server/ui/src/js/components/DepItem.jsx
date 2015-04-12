@@ -37,7 +37,6 @@ var DepStateItem = React.createClass({
 		var imageNameShortened = imageName
 		var parts = imageNameShortened.split(".")
 		if (parts.length > 1) {
-			console.log(imageName)
 			imageNameShortened = parts[0].substring(0,10) + "..." + parts[1].slice(-10)
 		}
 
