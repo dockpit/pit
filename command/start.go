@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/codegangsta/cli"
 	"github.com/hashicorp/errwrap"
@@ -27,20 +26,20 @@ func (c *Start) Name() string {
 }
 
 func (c *Start) Description() string {
-	return fmt.Sprintf("<descriptions>")
+	return fmt.Sprintf("Starts serving the web UI over HTTP and launches the terminal UI in your current shell. It will create a new dockpit.db if it doesn't exists yet and connect to the configured Docker host for creating images and running containers.")
 }
 
 func (c *Start) Usage() string {
-	return "<usage>"
+	return "Start the development interface"
 }
 
 func (c *Start) Flags() []cli.Flag {
 
 	return []cli.Flag{
-		cli.StringFlag{Name: "bind", Value: ":3838", Usage: "<usage>"},
-		cli.StringFlag{Name: "db", Value: "dockpit.db", Usage: "<usage>"},
-		cli.StringFlag{Name: "docker-host", Value: os.Getenv("DOCKER_HOST"), Usage: "<usage>"},
-		cli.StringFlag{Name: "docker-cert-path", Value: os.Getenv("DOCKER_CERT_PATH"), Usage: "<usage>"},
+		cli.StringFlag{Name: "bind", Value: ":3838", Usage: "The address and port on which the process will listen to serve the web UI"},
+		DBFlag,
+		DockerHostFlag,
+		DockerCertFlag,
 	}
 }
 

@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/codegangsta/cli"
 	"github.com/hashicorp/errwrap"
@@ -24,19 +23,18 @@ func (c *Clean) Name() string {
 }
 
 func (c *Clean) Description() string {
-	return fmt.Sprintf("<descriptions>")
+	return fmt.Sprintf("Sometimes Docker containers remain after testing, this command removes all containers (and the data in them) that begin their name with 'dp-'. It does not remove any of your Docker images.")
 }
 
 func (c *Clean) Usage() string {
-	return "<usage>"
+	return "Remove all Dockpit containers"
 }
 
 func (c *Clean) Flags() []cli.Flag {
 	return []cli.Flag{
-		cli.StringFlag{Name: "bind", Value: ":3838", Usage: "<usage>"},
-		cli.StringFlag{Name: "db", Value: "dockpit.db", Usage: "<usage>"},
-		cli.StringFlag{Name: "docker-host", Value: os.Getenv("DOCKER_HOST"), Usage: "<usage>"},
-		cli.StringFlag{Name: "docker-cert-path", Value: os.Getenv("DOCKER_CERT_PATH"), Usage: "<usage>"},
+		DBFlag,
+		DockerHostFlag,
+		DockerCertFlag,
 	}
 }
 

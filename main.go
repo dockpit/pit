@@ -25,8 +25,8 @@ func main() {
 	app := cli.NewApp()
 	app.Author = "Ad van der Veer"
 	app.Email = "ad@dockpit.io"
-	app.Name = "<name>"
-	app.Usage = "<usage>"
+	app.Name = "pit"
+	app.Usage = "develop your (micro)service in isolation"
 	app.Version = fmt.Sprintf("%s (%s)", Version, Build)
 
 	cmds := []Command{

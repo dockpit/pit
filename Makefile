@@ -16,6 +16,21 @@ debug:
 		-debug=true server/ui/...
 	go run -tags=debug -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" main.go start 
 
+run:
+	go-bindata \
+		-o=server/ui/bin/assets_dev.go \
+		-tags=debug \
+		-pkg=uibin \
+		-ignore=server/ui/bin \
+		-ignore=server/ui/node_modules \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/node_modules \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/src \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/examples \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/tasks \
+		-ignore=server/ui/vendor/semantic-ui-1.11.5/test \
+		-debug=true server/ui/...
+	go run -tags=debug -ldflags "-X main.Version `cat VERSION` -X main.Build `date -u +%Y%m%d%H%M%S`" main.go
+
 #1. build release binaries
 release:
 	rm -fr bin/*
@@ -67,7 +82,7 @@ publish-zip:
 	done 
 
 #5 create checksums of zip archives
-publish-checksums:
+publish-checksum:
 	cd bin/dist && shasum -a256 * > ./dockpit_$(shell cat VERSION)_SHA256SUMS
 
 #6 upload zip and checksums
