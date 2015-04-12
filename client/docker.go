@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/dockpit/iowait"
-	"github.com/extemporalgenome/slug"
 	"github.com/hashicorp/errwrap"
 	"github.com/samalba/dockerclient"
 
@@ -24,8 +23,26 @@ import (
 var DockpitPrefix = "dp"
 var ConnectionTimeout = time.Millisecond * 500
 
+func ToImageName(depid, stateid string) string {
+	return fmt.Sprintf("%s-%s.%s", DockpitPrefix, depid, stateid)
+}
+
+func ToContainerName(isoid, imagename string) string {
+	return fmt.Sprintf("%s-%s.%s", DockpitPrefix, isoid, imagename[(len(DockpitPrefix)+1):])
+}
+
+func FromContainerName(name string) (isoid, depid, stateid string, err error) {
+	parts := strings.Split(name[(len(DockpitPrefix)+2):], ".")
+	if len(parts) < 3 {
+		return "", "", "", fmt.Errorf("Container name '%s' could not be inferred from", name)
+	}
+
+	return parts[0], parts[1], parts[2], nil
+}
+
 type Docker struct {
-	Host string
+	Host   string
+	HostIP string
 
 	client *dockerclient.DockerClient
 	model  *model.Model
@@ -42,6 +59,8 @@ func NewDocker(m *model.Model, host, cert string) (*Docker, error) {
 	if err != nil {
 		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to parse Docker host '%s' as url: {{err}}", host), err)
 	}
+
+	d.HostIP = strings.SplitN(hurl.Host, ":", 2)[0]
 
 	//use tlsc?
 	var tlsc tls.Config
@@ -116,6 +135,47 @@ func (d *Docker) Containers() ([]dockerclient.Container, error) {
 	return res, nil
 }
 
+func (d *Docker) Running(allIsos []*model.Isolation, allDeps []*model.Dep) (map[*model.Isolation]map[*model.Dep]dockerclient.Container, error) {
+	running := map[*model.Isolation]map[*model.Dep]dockerclient.Container{}
+
+	cs, err := d.Containers()
+	if err != nil {
+		return running, errwrap.Wrapf(fmt.Sprintf("Failed to fetch all container for determine current isolation: {{err}}"), err)
+	}
+
+	for _, c := range cs {
+		for _, n := range c.Names {
+			isoid, depid, stateid, err := FromContainerName(n)
+			if err != nil {
+				continue
+			}
+
+			//@todo map by deps and states
+			_ = depid
+			_ = stateid
+
+			//determine what iso
+			for _, iso := range allIsos {
+				if iso.ID == isoid {
+
+					//determine what dep
+					for _, dep := range allDeps {
+						if dep.ID == depid {
+
+							//finally assing to map
+							running[iso] = map[*model.Dep]dockerclient.Container{
+								dep: c,
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return running, nil
+}
+
 func (d *Docker) Switch(iso *model.Isolation) error {
 	err := d.RemoveAll()
 	if err != nil {
@@ -128,34 +188,32 @@ func (d *Docker) Switch(iso *model.Isolation) error {
 		return errwrap.Wrapf(fmt.Sprintf("Failed to get deps and states for starting iso '%s': {{err}}", iso.Name), err)
 	}
 
-	for dep, state := range depst {
+	for _, state := range depst {
 		run, err := model.NewRun(*state)
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to create run from state '%s': {{err}}", state.Name), err)
 		}
 
-		cid, err := d.Start(run, fmt.Sprintf("%s.%s.", DockpitPrefix, iso.ID))
+		_, err = d.Start(run, iso.ID)
 		if err != nil {
 			return errwrap.Wrapf(fmt.Sprintf("Failed to start state '%s': {{err}}", state.Name), err)
 		}
 
-		//@todo probalby wanna store this somewhere
-		_ = run //run instance
-		_ = dep //dependency
-		_ = cid //container id
 	}
 
 	return nil
 }
 
-func (d *Docker) Start(run *model.Run, prefix string) (string, error) {
+func (d *Docker) Start(run *model.Run, isolationId string) (string, error) {
 	var err error
 
 	//container config
 	cconfig := run.State.Settings.ContainerConfig
 	cconfig.Image = run.State.ImageName
 
-	run.ContainerID, err = d.client.CreateContainer(cconfig, prefix+run.State.ImageName)
+	// @todo
+
+	run.ContainerID, err = d.client.CreateContainer(cconfig, ToContainerName(isolationId, run.State.ImageName))
 	if err != nil {
 		return "", errwrap.Wrapf(fmt.Sprintf("Failed to create state container with image '%s': {{err}}, is the state build?", run.State.ImageName), err)
 	}
@@ -245,8 +303,8 @@ func (d *Docker) Build(b *model.Build) (string, error) {
 	}
 
 	// generate an unique image name based on the provider name and path to the state folder
-	iname := fmt.Sprintf("%s-%s-%s", DockpitPrefix, dep.Name, state.Name)
-	iname = slug.SlugAscii(iname)
+	iname := ToImageName(dep.ID, state.ID)
+	// iname = slug.SlugAscii(iname)
 
 	// fall back to streaming ourselves for building the image, samalba has yet to
 	// implement image building: https://github.com/samalba/dockerclient/issues/62

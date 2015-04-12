@@ -32,6 +32,7 @@ func main() {
 	cmds := []Command{
 		command.NewStart(Version),
 		command.NewClean(),
+		command.NewLocate(),
 	}
 
 	for _, c := range cmds {

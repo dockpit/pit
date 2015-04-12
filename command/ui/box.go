@@ -165,6 +165,7 @@ func (b *Box) Draw() {
 		b.PrintLn(``)
 		b.PrintLn("\t" + `  1. Open your favorite web browser`)
 		b.Printf("\t"+`  2. Browse to %s`, b.svr.URL())
+		b.PrintLn("\t" + `  3.Follow the instructions on screen`)
 	} else {
 		b.PrintLn(``)
 		for i, m := range b.filtered {

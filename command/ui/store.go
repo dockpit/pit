@@ -18,7 +18,6 @@ type State struct {
 	Deps       []*model.Dep
 	Isolations []*model.Isolation
 	DockerInfo *dockerclient.Info
-	Containers []dockerclient.Container
 	Errors     []error
 }
 
@@ -114,31 +113,19 @@ func (s *Store) Sync() {
 	} else {
 		s.State.DockerHostStatus = "OK"
 
-		//get dockpit containers
-		s.State.Containers, err = s.client.Containers()
+		//filter all isolations to the instances that are running
+		running, err := s.client.Running(s.State.Isolations, s.State.Deps)
 		if err != nil {
 			s.State.Errors = append(s.State.Errors, err)
 		}
 
-		running := []string{}
-		for _, c := range s.State.Containers {
-			for _, n := range c.Names {
-				split := strings.Split(n, ".")
-				if len(split) < 2 {
-					continue
-				}
-
-				isoid := split[1]
-				for _, iso := range s.State.Isolations {
-					if iso.ID == isoid {
-						running = append(running, iso.Name)
-					}
-				}
-			}
-		}
-
 		if len(running) > 0 {
-			s.State.CurrentIsolationName = strings.Join(running, ",")
+			names := []string{}
+			for iso, _ := range running {
+				names = append(names, iso.Name)
+			}
+
+			s.State.CurrentIsolationName = strings.Join(names, ",")
 
 			//@todo determine status though something more sophisticated
 			s.State.CurrentIsolationStatus = "OK"
