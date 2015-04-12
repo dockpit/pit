@@ -34,6 +34,13 @@ var DepStateItem = React.createClass({
 			return res
 		})
 
+		var imageNameShortened = imageName
+		var parts = imageNameShortened.split(".")
+		if (parts.length > 1) {
+			console.log(imageName)
+			imageNameShortened = parts[0].substring(0,10) + "..." + parts[1].slice(-10)
+		}
+
 		return <div className="item" onMouseEnter={this.enter} onMouseLeave={this.leave}>
 			{this.state.hover ? <button style={{margin: '5px 5px 0 0'}} className="right floated circular compact ui red icon mini button" onClick={this.removeDepState}><i className="trash icon"></i></button> : null }
 			{imageName ? <img className="ui avatar image" src="/static/src/img/icon_built_image.png"/> : <img className="ui avatar image" src="/static/src/img/icon_unbuilt_image.png"/>}
@@ -41,7 +48,7 @@ var DepStateItem = React.createClass({
 				<a className="header" href={"/deps/"+dep.get('id')+"/states/"+st.get('id')}>
 					<h4 style={{color: BRAND_BLUE, fontWeight: "normal"}}>{st.get('name')}</h4>				
 				</a>
-				<div className="description">Image: {imageName ? <span>{imageName}</span> : <em>not yet build</em>}</div>			
+				<div className="description">Image: {imageName ? <span>{imageNameShortened}</span> : <em>not yet build</em>}</div>			
 			</div>			
 		</div>
 	}
