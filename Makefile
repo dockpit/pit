@@ -60,7 +60,7 @@ publish-tag:
 	git tag v$(shell cat VERSION)
 	git push --tags
 
-#3 create github release
+#3 create github release (requires GITHUB_TOKEN environment variable)
 publish-release:
 	github-release release \
     --user dockpit \
