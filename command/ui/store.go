@@ -23,10 +23,10 @@ type State struct {
 
 func NewState() *State {
 	return &State{
-		DockerHostAddress:      "Unkown",
-		DockerHostStatus:       "Unkown",
+		DockerHostAddress:      yellow("Unkown"),
+		DockerHostStatus:       yellow("Unkown"),
 		CurrentIsolationStatus: "",
-		CurrentIsolationName:   "<none>",
+		CurrentIsolationName:   yellow("<none>"),
 		Errors:                 []error{},
 	}
 }
@@ -79,7 +79,7 @@ func (s *Store) SwitchTo(iso *model.Isolation) {
 
 	err := s.client.Switch(iso)
 	if err != nil {
-		s.State.CurrentIsolationStatus = "Error"
+		s.State.CurrentIsolationStatus = red("Error")
 		s.State.Errors = append(s.State.Errors, err)
 		return
 	}
@@ -108,10 +108,10 @@ func (s *Store) Sync() {
 	s.State.DockerHostAddress = s.client.Host
 	if err != nil {
 		//@todo retry on error?
-		s.State.DockerHostStatus = "Error"
+		s.State.DockerHostStatus = red("Error")
 		s.State.Errors = append(s.State.Errors, err)
 	} else {
-		s.State.DockerHostStatus = "OK"
+		s.State.DockerHostStatus = green("OK")
 
 		//filter all isolations to the instances that are running
 		running, err := s.client.Running(s.State.Isolations, s.State.Deps)
@@ -128,9 +128,9 @@ func (s *Store) Sync() {
 			s.State.CurrentIsolationName = strings.Join(names, ",")
 
 			//@todo determine status though something more sophisticated
-			s.State.CurrentIsolationStatus = "OK"
+			s.State.CurrentIsolationStatus = green("OK")
 		} else {
-			s.State.CurrentIsolationName = "<none>"
+			s.State.CurrentIsolationName = yellow("<none>")
 			s.State.CurrentIsolationStatus = ""
 		}
 
