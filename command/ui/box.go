@@ -214,7 +214,7 @@ func (b *Box) Draw() {
 		}
 
 		b.PrintLn(``)
-		b.PrintLn(``)
+		b.PrintLn(`↑↓ to select, press ENTER to start the isolation`)
 		b.PrintLn(`Use Esc or Ctrl-C to exit`)
 	}
 
