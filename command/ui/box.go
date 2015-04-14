@@ -13,6 +13,18 @@ import (
 	"github.com/dockpit/pit/server"
 )
 
+func green(str string) string {
+	return fmt.Sprintf(string(0x01)+"%s"+string(0x00), str)
+}
+
+func red(str string) string {
+	return fmt.Sprintf(string(0x02)+"%s"+string(0x00), str)
+}
+
+func yellow(str string) string {
+	return fmt.Sprintf(string(0x03)+"%s"+string(0x00), str)
+}
+
 type Box struct {
 	client *client.Docker
 	model  *model.Model
@@ -23,6 +35,8 @@ type Box struct {
 	input     string
 	selection int
 	filtered  []*Entry
+
+	currentColor termbox.Attribute
 }
 
 func NewBox(m *model.Model, svr *server.Server, client *client.Docker, store *Store) *Box {
@@ -34,6 +48,8 @@ func NewBox(m *model.Model, svr *server.Server, client *client.Docker, store *St
 
 		filtered: []*Entry{},
 		currLn:   0,
+
+		currentColor: termbox.ColorDefault,
 	}
 }
 
@@ -108,6 +124,20 @@ func (b *Box) PrintLn(str string) {
 
 	y := 0
 	for _, c := range str {
+		switch c {
+		case rune(0x01):
+			b.currentColor = termbox.ColorGreen
+			continue
+		case rune(0x02):
+			b.currentColor = termbox.ColorRed
+			continue
+		case rune(0x03):
+			b.currentColor = termbox.ColorYellow
+			continue
+		case rune(0x00):
+			b.currentColor = termbox.ColorDefault
+			continue
+		}
 
 		//jump to next line if message doesnt fit
 		if y == w {
@@ -115,7 +145,7 @@ func (b *Box) PrintLn(str string) {
 			b.currLn++
 		}
 
-		termbox.SetCell(y, b.currLn, c, termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(y, b.currLn, c, b.currentColor, termbox.ColorDefault)
 		y++
 	}
 
@@ -143,7 +173,7 @@ func (b *Box) Draw() {
 
 	//render status lines
 	b.Printf(`Docker Host: %s (%s)`, b.store.State.DockerHostStatus, b.store.State.DockerHostAddress)
-	b.Printf(`Web Interface: Ok (%s)`, b.svr.URL()) //@todo replace by hostname
+	b.Printf(`Web Interface: %s (%s)`, green("OK"), b.svr.URL()) //@todo replace by hostname
 	b.Printf(`Current Isolation: %s (%s)`, b.store.State.CurrentIsolationStatus, b.store.State.CurrentIsolationName)
 
 	//@todo render current isolation
@@ -184,14 +214,14 @@ func (b *Box) Draw() {
 		}
 
 		b.PrintLn(``)
-		b.PrintLn(``)
+		b.PrintLn(`↑↓ to select, press ENTER to start the isolation`)
 		b.PrintLn(`Use Esc or Ctrl-C to exit`)
 	}
 
 	//print errors
 	b.PrintLn(``)
 	if len(b.store.State.Errors) > 0 {
-		b.PrintLn("Errors:")
+		b.PrintLn(red("Errors:"))
 		for _, err := range b.store.State.Errors {
 			b.PrintLn("  - " + err.Error())
 		}

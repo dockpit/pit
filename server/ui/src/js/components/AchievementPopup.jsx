@@ -60,7 +60,7 @@ module.exports = React.createClass({
 
 
 				    <div className="content">
-				    	{"You've just setup the first dependency of the default fixture, next you could:"}
+				    	{"You've just setup the first dependency of the default isolation, next you could:"}
 				    	<ol>
 				    		<li>
 				    			{"Commit you isolation for other team members to use:"}
@@ -70,7 +70,7 @@ module.exports = React.createClass({
 				    			</pre>
 				    		</li>
 				    		<li>
-				    			{"Start your fixture by heading over to your terminal UI:"}
+				    			{"Start your isolation by heading over to your terminal UI:"}
 				    			<pre style={{backgroundColor: "#333", color: "#CCC", padding: "10px"}}>
 {"Docker Host: OK (tcp://192.168.99.100:2376)\n"}
 {"Web Interface: Ok (http://[::]:3838)\n"}
