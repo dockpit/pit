@@ -205,6 +205,42 @@ func server_ui_head_html() (*asset, error) {
 	return a, err
 }
 
+// server_ui_main_html reads file data from disk. It returns an error on failure.
+func server_ui_main_html() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/main.html"
+	name := "server/ui/main.html"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// server_ui_main_js reads file data from disk. It returns an error on failure.
+func server_ui_main_js() (*asset, error) {
+	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/main.js"
+	name := "server/ui/main.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // server_ui_package_json reads file data from disk. It returns an error on failure.
 func server_ui_package_json() (*asset, error) {
 	path := "/Users/advanderveer/Documents/Projects/go/src/github.com/dockpit/pit/server/ui/package.json"
@@ -9465,6 +9501,8 @@ var _bindata = map[string]func() (*asset, error){
 	"server/ui/foot.html": server_ui_foot_html,
 	"server/ui/gulpfile.js": server_ui_gulpfile_js,
 	"server/ui/head.html": server_ui_head_html,
+	"server/ui/main.html": server_ui_main_html,
+	"server/ui/main.js": server_ui_main_js,
 	"server/ui/package.json": server_ui_package_json,
 	"server/ui/src/.DS_Store": server_ui_src_ds_store,
 	"server/ui/src/img/icon_build_image.png": server_ui_src_img_icon_build_image_png,
@@ -10041,6 +10079,10 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			"gulpfile.js": &_bintree_t{server_ui_gulpfile_js, map[string]*_bintree_t{
 			}},
 			"head.html": &_bintree_t{server_ui_head_html, map[string]*_bintree_t{
+			}},
+			"main.html": &_bintree_t{server_ui_main_html, map[string]*_bintree_t{
+			}},
+			"main.js": &_bintree_t{server_ui_main_js, map[string]*_bintree_t{
 			}},
 			"package.json": &_bintree_t{server_ui_package_json, map[string]*_bintree_t{
 			}},
