@@ -33,6 +33,7 @@ func main() {
 		command.NewStart(Version),
 		command.NewClean(),
 		command.NewLocate(),
+		command.NewInit(),
 	}
 
 	for _, c := range cmds {
