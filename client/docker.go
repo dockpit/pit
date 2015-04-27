@@ -41,18 +41,21 @@ func FromContainerName(name string) (isoid, depid, stateid string, err error) {
 }
 
 type Docker struct {
-	Host   string
+	Host   Host
 	HostIP string
 
 	client *dockerclient.DockerClient
 	model  *model.Model
 }
 
-func NewDocker(m *model.Model, host, cert string) (*Docker, error) {
+func NewDocker(m *model.Model, h Host) (*Docker, error) {
 	d := &Docker{
-		Host:  host,
+		Host:  h,
 		model: m,
 	}
+
+	cert := h.CertDir()
+	host := h.HostURL()
 
 	//parse docker host addr as url
 	hurl, err := url.Parse(host)
@@ -86,7 +89,7 @@ func NewDocker(m *model.Model, host, cert string) (*Docker, error) {
 func (d *Docker) Info() (*dockerclient.Info, error) {
 	info, err := d.client.Info()
 	if err != nil {
-		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to retrieve Docker host info for '%s': {{err}}", d.Host), err)
+		return nil, errwrap.Wrapf(fmt.Sprintf("Failed to retrieve Docker host info for '%s': {{err}}", d.Host.HostURL()), err)
 	}
 
 	return info, nil

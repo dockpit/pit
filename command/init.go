@@ -52,7 +52,7 @@ func (c *Init) Action() func(ctx *cli.Context) {
 
 func (i *Init) request(method string) (map[string]interface{}, error) {
 	v := map[string]interface{}{}
-	url := fmt.Sprintf("https://dockpit-v1.appspot.com/api/%s", method)
+	url := fmt.Sprintf("https://dockpit-eu.appspot.com/api/%s", method)
 	resp, err := http.Get(url)
 	if err != nil {
 		return v, errwrap.Wrapf(fmt.Sprintf("Failed to send request to '%s': {{err}}", url), err)
@@ -79,7 +79,7 @@ func (c *Init) Run(ctx *cli.Context) error {
 
 	//phase 1: create remote
 	fmt.Println("Requesting remote for a new box...")
-	data, err := c.request("boxes.launch")
+	data, err := c.request("boxes.launch?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0MzA0MDQwNjAsInJvbGVzIjpbMV0sInV1aWQiOiI2OTU2MWQwYi02M2U5LTRmMDEtOWMxNS1hYmRlZTFhODZjOTcifQ.8VppvJqb-kKECGQ_FPXw6t9KBlz_F2b7NoZAjK5wkYY&box=31273270-6fcc-487d-a760-b472dcb07628")
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func (c *Init) Run(ctx *cli.Context) error {
 	for {
 		fmt.Print(".")
 
-		data, err = c.request(fmt.Sprintf("boxes.status?box=%s", box["id"]))
+		data, err = c.request(fmt.Sprintf("boxes.status?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0MzA0MDQwNjAsInJvbGVzIjpbMV0sInV1aWQiOiI2OTU2MWQwYi02M2U5LTRmMDEtOWMxNS1hYmRlZTFhODZjOTcifQ.8VppvJqb-kKECGQ_FPXw6t9KBlz_F2b7NoZAjK5wkYY&box=%s", box["id"]))
 		if err != nil {
 			return err
 		}

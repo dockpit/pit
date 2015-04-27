@@ -105,7 +105,7 @@ func (s *Store) Sync() {
 
 	//get host info
 	s.State.DockerInfo, err = s.client.Info()
-	s.State.DockerHostAddress = s.client.Host
+	s.State.DockerHostAddress = s.client.Host.HostURL()
 	if err != nil {
 		//@todo retry on error?
 		s.State.DockerHostStatus = red("Error")

@@ -9,6 +9,7 @@ import (
 	"github.com/samalba/dockerclient"
 
 	"github.com/dockpit/pit/client"
+	"github.com/dockpit/pit/host"
 	"github.com/dockpit/pit/model"
 )
 
@@ -50,7 +51,9 @@ func (c *Locate) Run(ctx *cli.Context) error {
 		return errwrap.Wrapf("Failed open model: {{err}}", err)
 	}
 
-	docker, err := client.NewDocker(m, ctx.String("docker-host"), ctx.String("docker-cert-path"))
+	lhost := host.NewLocal(ctx.String("docker-host"), ctx.String("docker-cert-path"))
+	dphost := host.NewDockpit(lhost)
+	docker, err := client.NewDocker(m, dphost)
 	if err != nil {
 		return errwrap.Wrapf("Failed to connect to Docker host: {{err}}", err)
 	}
