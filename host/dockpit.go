@@ -7,15 +7,27 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bgentry/speakeasy"
 	"github.com/codegangsta/cli"
 )
 
 var BoxesListURL = "https://dockpit-eu.appspot.com/api/boxes.list"
+var UsersAuthURL = "https://dockpit-eu.appspot.com/api/users.authenticate"
 
 type BoxesListResponse struct {
 	Ok    bool     `json:"ok"`
 	Error string   `json:"error,omitempty"`
 	Boxes *BoxList `json:"boxes"`
+}
+
+type UsersAuthResponse struct {
+	Ok    bool   `json:"ok"`
+	Error string `json:"error,omitempty"`
+	User  *User  `json:"user"`
+}
+
+type User struct {
+	Token string `json:"token"`
 }
 
 type Box struct {
@@ -62,13 +74,62 @@ func (d *Dockpit) GetBoxes() (*BoxList, error) {
 	var listresp BoxesListResponse
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
-	dec.Decode(&listresp)
+	err = dec.Decode(&listresp)
+	if err != nil {
+		return nil, err
+	}
 
 	if !listresp.Ok {
 		return nil, fmt.Errorf(listresp.Error)
 	}
 
 	return listresp.Boxes, nil
+}
+
+func (d *Dockpit) LoginScan(ctx *cli.Context) (string, string, error) {
+	var email string
+	fmt.Printf("Enter email: ")
+
+	_, err := fmt.Scanln(&email)
+	switch {
+	case err != nil && err.Error() != "unexpected newline":
+		return "", "", err
+	case email == "":
+		return "", "", fmt.Errorf("email is required.")
+	}
+
+	// NOTE: gopass doesn't support multi-byte chars on Windows
+	password, err := speakeasy.Ask("Enter password: ")
+	switch {
+	case err == nil:
+	case err.Error() == "unexpected newline":
+		return email, "", fmt.Errorf("password is required.")
+	default:
+		return email, "", err
+	}
+
+	return email, password, nil
+}
+
+func (d *Dockpit) GetToken(email, password string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf(UsersAuthURL+"?email=%s&password=%s", email, password))
+	if err != nil {
+		return "nil", err
+	}
+
+	var authresp UsersAuthResponse
+	defer resp.Body.Close()
+	dec := json.NewDecoder(resp.Body)
+	err = dec.Decode(&authresp)
+	if err != nil {
+		return "", err
+	}
+
+	if !authresp.Ok {
+		return "", fmt.Errorf(authresp.Error)
+	}
+
+	return authresp.User.Token, nil
 }
 
 func (d *Dockpit) Init(ctx *cli.Context) error {
@@ -137,14 +198,21 @@ func (d *Dockpit) Init(ctx *cli.Context) error {
 	//to token provided, please login
 	token := ctx.String("token")
 	if token == "" {
-		fmt.Printf("\nPlease login:\n")
+		email, password, err := d.LoginScan(ctx)
+		if err != nil {
+			return err
+		}
 
-		<-time.After(time.Second * 10)
+		token, err = d.GetToken(email, password)
+		if err != nil {
+			return err
+		}
+
 	}
 
-	fmt.Println(sel.ID)
-
-	//@todo, login / register?
+	//@todo, login / register?, but be logged in
+	fmt.Println(sel.ID, token)
+	<-time.After(time.Second * 30)
 
 	return nil
 }
