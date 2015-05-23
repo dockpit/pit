@@ -31,7 +31,7 @@ NOTE: If something went wrong make sure [Docker](https://docker.com) is installe
 ## Dockpit vs Other Software
 - **Fig, Docker Compose**: Fig and Docker Compose use a configuration file for defining a single set of dependencies. Dockpit instead provides an easy-to-use UI and focusses on creating multiple sets of dependencies with well defined states that can be switched out when needed.  
   
-- **Kitamatic** comes with an UI that makes it easy install Docker and launch images from the hub. *Dockpit* expects Docker to be running already and its UI focusses on constructing Docker images specific to your project. As such, it complements Kitamatic and can be configured to use the Docker host Kitamatic installs.
+- **Kitematic** comes with an UI that makes it easy install Docker and launch images from the hub. *Dockpit* expects Docker to be running already and its UI focusses on constructing Docker images specific to your project. As such, it complements Kitematic and can be configured to use the Docker host Kitematic installs.
 
 - **Vagrant, Virtual Box, VMWare, etc**: Virtual machines are often used to provide reliable development environments for teams. *Dockpit* aims to be more lightweight by depending on Docker as its portable runtime. But Dockpit itself can ofcourse also be run inside such virtual machines to provide the best of both worlds. 
 
